@@ -1,0 +1,80 @@
+=== Adaptive Reasoning Language Agents.pdf ===
+### Adaptive Reasoning Language Agents.pdf
+- **AI Technique(s)**: Large Language Models (LLMs) such as GPT-4 and GPT-3.5 for adaptive reasoning and acting in a simulated clinical environment.
+- **Healthcare Application**: Applied to a simulated clinical environment using the MedQA dataset for diagnostic tasks.
+- **Methodology**: Involves generating sequences of tokens from LLMs, adapting from previous trials, compressing context length, and correcting diagnostic failures.
+- **Key Findings or Contributions**: The LLM doctor agent can improve diagnostic accuracy over time, even in complex patient interactions, by incorporating automatic correction mechanisms.
+- **Limitations or Challenges**: Future enhancements are needed to refine the algorithm and expand its applicability across a wider range of tasks and different large language models.
+
+=== Agents in Clinic.pdf ===
+### Agents in Clinic.pdf
+- **AI Technique(s)**: Large language models (LLMs) such as GPT-4 and Med-PaLM 2 are used.
+- **Healthcare Application**: LLM agents are applied to various clinical tasks and settings in healthcare.
+- **Methodology**: The paper discusses the development of LLM agents for clinical use, including providing access to different sources of information and tools, as well as utilizing agent-based modeling (ABM) for evaluating LLM agents in simulated clinical settings.
+- **Key Findings or Contributions**: LLM agents have the potential to improve and automate aspects of clinical tasks beyond traditional natural language processing (NLP) tasks. The development of Artificial Intelligence Structured Clinical Examinations (AI-SCEs) is proposed to assess the ability of LLMs to aid in real-world clinical workflows.
+- **Limitations or Challenges**: Challenges include the need for robust evaluation frameworks for LLM agents in clinical settings, as well as the development of AI-SCE benchmarks that go beyond traditional computer science metrics to capture the full range of capabilities demonstrated by clinical LLM agents.
+
+=== Autonomous Agents 2024 in medicine.pdf ===
+### Autonomous Agents 2024 in medicine.pdf
+- **AI Technique(s)**: The study utilizes Large Language Models (LLMs) such as GPT-4 and Retrieval Augmented Generation (RAG) within an agent-based system.
+- **Healthcare Application**: The LLMs are applied to generating clinical recommendations and management strategies in healthcare settings.
+- **Methodology**: The LLMs are prompted with specific questions and guidelines, with the addition of RAG improving performance in conforming to clinical knowledge. Prompt engineering is used to guide the models' responses and reduce hallucinations. The models operate within an agentic workflow, interacting with user prompts and tools to generate recommendations.
+- **Key Findings or Contributions**: The study demonstrates the effectiveness of using LLMs as agents in healthcare settings, integrating with existing systems and generating evidence-based recommendations. The addition of RAG improves model performance, and prompt engineering helps steer model responses in the right direction.
+- **Limitations or Challenges**: Limitations include the need for human intervention in curating and evaluating data, as well as the challenge of adapting the models to real clinical settings. The study also highlights limitations in model performance and the choice between open-source and proprietary models.
+
+=== LLM Agents in Medicine.pdf ===
+### LLM Agents in Medicine.pdf
+- **AI Technique(s)**: Large Language Models (LLMs) and Multimodal Large Language Models (MLLMs) are utilized in the medical domain, incorporating various models like PaLM series, GPT series, LLaMA series, and others.
+- **Healthcare Application**: The AI techniques are applied to medical tasks such as medical report generation, clinical diagnosis, mental health services, and various clinical applications.
+- **Methodology**: The paper traces the evolution of LLMs and MLLMs, reviews existing models, provides guidance on construction and evaluation, explores applications in healthcare, and addresses challenges in training and deployment.
+- **Key Findings or Contributions**: The paper offers a comprehensive overview of the technical methodologies and practical clinical applications of medical LLMs and MLLMs, aiming to bridge the gap between advanced technologies and clinical practice in healthcare.
+- **Limitations or Challenges**: Challenges include the need for substantial medical data for training, computational demands, evaluation beyond benchmarks, and challenges in practical clinical use due to hallucinations and lack of up-to-date information.
+
+=== MedAide.pdf ===
+### MedAide.pdf
+- **AI Technique(s)**: The paper proposes the MEDAIDE framework in combination with various state-of-the-art language models for specialized healthcare services.
+- **Healthcare Application**: The framework is applied to tasks such as medical diagnosis, medication recommendation, and post-diagnosis rehabilitation in healthcare.
+- **Methodology**: The model pipeline includes query rewriting, intent recognition, agent collaboration, and decision analysis for integrated decision-making in healthcare services.
+- **Key Findings or Contributions**: MEDAIDE improves model performance in various healthcare tasks, providing personalized diagnoses, treatment recommendations, and comprehensive symptom analyses.
+- **Limitations or Challenges**: The paper does not explicitly mention any limitations or challenges associated with the proposed framework.
+
+=== Multimodal in healthcare.pdf ===
+### Multimodal in healthcare.pdf
+- **AI Technique(s)**: Multimodal Large Language Models (M-LLMs) such as BERT, GPT-4, Flamingo, LLaVA, Video-Chat, SpeechGPT, PandaGPT, NExT-GPT, Macaw-LLM, OneLLM, Time-LLM, LLM4TS, TEMPO, PromptCast, ChatGPT-4, ProtST, ProteinBERT, NetGO, and others.
+- **Healthcare Application**: The applications range from medical imaging, pathology, dermatology, neurology, computational histopathology, monitoring patient progress, disease trajectories, predicting outcomes, to medical image interpretation, visual question answering, time series forecasting, health learning, protein sequences, functional annotations, computational pathology, medical imaging, clinical prediction models, sentiment analysis, and breast cancer survival prediction.
+- **Methodology**: The paper discusses the development and capabilities of M-LLMs, including modality-specific encoding, embedding alignment and fusion, contextual understanding, cross-modal interactions, decision-making, pretraining, fine-tuning, and in-context learning.
+- **Key Findings or Contributions**: The main contributions include the transformative potential of M-LLMs in healthcare, improving diagnostic accuracy, efficiency in clinical tasks, personalized care, and advancements in various medical domains.
+- **Limitations or Challenges**: The limitations and challenges highlighted include the need for more comprehensive evaluation methods, interpretability issues, ethical challenges related to bias, fairness, data privacy, informed consent, and operational demands in clinical environments.
+
+=== Polaris LLM Constellation.pdf ===
+### Polaris LLM Constellation.pdf
+- **AI Technique(s)**: Large Language Models (LLMs) in a constellation architecture with specialized support agents.
+- **Healthcare Application**: Real-time patient-AI healthcare conversations focusing on tasks performed by healthcare professionals.
+- **Methodology**: Training on proprietary data, clinical care plans, and healthcare documents with iterative co-training of agents. Models aligned to speak like medical professionals through organic and simulated conversations.
+- **Key Findings or Contributions**: Polaris performs on par with human nurses in medical safety, clinical readiness, patient education, and conversational quality. Specialist support agents outperform general-purpose LLMs in task-based evaluations.
+- **Limitations or Challenges**: The paper does not explicitly mention any limitations or challenges of the Polaris2 system.
+
+=== Systematic Review LLM Apps.pdf ===
+### Systematic Review LLM Apps.pdf
+- **AI Technique(s)**: Large Language Models (LLMs) such as GPT models and CHATGPT are utilized for various healthcare tasks.
+- **Healthcare Application**: The applications include diagnosing diseases, recommending treatments, administrative tasks, patient education, care coordination, and more across a wide range of medical specialties.
+- **Methodology**: The study involves systematic reviews of numerous studies to categorize evaluation data types, healthcare tasks, NLP/NLU tasks, and dimensions of evaluation.
+- **Key Findings or Contributions**: The findings highlight the limited use of real patient care data for LLM evaluation, the focus on accuracy over other evaluation dimensions, gaps in testing across medical specialties, and the need for standardized evaluation criteria.
+- **Limitations or Challenges**: The challenges identified include the lack of standardized evaluation dimensions, gaps in testing LLMs across specialties, and the importance of addressing bias and other evaluation dimensions for safe integration in healthcare settings.
+
+=== Transformative impact of LLM in Medicine.pdf ===
+### Transformative impact of LLM in Medicine.pdf
+- **AI Technique(s)**: Large Language Models (LLMs) such as Bidirectional Encoder Representations from Transformers (BERT) and Generative Pre-trained Transformers (GPT) are discussed in the paper.
+- **Healthcare Application**: The integration of LLMs in evidence-based medical research and clinical decision-making in healthcare settings.
+- **Methodology**: The paper emphasizes the importance of empirical studies, randomized controlled trials, observational studies, and collaborative research to evaluate the clinical utility, reliability, and safety of LLMs in healthcare.
+- **Key Findings or Contributions**: The paper highlights the need for robust evidence-based research to assess the accuracy, reliability, and safety of LLMs in medical applications. It also stresses the importance of interdisciplinary collaboration and ethical considerations in the deployment of LLMs in healthcare.
+- **Limitations or Challenges**: Challenges mentioned include the potential for prediction errors in clinical environments, the complexity and variability of medical data, and the need for LLMs to encompass domain-specific medical knowledge to avoid misunderstandings in complex medical scenarios.
+
+=== yang-et-al-2024-application-of-large-language-models-in-disease-diagnosis-and-treatment.pdf ===
+### yang-et-al-2024-application-of-large-language-models-in-disease-diagnosis-and-treatment.pdf
+- **AI Technique(s)**: Large language models (LLMs) such as ChatGPT, Claude, Llama, Qwen, GPT-3.5, GPT-4, Google Bard, BERTweet, BioClinical BERT, Retrieval-Augmented Generation (RAG), MLLMs, GPT-4V, Clinical Visual Instruction Tuning, CLIP, LLaVA-Ultra, DeepDR-LLM, PathChat, Prov-GigaPath, PathCLIP.
+- **Healthcare Application**: The paper focuses on the application of LLMs in disease diagnosis and treatment across various medical disciplines including liver cancer diagnosis, neurological disease diagnosis, mild cognitive impairment screening, emergency medicine triage, infectious disease diagnosis, cardiology, ophthalmology, radiology, radiology, ultrasonography, pathology, perioperative assessment, oncology, cancer treatment planning, gynecological malignancies, radiation oncology, neuro-oncology, gastroenterology, geriatrics, diabetes management, infectious diseases, orthopedics, managing acute pancreatitis in obese patients, and providing treatment recommendations for esophageal squamous cell carcinoma.
+- **Methodology**: Researchers utilize LLMs trained on vast internet knowledge, natural language understanding capabilities, and multimodal medical data handling. They employ optimization techniques like prompt engineering, post-training techniques, and combine text and images for improved diagnostic accuracy in medical imaging and disease treatment.
+- **Key Findings or Contributions**: LLMs have shown promise in diagnosing common and rare diseases, predicting disease risks, providing personalized treatment recommendations, and improving diagnostic accuracy and efficiency in various medical tasks. They have also demonstrated potential in generating medical reports, interpreting medical images, and developing personalized treatment plans for cancer patients.
+- **Limitations or Challenges**: Challenges include algorithmic bias, potential hallucinations, need for rigorous clinical validation, biases in model training data, lack of standardized research paradigms, limitations in accuracy and reasoning abilities of LLMs, ethical considerations, privacy concerns, and the complexity of clinical diagnosis and treatment using LLMs. Further refinement is needed for generating personalized recommendations, integrating multimodal information, and aligning with the latest medical guidelines.
+
