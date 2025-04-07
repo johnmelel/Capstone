@@ -1,0 +1,12 @@
+/.idea
+.env
+.DS_Store
+*.html
+/Assignment 2/Papers
+/venv
+*.aux
+*.log
+*.out
+*.nav
+*.snm
+*.toc
