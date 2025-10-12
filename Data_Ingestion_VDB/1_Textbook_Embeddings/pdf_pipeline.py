@@ -1,6 +1,13 @@
 """
 PDF Processing Pipeline - Text, Image, and Table Extraction
 
+CONFIGURATION:
+- Chunking: RecursiveCharacterTextSplitter (512 tokens, 75 overlap)
+- Embeddings: sentence-transformers 'all-MiniLM-L6-v2' (384 dims, local)
+- Text extraction: PyMuPDF (fitz)
+- Table detection: Basic text alignment
+- Image extraction: PyMuPDF with context
+
 Usage:
     python pdf_pipeline.py --test-mode              # Process first PDF only
     python pdf_pipeline.py --full                   # Process all PDFs
@@ -16,6 +23,7 @@ from datetime import datetime
 from PIL import Image
 import io
 import argparse
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 # ============================================================================
@@ -24,7 +32,7 @@ import argparse
 
 class TextExtractor:
     """
-    Extracts text from PDFs and chunks it with overlap
+    Extracts text from PDFs and chunks it with overlap using RecursiveCharacterTextSplitter
     
     WHY OVERLAP? Prevents cutting sentences/ideas at chunk boundaries
     """
@@ -32,8 +40,15 @@ class TextExtractor:
     def __init__(self, chunk_size=512, overlap=75):
         self.chunk_size = chunk_size  # tokens (characters / 4)
         self.overlap = overlap
-        self.max_chars = chunk_size * 4
-        self.overlap_chars = overlap * 4
+        
+        # Initialize RecursiveCharacterTextSplitter
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=chunk_size * 4,  # Convert tokens to characters
+            chunk_overlap=overlap * 4,  # Convert tokens to characters
+            separators=["\n\n", "\n", ". ", "! ", "? ", " ", ""],
+            length_function=len,
+            is_separator_regex=False
+        )
     
     def extract_and_chunk(self, page, page_num):
         """
@@ -55,91 +70,43 @@ class TextExtractor:
                     for span in line["spans"]:
                         block_text += span["text"]
                 
+                # save only meaningfull text
                 if block_text.strip():
                     text_blocks.append({
-                        "text": block_text.strip(),
-                        "bbox": block["bbox"]
+                        "text": block_text.strip(), # text without whitespace
+                        "bbox": block["bbox"]       # bounding box (coordinates where text appears)
                     })
         
-        # Combine all text
+        # Combine all text into one string
         full_text = " ".join([b["text"] for b in text_blocks])
         
+        # handle empty pages
         if not full_text.strip():
             print(f"       ⚠️  No text found on page {page_num + 1}")
             return []
         
-        # Chunk with overlap
-        chunks = self._chunk_with_overlap(full_text, page_num)
+        # Chunk with overlap using RecursiveCharacterTextSplitter
+        text_chunks = self.text_splitter.split_text(full_text)
         
-        print(f"       ✅ Created {len(chunks)} text chunks")
-        return chunks
-    
-    def _chunk_with_overlap(self, text, page_num):
-        """Split text into overlapping chunks"""
+        # Convert to our chunk format with metadata
         chunks = []
-        words = text.split()
-        current_chunk = []
-        current_length = 0
-        chunk_start_word = 0
-        
-        i = 0
-        while i < len(words):
-            word = words[i]
-            word_length = len(word) + 1  # +1 for space
-            
-            # Check if adding this word exceeds limit
-            if current_length + word_length > self.max_chars and current_chunk:
-                # Save current chunk
-                chunk_text = ' '.join(current_chunk)
-                chunks.append({
-                    "chunk_id": f"page{page_num + 1}_text_{len(chunks)}",
-                    "type": "text",
-                    "content": chunk_text,
-                    "metadata": {
-                        "page": page_num + 1,
-                        "char_count": len(chunk_text),
-                        "token_estimate": len(chunk_text) // 4,
-                        "word_range": [chunk_start_word, i - 1],
-                        "has_overlap": len(chunks) > 0
-                    }
-                })
-                
-                # Calculate overlap for next chunk
-                overlap_words = []
-                overlap_len = 0
-                for w in reversed(current_chunk):
-                    if overlap_len + len(w) + 1 <= self.overlap_chars:
-                        overlap_words.insert(0, w)
-                        overlap_len += len(w) + 1
-                    else:
-                        break
-                
-                # Start new chunk with overlap
-                current_chunk = overlap_words
-                current_length = overlap_len
-                chunk_start_word = i - len(overlap_words)
-            else:
-                current_chunk.append(word)
-                current_length += word_length
-                i += 1
-        
-        # Save final chunk
-        if current_chunk:
-            chunk_text = ' '.join(current_chunk)
+        for i, chunk_text in enumerate(text_chunks):
             chunks.append({
-                "chunk_id": f"page{page_num + 1}_text_{len(chunks)}",
+                "chunk_id": f"page{page_num + 1}_text_{i}",
                 "type": "text",
                 "content": chunk_text,
                 "metadata": {
                     "page": page_num + 1,
                     "char_count": len(chunk_text),
                     "token_estimate": len(chunk_text) // 4,
-                    "word_range": [chunk_start_word, len(words) - 1],
-                    "has_overlap": len(chunks) > 0
+                    "chunk_index": i,
+                    "has_overlap": i > 0
                 }
             })
         
+        print(f"       ✅ Created {len(chunks)} text chunks")
         return chunks
+    
 
 
 # ============================================================================
