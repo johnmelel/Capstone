@@ -1,0 +1,1076 @@
+[
+  {
+    "text": "THIRD EDITION",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p2_c0",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 2
+  },
+  {
+    "text": "THIRD EDITION\n\nMitchell Tublin, MD\n   Professor and Vice Chair of Radiology\n     Chief, Abdominal Imaging Division\nUniversity of Pittsburgh School of Medicine\n         Pittsburgh, Pennsylvania\n\nAmir A. Borhani, MD\n        Assistant Professor of Radiology\n        Abdominal Imaging Division\n  University of Pittsburgh School of Medicine\n           Pittsburgh, Pennsylvania\n\nAlessandro Furlan, MD\n              Assistant Professor\n        Abdominal Imaging Division\n         Department of Radiology\n  University of Pittsburgh School of Medicine\n           Pittsburgh, Pennsylvania\n\nMatthew T. Heller, MD, FSAR\n       Associate Professor of Radiology\n        Abdominal Imaging Division\n    University of Pittsburgh Medical Center\n           Pittsburgh, Pennsylvania",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p4_c1",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "1600 John F. Kennedy Blvd.\n     Ste 1800\n     Philadelphia, PA 19103-2899\n\nDIAGNOSTIC IMAGING: GENITOURINARY, THIRD EDITION                                           ISBN: 978-0-323-37708-9\n\nCopyright \u00a9 2016 by Elsevier. All rights reserved.\n\nNo part of this publication may be reproduced or transmitted in any form or by any means, electronic or mechanical, including\n    photocopying, recording, or any information storage and retrieval system, without permission in writing from the publisher. Details on\n   how to seek permission, further information about the Publisher\u2019s permissions policies and our arrangements with organizations such as\n     the Copyright Clearance Center and the Copyright Licensing Agency, can be found at our website: www.elsevier.com/permissions.\n\nThis book and the individual contributions contained in it are protected under copyright by the Publisher (other than as may be\n    noted herein).",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p5_c2",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "Knowledge and best practice in this \ufb01eld are constantly changing. As new research and\n      experience broaden our understanding, changes in research methods, professional practices,\n      or medical treatment may become necessary.\n\nPractitioners and researchers must always rely on their own experience and knowledge in\n      evaluating and using any information, methods, compounds, or experiments described\n      herein. In using such information or methods they should be mindful of their own safety\n     and the safety of others, including parties for whom they have a professional responsibility.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p5_c2",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "With respect to any drug or pharmaceutical products identi\ufb01ed, readers are advised to check\n      the most current information provided (i) on procedures featured or (ii) by the manufacturer\n       of each product to be administered, to verify the recommended dose or formula, the\n     method and duration of administration, and contraindications. It is the responsibility of\n       practitioners, relying on their own experience and knowledge of their patients, to make\n       diagnoses, to determine dosages and the best treatment for each individual patient, and to\n       take all appropriate safety precautions.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p5_c2",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "To the fullest extent of the law, neither the Publisher nor the authors, contributors, or\n        editors, assume any liability for any injury and/or damage to persons or property as a matter\n       of products liability, negligence or otherwise, or from any use or operation of any methods,\n       products, instructions, or ideas contained in the material herein.\n\nPublisher Cataloging-in-Publication Data\n\nDiagnostic imaging. Genitourinary / [edited by] Mitchell Tublin.\n        pages ; cm\n         Genitourinary\n         Includes bibliographical references and index.\n      ISBN 978-0-323-37708-9 (hardback)\n        1. Genitourinary organs--Cancer--Imaging--Handbooks, manuals, etc.\n         I. Tublin, Mitchell E.  II. Title: Genitourinary.\n     [DNLM: 1. Urogenital Neoplasms--diagnosis--Atlases. 2. Diagnostic Imaging--Atlases. WJ 17]\n      RC280.G4 D534 2015\n       616.99/46--dc23",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p5_c2",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "International Standard Book Number: 978-0-323-37708-9\n     Cover Designer: Tom M. Olson, BA\n     Cover Art: Lane R. Bennion, MS & Richard Coombs, MS\n     Printed in Canada by Friesens, Altona, Manitoba, Canada\n\nLast digit is the print number: 9 8 7 6 5 4 3 2 1",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p5_c2",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "Dedications\n\nTo the home team: My wonderful wife, Mary, and our sons,\nDaniel, Josh, and Andrew. The Tublin mantra: Good things happen\n  with drive, commitment, and integrity...but it\u2019s really your love\n         and support that make everything possible.\n\nI would like to dedicate this book to my wonderful wife, Goli, and\n         to my beloved parents who have supported me\n                      in every second of my life.\n\nTo Liz, for her patience, support, and love.\n\n!\"#$%&'(')#*\"+')#',-#./0'(#1\"(#2%3&(#4,5'63(&,7#8\"63#',-#/499\"(2:\n       To my mentor, Mitch Tublin, and my AI colleagues.\n             To my parents, Michelene and Tom.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p6_c7",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 6
+  },
+  {
+    "text": "Contributing Authors\n\nShweta Bhatt, MD                      Marta Heilbrun, MD, MS\n          Associate Professor                                  Associate Professor of Radiology and Body\n         Department of Imaging Sciences                    Imaging\n           University of Rochester Medical Center                University of Utah School of Medicine\n          Rochester, New York                                     Salt Lake City, Utah",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p7_c8",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Paula J. Woodward, MD                   Ashraf Thabet, MD\n          David G. Bragg, MD and Marcia R. Bragg                Instructor in Radiology\n           Presidential Endowed Chair in Oncologic             Harvard Medical School\n          Imaging                                                Division of Interventional Radiology\n         Department of Radiology                          Massachusetts General Hospital\n         Department of Obstetrics and Gynecology            Boston, Massachusetts\n           University of Utah School of Medicine\n            Salt Lake City, Utah\n                                                     Gloria M. Salazar, MD\n                                                                  Assistant Radiologist\n        Michael P.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p7_c8",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Federle, MD, FACR                   Division of Vascular Imaging and Intervention\n          Professor and Associate Chair for Education          Massachusetts General Hospital\n         Department of Radiology                              Instructor in Radiology\n          Stanford University Medical Center                  Harvard Medical School\n           Stanford, California                                 Boston, Massachusetts.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p7_c8",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "!\"#$%&&'(#)(*%(+,#-. Todd M. Blodgett, MD          Professor and Vice Chairman\n                                                          Foundation Radiology Group         Department of Radiology\n                                                                 Pittsburgh, Pennsylvania          Stanford University School of Medicine\n           Stanford, California\n                                                Katherine E. Maturen, MD, MS\n         /\"#0%(1&%+#234'(%,#-.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p7_c8",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": ",#567!                   Associate Professor\n           Assistant Professor of Radiology                   Abdominal Radiology Fellowship Director\n          Harvard Medical School                                University of Michigan Hospitals\n          Associate Director, Fellowship                   Ann Arbor, Michigan\n           Division of Interventional Radiology\n          Massachusetts General Hospital\n                                               David Bauer, MD          Boston, Massachusetts\n                                                             Missoula Radiology\n                                                                Missoula, Montana.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p7_c8",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Akram M. Shaaban, MBBCh\nProfessor (Clinical)\nDepartment of Radiology\nUniversity of Utah School of Medicine\nSalt Lake City, Utah\n\nChristine O. Menias, MD\nProfessor of Radiology\nMayo Clinic School of Medicine\nScottsdale, Arizona\nAdjunct Professor of Radiology\nWashington University School of Medicine\nSt. Louis, Missouri\n\nVineet Krishan Khanna, MD\nRadiology Resident\nDepartment of Radiology\nUniversity of Pittsburgh Medical Center\nPittsburgh, Pennsylvania\n\nKarl Yaeger, MD\nWomen\u2019s Imaging Fellow\nDepartment of Radiology\nMagee Women\u2019s Hospital of UPMC\nPittsburgh, Pennsylvania\n\nAmit B. Desai, MD\nRadiology Resident\nDepartment of Imaging Sciences\nUniversity of Rochester Medical Center\nRochester, New York",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p8_c13",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Abdominal imagers recognize that a formal      employed by present day abdominal imagers. rigid split between GU and GI radiology no         Introductory narrative overview chapters\nlonger works with the rapid advancements        describe relevant GU anatomy, physiology,\nin cross-sectional imaging that have occurred      imaging protocols and work-up. GU oncology\nover the past generation. Nonetheless, when      staging and interventional technique chapters\nwe began planning for the third edition of         \u2014crucial material for current abdominal\nDiagnostic Imaging: Abdomen, we realized        imagers\u2014have also been added. Finally,\nthat it was no longer possible to encompass        additional images and references are included\nthe imaging and management of the entire         in the Elsevier Expert Consult eBook that\nspectrum of abdominal disorders in one          accompanies the print version of Diagnostic\ntext.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p10_c14",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Thus we decided to separate diagnoses       Imaging: Genitourinary, Third Edition. considered to be largely genitourinary                                                   This new edition of Diagnostic Imaging:\n(highlighted in this updated and expanded                                                   Genitourinary was compiled by members of the\ntext) from topics judged to be gastrointestinal                                          Abdominal Imaging Division of the University\n(covered in a corresponding, companion book). of Pittsburgh. The division has a long history\nThe Amirsys format of bulleted text \u2014            of excellent collaboration with one another,\nincluding key facts, imaging features, exam       and with referring clinical services.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p10_c14",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "This\nprotocols, pathology, clinical manifestations/      collaboration has resulted in a legacy of clinical\ntreatment, and image interpretation pearls      and academic success, and will be even more\n\u2014 is still employed. Succinct but exhaustive       important in a healthcare environment that\noutlined descriptions of GU diagnoses             appropriately emphasizes value over volume. are supplemented by image galleries that          4()#5()-&%,!(%. ). *#. ). *\"')62!#. (!)(!\". \"&%)7\"//)\nemphasize the pearls and pitfalls of modern      be a go-to, readily accessible, clinically relevant\nGU imaging. The number of genitourinary         resource for abdominal imagers and trainees\n!\"#$%&'(')*#')+((%)'\"$%\",-#%. /0)(12#%!(!3)        for years to come. and the utility of state of the art cross-\nsectional imaging is emphasized in updated\nimage panels.",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p10_c14",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "The approach mirrors current    Mitchell Tublin, MD\npractice: Examples of traditional imaging         Professor and Vice Chair of Radiology\ntechniques utilized by GU radiologists decades     Chief, Abdominal Imaging Division\nago (retrograde, intravenous urography,           University of Pittsburgh School of Medicine\nangiography, etc. ) have largely been replaced                                                 Pittsburgh, Pennsylvania\nby their cross-sectional counterparts (MDCT,\nMR, CTA, MRA, CT urography, MR urography).",
+    "id": "raw_Diagnostic Imaging Genitourinary ( PDFDrive )_p10_c14",
+    "source": "Diagnostic Imaging Genitourinary ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "European Journal of Radiology 161 (2023) 110757\n\nContents lists available at ScienceDirect\n                      European Journal of Radiology\n\njournal homepage: www.elsevier.com/locate/ejrad\n\nProstate MRI and image Quality: It is time to take stock\nYue Lin a, Enis C. Yilmaz a, Mason J. Belue a, Baris Turkbey a,*\na Molecular Imaging Branch, National Cancer Institute, National Institutes of Health, Bethesda, MD, United States\n\nA R T I C L E  I N F O                  A B S T R A C T",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "Keywords:                                        Multiparametric magnetic resonance imaging (mpMRI) plays a vital role in prostate cancer diagnosis and\nProstatic Neoplasms                            management. With the increase in use of mpMRI, obtaining the best possible quality images has become a\nMagnetic Resonance Imaging                            priority. The Prostate Imaging Reporting and Data System (PI-RADS) was introduced to standardize and optimize\nDiagnostic Imaging                                                    patient preparation, scanning techniques, and interpretation. However, the quality of the MRI sequences depends\n                                               not only on the hardware/software and scanning parameters, but also on patient-related factors. Common\n                                                     patient-related factors include bowel peristalsis, rectal distension, and patient motion.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "There is currently no\n                                               consensus regarding the best approaches to address these issues and improve the quality of mpMRI. New evi\u00ad\n                                            dence has been accrued since the release of PI-RADS, and this review aims to explore the key strategies which\n                                         aim to improve prostate MRI quality, such as imaging techniques, patient preparation methods, the new Prostate\n                                            Imaging Quality (PI-QUAL) criteria, and artificial intelligence on prostate MRI quality.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "1. Introduction                                                             translate into acquiring high-quality scans [7]. These issues are often\n                                                                       unrecognized, and the diagnostic performance of mpMRI of the prostate,\n   Multiparametric magnetic resonance imaging (mpMRI) of the pros\u00ad     especially in non-academic centers, is assumed to be similar to published\ntate has become an essential component in the diagnostic pathway of     data when in practice this is most likely not the case as low quality\nlocalized prostate cancer, enabling more precise detection and charac\u00ad    images end up being excluded from the studies. terization of cancerous lesions.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "Prostate mpMRI has been shown to       To improve the image acquisition quality control process, the Pros\u00ad\nimprove clinically significant prostate cancer (csPCa) diagnosis through     tate Imaging Quality (PI-QUAL) scoring system from the PRECISION\ntargeted biopsies [1,2]. It is also useful for ruling out csPCa, preventing     study was introduced in 2020 [8]. PI-QUAL aims to assess prostate\nunnecessary biopsies [3]. The quality of the MRI is crucial, given its   mpMRI quality and provide a standardized formal feedback mechanism\nmajor role in aiding cancer detection and guiding prostate biopsies. for scan variability. However, even with a standardized quality scoring\nHowever, the widespread use of mpMRI has also resulted in high vari\u00ad    system for prostate MRI, there is still no clear consensus on the crucial\nability of scan quality for each sequence across different institutions and     factors that may impact MRI quality.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "The quality of mpMRI depends not\ncountries around the world [4]. only on the technical equipment-related factors (magnetic field strength\n   As a response to the growth in the use of mpMRI, the Prostate Im\u00ad     of MRI, vendors, hardware/software) but also on image acquisition\naging Reporting and Data System (PI-RADS) guidelines, the most recent     parameters, and patient-related factors, such as rectal distension, bowel\niteration being the PI-RADSv2. 1, were introduced to standardize pros\u00ad      peristalsis, and patient motion (Fig. 1 and Table 1). The research ini\u00ad\ntate mpMRI acquisition, interpretation, and reporting [5]. Importantly,      tiatives undertaken to improve image quality in prostate MRI have been\nPI-RADSv2 established the minimum technical requirements for the     centered around optimizing image acquisition (e. g.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": ", use of endorectal\nacquisition of the individual MRI sequences with the goal of standard\u00ad      coil [ERC]), employment of various patient preparation methods, and\nizing imaging protocols and reducing variability in image quality [6]. quality control methods (e. g. , PI-QUAL). These issues were particularly\nNevertheless, adherence to these requirements is variable across both     amplified during the COVID-19 pandemic, as many centers across the\nacademic and non-academic  institutions and does not  necessarily    world were forced to change their MRI protocols, such as discontinuing.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "Abbreviations: ERC, Endorectal coil; NERC, Non-endorectal coil; SNR, Signal-to-noise ratio; CNR, Contrast-to-noise ratio; PAC, Phased-array coil; HBB, Hyoscine\nbutylbromide; DR, Dietary restrictions.\n * Corresponding author at: Molecular Imaging Branch, National Cancer Institute, National Institutes of Health, 10 Center Dr., MSC 1182, Building 10, Room B3B85,\nBethesda, MD 20892, United States.\n    E-mail address: turkbeyi@mail.nih.gov (B. Turkbey).\nhttps://doi.org/10.1016/j.ejrad.2023.110757\nReceived 28 January 2023; Received in revised form 15 February 2023; Accepted 21 February 2023\nAvailable online 25 February 2023\n0720-048X/Published by Elsevier B.V.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p1_c18",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 1
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "bowel preparations, due to disruptions in patient care [9]. Table 1\n   As prostate MRI has improved dramatically in recent years [10], this    Common terms related to MRI quality. review outlines the studies aimed at improving prostate MRI quality that       Terms                     Definitions\nhave been published in the last decade. This comprehensive review will                                                                                                        Artifacts               Image features that are seen on a scan but not actually\nfocus on strategies which aim to improve prostate MRI quality, specif\u00ad                                    present; it can also refer to items outside the patient that\nically the impact of imaging techniques, patient preparation methods,                         may obscure or distort the image\nPI-QUAL, and artificial intelligence (AI).",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "Noise                      Variability that is not part of a desired signal, appears as\n                                                                                                       an irregular granular pattern and degrades image\n2. Imaging technique-based quality improvement strategies                                        information                                                                                  Motion artifact           Occurs with voluntary or involuntary patient or organ\n                                                                                               movement during image acquisition\n2. 1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "Endorectal coil vs surface coil                                                       Aliasing (wraparound)    Occurs when the field of view is smaller than the body part\n                                                                                                                 being imaged\n   Prostate gland is a walnut sized organ deeply located in the pelvis. Its         Susceptibility artifact      Distortions or signal change due to local magnetic field                                                                                                                     inhomogeneities, often result from metallic object near\nrelatively small size and deep location make it quite challenging to get a                             homogeneous external magnetic field\nhigh-quality and stable signal for MRI.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "In order to get a high-quality       Phase-encoded motion    Occurs as a result of tissue/fluid movement during image\nsignal from the prostate, use of a cavitary coil (also known as ERC),            artifact                   acquisition; it manifests as ghosting or blurring in the\nwas proposed in 1989 by Schnall et al. [11]. This method has been re\u00ad                                    direction of phase-encoding\nported to be useful in several studies for detection and staging of pros\u00ad\ntate cancer [12\u201314]. Despite documented benefits of ERC for prostate                                                                  can be translated into a better SNR.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "With the introduction of more\ncancer diagnosis and staging, a variety of drawbacks regarding the use of                                                                advanced hardware, such as 3 T MR scanners, the question arises: is ERC\nERC for MRI of the prostate also exist, including higher costs, inva\u00ad                                                                                                       still necessary for prostate MRI? Studies investigating the impact of ERC\nsiveness, and patient discomfort, all of which are associated with patient                                                             on prostate MRI quality are summarized in Table 2. reluctance to undergo prostate MRI.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "Regarding the effect of ERC on prostate MRI subjective image qual\u00ad\n   With increasing use of mpMRI in prostate cancer diagnosis and                                                                                             ity, prior studies have found mixed results. In most of the studies iden\u00ad\nmanagement, excellent quality images with high patient tolerance are                                                                                       tified in this narrative review, the image quality rating protocols were\nneeded. PI-RADSv2. 1 guidelines acknowledge that the use of ERC en\u00ad                                                                             similar [17\u201323]. Two to six radiologists evaluated image quality and\nables a higher signal-to-noise ratio (SNR) [5].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "When integrated with                                                                        assigned a rating based on a subjective 5-point Likert scale, rating on\nexternal phased-array coil (PAC), ERC increases SNR in the prostate at                                                                       items such as distinction of zonal anatomy, presence of motion, and\nany magnetic field strength. This is particularly true for older 1. 5 T                                                                                       artifacts. It is important to note that these studies did not blind the\nscanners; the use of combined ERC-PAC with 1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "5 T scanners results in                                                                         readers concerning the coil setup, as ERC arrangements were difficult to\nbetter SNR and therefore a better image quality compared to PAC only                                                                       conceal on scans. Some studies showed no significant differences in\nimages [15,16]. This may be particularly beneficial when high spatial                                                                       perceived image quality on both T2-weighted imaging (T2WI) and DWI\nresolution is preferred (i. e. , cancer staging). ERC usage can also be                                                                                for 3 T MRI [17\u201319], while others reported improved image quality with\nhelpful for intrinsically low-SNR sequences, such as diffusion-weighted                                                      ERC [20\u201322].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "Specifically, in a prospective single institution study with\nimaging (DWI) and  high  temporal  resolution dynamic  contrast-                                                            45 patients, Baur et al. [21] described better overall T2WI quality rat\u00ad\nenhanced (DCE) sequences. However, a higher magnetic field strength                                                                           ings with ERC-PAC compared to PAC only (p = 0. 004). However, they. Fig. 1. Factors that can impact prostate mpMRI quality.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p2_c26",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 2
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "=\n                       at3                                                   for                   TZ\n                     or of           3                                 higherand\n                    +                                                                                                                                                                                            zone;\n           4                                                                                            superiorscore            had                                                                                                                                      sensitivity                        cancersensitivity                                                                                         detecting                     of                                                                                                                                             more                    in  was              ERCposterior                                    ofcancers                                                               higher                                                                      detection           scoresERCGleason                                                                                                                                                                                                                                                                                         detection                        higher                                              peripheral                                                                                           had                               detectedwithPPV        =\n             4                                               Cancer           ComparableGleasongreater,detecting +x                         Comparable,detectionperipheralx               Comparable                       Comparable x    ERCcancerComparable       ERCfociandx               Comparable  PZ\n                                                                                                                                                                                                                                  ratio;\n                                                                             PZDWI                                                                                    higher                   DWI                            lower\n              a                                                           T2WI                                                                                                                      higherboth      aDWI                                                higherbothfor                                                                and                                          hadon            hadfor                   hadfor                        hadinTZ                       SNR x         ERCSNR x    ERCSNRT2WIx  x    ERCSNR x x  x    ERCSNRandComparable                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    signal-to-noise\n                                                                     =\n                                                                                    motionbutartifacts                                              ERC                         SNR                                            DWI                   T2WI                   T2WI    DWI                                                                                                                                                                                                                                                                                                        artifacts                                                        lesson                moreon                moreon   moreon         with\n                                                                                                MRI                                          had    motion                                Tmore                                                                  T2WI       had              had    had                                                                                                                                                                                                                                                                                                                                                                                                                              ultrasound;                                                                      Artifacts x         ERCartifactsmoreonx    ERCartifacts      Comparable       ERCartifacts  ERCartifacts x  1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "5had x x x\n                                                                                                                   scoreand       score       scorereader                score                                                                           transrectal                                       image                                                                                better              better         better 1                    =                      a   T2WI a   onlya by          withouthigher                                                                                                                                                                 quality                quality          quality                            quality                                                                                                                                                                                                               reader                                                                  had   both  had   T2WIhad  DWI    MRIhad                                  1                        TRUS\n                                T                                                                              Subjectivequality   Comparable                               Comparable  x               Comparable    ERCimageonDWIERCimageonERCimageonx 3ERCimagebyx x x                                                                                                                                                                                            coil;.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "or                                                                                                                                                                                                                                  pelvic                                                                                    fusion                                                               fusion                             biopsy                                       truth\n                                                                                                                                                                                                                                                                                                             wearable                                               Ground              Prostatectomy                      MR-TRUSbiopsy                   Prostatectomy      None                   Prostatectomy                MR-TRUSbiopsy   None                   ProstatectomycombinedProstatectomy                              Prostatectomy                   Prostatectomy                   Prostatectomy\n                                                                     =\n                                                                                                                 WPC                                                                                                                                withMRI\n                                 T                                       NERC         FSC         NERC    WPC      NERC         NERC      NERC      NERC 3      NERC      NERC      NERC     coil;                                                                                                MRI                                                                                                                                       NERC                    vs                            vs                                  vs                                       vs                                            vs                                                   vs                                                        vs                                                             vs                                                                  vs                                                                       vs                                                                            vs                                                                                vs\n                                T                                                                              Comparison                              ERC                                          ERC                                                    ERC                                                           ERC                                                                  ERC                                                                            ERC                                                                                    ERC                                                                                           ERC                                                                                                1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "5                                                                                                   ERC                                                                                                                                       with                                                                                                          ERC                                                                                                                 ERC                                                                                                                         ERC                                                                                                                                                                                                                                                                       surface.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "and          T   T  T T T  T T T T T T T        flexible                       MRIsystem 3   3  3 3 3  3 3 3  1.53 3 3 3\n                                                                     =\n                                                                                                                 FSC\n                                                            readers                                                                                                                                                  coil;                                               Numberof 2   6  4 2 2  2 2 2 2  2 1 2",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "patients                                               Numberof 23         150       429   18   41     45   98   49  186     20   25   30                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               non-endorectal\n                                                                     =value.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "design                                                                                                                       NERC                                       Study            Prospective                                        Retrospective                              Retrospective                Prospective                   Retrospective                         Prospective                Prospective                Prospective       Prospective                         Prospective                Unspecified                   Retrospective     coil;                            coil.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "predictive\n                                                                                                                                                                                                                                                                                                                                                                                        endorectal                                                         endorectal\n                                                                     =                                                      Country      Canada                                        International       USA    USA          Germany                Germany                Switzerland    USA  USA       USA    USA       Korea                                                                                                                 ERCPPV=positive\n                                                                  al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "date                                           [17]       al. [29]                                            et[20]                                                                                                                                                                    [27]    zone                                                           [18]    al. [23]    al. et[30]  al. et[26]                              al. [21]  al. [22]  al. al. al. &                            et                                                                        [28]         (2018)                                                                                                                         al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "investigating                                  et                    et                                                        et                                                             et                                                                et                                                   et     2                                                                                et                                                              al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "(2020)                   (2020)              (2019)   et[19]    (2017)              (2016)         (2016)         (2016)    (2015)              (2014)         (2013)         (2012)                                               Author     Dhatt                      Ullrich           Mirak             O\u2019Donohoe            Gawlitza         Baur       Barth       Costa   Shah                Turkbey            Mazaheri    Kim                        TableStudies                                                                                                                                                                                                                                                                                                                                                                                                                                                 Abbreviations:transition.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p3_c36",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 3
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "did not report a significant difference in quality for DWI (p = 0. 39). This     increased artifacts, particularly motion and susceptibility artifacts, for\nstudy only included patients without prostate cancer which were    both T2WI and DWI. These findings may reflect that ERC are more prone\nconfirmed with at least one transrectal ultrasonography (TRUS)-guided     to signal inhomogeneity due to the non-uniform reception profile and\nsystematic biopsy of the prostate. As a result, there could be a selection      this effect could be further amplified by poor positioning of the patient\nbias towards patients with prostate cancer in uncommon locations or    and ERC. Susceptibility artifacts could be a result of the direct interface\nbenign conditions associated with persistently elevated prostate-specific    between soft tissue and air/liquids in the ERC. Moreover, incorrect\nantigen.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "In contrast, in a prospective two institutional study with 98     positioning and rotation of the ERC may deform or displace the prostate\npatients, Barth et al. [22] found no significant difference in overall    and lead to artifacts [24] (Fig. 3). It may even stimulate bowel peristalsis\nimage quality scores for T2WI between PAC-only and ERC-PAC groups    and thus induce more motion artifacts [18]. Artifacts may be reduced by\n(p = 0. 56). For DWI quality, one reader reported similar assessment     completely deflating the ERC to remove air bubbles and reflating it\nscores (3. 03 \u00b1 1. 10 and 3. 08 \u00b1 0. 80, respectively, p = 0. 67), whereas     before usage [22]. It must be also noted that if present, rectal air may\nanother reader rated ERC setup higher (3. 27 \u00b1 0. 81 and 3. 66 \u00b1 0. 85,    mimic susceptibility artifacts seen with ERC usage. respectively, p < 0. 05).",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "In this study, however, not all scanning pa\u00ad        Apart from the subjective measures, MRI quality can be evaluated\nrameters were kept constant between ERC and non-ERC (NERC) MRIs. objectively, most often with quantifiable parameters such as SNR. SNR is\nIn summary, past studies provided variable results in subjective image     typically measured within regions-of-interest, drawn on the whole\nquality comparisons between ERC and NERC. This variation likely arises     prostate gland including the peripheral zone (PZ) and transitional zone\nfrom the limitations in blinding ERC cases within reader studies and     (TZ). It is important to note that measurement of SNR for MRI scans with\nvariable center-specific adherence to image acquisition guidelines. surface coils or various reconstruction techniques (i. e. , parallel imaging)\n   Another crucial aspect of quality assessment of MRI is the presence of      is difficult.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "These measurements are often estimations and may not\nartifacts, as they can affect visibility and influence image interpretation. reflect  the  true  quantitative  value  [25]. Numerous  studies have\nThe presence of imaging artifacts is often caused by motion or other    confirmed the use of ERC improves SNR for 3 T MRI on both T2WI and\nsources, such as aliasing and susceptibility. Studies have consistently   DWI [18,19,26]. One study measured a higher SNR for DWI with NERC\ndemonstrated that ERC use was associated with more artifacts on    group compared to ERC group [22]. However, there was no significant\nprostate MRI [19,21,22] (Fig. 2). One study found that artifact severity     difference in SNR for T2WI acquired with NERC and ERC in the whole\nscore was greater in T2WI acquired with an ERC-PAC compared with     gland (22. 7 \u00b1 5. 0 and 21. 3 \u00b1 6. 6; p = 0. 08). It is worth noting that not\njust PAC (2. 01 \u00b1 0. 42 vs 1. 39 \u00b1 0.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "70, respectively, p = 0. 003). Motion      all parameters were kept constant between the sequences acquired with\nartifact emanating from the interface of the ERC and rectal wall was seen     the ERC and NERC groups in this study. Specifically, number of exci\u00ad\nin 17 of 18 T2WI with ERC. However, no significant difference was re\u00ad     tations (SNR is generally proportional to the square root of the number\nported for DWI [19]. Baur et al. demonstrated similar findings with more     of excitations) was higher for the NERC group, and it may have reduced\nartifacts being noted in ERC group for T2WI [21]. In another study,     the advantage of a higher resolution achieved by ERC. In addition, Kim\nBarth  et  al. [22] reported that  susceptibility  artifacts were more     et al. [27] reported no significant difference in T2WI SNR between the\ncommonly observed in DWI while Ullrich et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "[18] reported ERC group    ERC and NERC groups, though the authors did note that SNR in the ERC\nhad more motion artifacts in T2WI but less motion artifacts in DWI. One    group was higher without statistical significance (14. 75 vs 11. 53, p =\nstudy reported no significant difference in artifacts for both ERC-PAC     0. 08). Mazaheri et al. [26] found mean DWI SNR with ERC for PZ was\nand PAC setup [20]. In the study, an anti-peristaltic agent (i. e. , 1 mg    66. 33 \u00b1 27. 07 and TZ was 32. 69 \u00b1 12. 52 while mean SNR with NERC\nof glucagon) was intravenously administrated twice during the exami\u00ad    was 7. 32 \u00b1 2. 30 and 6. 13 \u00b1 1. 56, respectively (p < 0. 0001 for both). nation. The use of anti-peristaltic agents could have reduced motion     Ullrich et al. [18] found T2WI SNRs with ERC for PZ was 76. 74 and TZ\nartifacts. Overall, studies suggested that ERC was associated with    was 52. 49, while SNRs with NERC for PZ and TZ were 33.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "99 and 34. 94,. Fig. 2. Axial T2W MRIs of a 63-year-old (serum PSA = 9.5 ng/ml) (A) and a 53-year-old (serum PSA = 5 ng/ml) (B) male obtained with endorectal coil. Use of\nendorectal coil resulted in motion related ghosting artifacts in both patients.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p4_c48",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 4
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757\n\nFig. 3. Axial T2W MRIs of a 60-year-old (serum PSA = 4.8 ng/ml) (A) and a 48-year-old (serum PSA = 0.9 ng/ml) (B) male obtained with endorectal coil. Use of\nendorectal coil resulted in deformations in the peripheral zone which is secondary to coil elements as a result of incorrect placement of the endorectal coils (arrows).",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "respectively (p < 0. 001 for both). In brief, ERC provided higher T2WI    on MRI, and ERC usage may not impact the diagnostic rates. However,\nand DWI SNR in both PZ and TZ. without having a gold standard ground truth like whole-mount histo\u00ad\n   One of the most crucial questions is whether the use of ERC enhances     pathology, it is difficult to evaluate the whole gland for cancer presence. (and ultimately improves) prostate cancer detection on MRI. Indeed,     Nevertheless, radiologists need to be aware of this mismatch between\nmany studies have evaluated the diagnostic performance of ERC vs    ERC and anterior/transition zone lesions especially as anterior and\nsurface coil in 3 T MRI. Diagnostic performance was most often inves\u00ad     transition zones are often under-sampled on routine TRUS-guided bi\u00ad\ntigated by parameters such as cancer detection rate, sensitivity, speci\u00ad    opsy [31]. ficity, and positive predictive value.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "Most studies concluded that the\ndiagnostic performance between ERC and surface coil were comparable     2. 2. 1. 5 Tesla vs. 3 Tesla\n[17,20,21,27,28]. However, in a prospective study with 49 patients\ncomparing ERC and surface coil, Costa et al. [29] reported 78 % and 43       Another critical discussion on the use of hardware for prostate MRI\n% sensitivity for overall lesion detection, and 92 % and 47 % sensitivity     scans is 1. 5 T vs 3 T magnets. Obviously 3 T magnets brings an advan\u00ad\nfor index lesion (defined as the lesion with the highest Gleason score or     tage for the desired SNR, however there may be a few drawbacks. For\nthe largest diameter for lesions with the same Gleason score) detection,     patients with some models of medical instruments, such as aneurysm\nrespectively. In another prospective study with 20 patients, Turkbey      clips, vena cava filters, 3 T MRI may not be safe. Additionally, hip\net al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "[30] reported 76 % and 45 % sensitivity for ERC and surface coil,     prosthesis can cause susceptibility artifacts and impact diagnostic per\u00ad\nrespectively. Although these two studies were prospective studies, they    formance of prostate MRIs. Metalwork can lead to signal drop out,\nwere both single institutional studies and were limited by their relatively    making  it difficult to distinguish between normal tissue and cancer\nsmall sample size and by the fact that whole-mount histopathologic     suspicious lesions. The severity of the artifacts depends on the size,\nfindings were not available for all patients in Costa et al. [29]. Turkbey     location, and composition of the prosthesis. Another challenge is the\net al. used 6-channel cardiac coil during NERC MRI scans and 16-chan\u00ad     increased motion artifacts caused by the hip prosthesis. Patients with hip\nnel anterior cardiac coil for ERC scans.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "Because of this, it may not reflect     prostheses often have limited mobility and may experience pain or\na true one-to-one comparison of ERC and surface coil groups. Lastly,     discomfort during the exam, which can lead to increased voluntary/\nMirak et al. [28] conducted a retrospective case-control study including     involuntary motions. To overcome these issues, some proposed the\n429 patients who underwent 3 T MRI with and without an ERC prior to     utilization of 1. 5 T MR scanners over 3 T for patients with hip prosthesis\nprostatectomy. The study found ERC vs surface coil had similar detec\u00ad     [32]. The rationale is that although 3 T MRI generates higher SNR\ntion of overall and index prostate cancer. However, the ERC cohort had    compared to 1. 5 T, it often suffers more from susceptibility and ghosting\nsignificantly higher detection of cancers located posteriorly and in the      artifacts due to geometric distortion [33\u201335].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "However, there is only one\nPZ, but had lower detection rates of cancers located anteriorly and in the     study so far that directly compares the image quality of 1. 5 T and 3 T\nTZ. In the ERC and surface coil cohorts, 35. 9 % (66 of 184) and 48. 4 %    MRI for patients with hip prosthesis [36]. In a retrospective multicenter\n(76 of 157) of anterior cancers (p = 0. 02), 58 % (200 of 345) and 48. 1 %     study with 140 patients with uni- or bilateral total hip replacement,\n(89 of 185) of posterior cancers (p = 0. 03), 37. 3 % (41 of 110) and 54. 4    Boschheidgen et al. [36] found no significant difference between sub\u00ad\n% (62 of 114) of TZ cancers (p = 0. 01), and 53. 7 % (225 of 419) and     jective artifact severity in prostate mpMRI of patients with hip prosthesis\n45. 2 % (103 of 228) of PZ cancers (p = 0. 03) were detected, respec\u00ad    between 1. 5 T and 3 T MRI. This study is only a starting point and\ntively.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "Restricting the study sample to surgery patients may result in     additional research is needed to establish a standardized imaging pro\u00ad\nselection bias, and findings may not be generalizable to overall popu\u00ad     tocol for patients with hip prosthesis. Furthermore, deep learning\nlation. Surgery patients will likely have more obvious and larger lesions     reconstruction (DLR) may play an important role in 1. 5 T MRI in the.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p5_c56",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 5
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "future as it has the potential to compensate for the relatively lower SNR. mpMRI according to PI-RADS v2. 1 recommendations [5]. A variety of\n   In conclusion, the use of ERC provides significant improvement in    approaches have been explored to tackle these issues, such as having\nSNR for both T2WI and DWI, but its effects on subjective image quality     patients emptying their bowel prior to MRI or using prone imaging\nand cancer detection in 3 T MRI remains controversial, although most     during MRI. More complex methods have also been employed, including\nstudies suggested ERC does not improve MRI diagnostic performance     the use of anti-spasmodic/anti-peristaltic agents hyoscine butylbromide\ndramatically. The limited number of studies comparing 1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "5 T MRI with     (HBB), also known as scopolamine butylbromide, or glucagon to reduce\nERC to 3 T MRI with surface coil have demonstrated no significant dif\u00ad     rectal motion, or micro-enema to decrease rectal air and stool. Studies\nference in image quality and cancer detection rates [23]. In addition,     investigating the impact of patient preparation methods on prostate MRI\none should consider the drawbacks of ERC, such as motion and sus\u00ad     quality are summarized in Table 3. ceptibility  artifacts, prostate  distortion,  cost  of examination, and,      Among anti-spasmodic agents, HBB has been the main focus of the\nimportantly, patient discomfort. It\u2019s important to note that evaluating     majority of the studies on prostate MRI quality. The rationale behind the\nthe impact of ERC on DCE MRI, a component of mpMRI, has been     use of anti-spasmodic agents is to reduce motion-related artifacts that\ndifficult.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "It  is impractical and unethical to administer intravenous     deteriorate image quality. A prior study showed that the benefit of anti-\ncontrast multiple times to each patient on the same day for research      peristaltic agents on prostate MRI quality may be limited as the prostate\npurposes. Therefore, there is minimal data regarding this issue. For      is positioned away from the small bowel [37]. More recent studies on\npatients with hip prothesis, there is also no clear consensus on whether    HBB, however, reported that its use is associated with improved sub\u00ad\n1. 5 T or 3 T MRI provides better image quality. Lastly, as per PI-RADS     jective reader assessments, especially for T2WI. Most studies identified\nv2. 1 guidelines, an ERC should be employed to improve SNR on some     in this review focused on subjective image quality utilizing a 5-point\nolder 1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "5 T scanners or in patients with large intra-abdominal fat tissue,     Likert scale based on reader assessments. In a prospective study of 103\nwhere SNR in the gland may be reduced with the use of PAC alone. patients, Ullrich et al. [38] reported improvement in both visualization\nNonetheless, all MRI protocols should strive for the best and consistent     of anatomic structures (mean score 3. 4 before administration vs 4. 4\nquality possible with the scanners and tools available. after, p < 0. 001) and motion-related artifacts (mean score 3. 2 before vs\n                                                                        4. 2 after, p < 0. 001) on T2WIs for about 68 % of the patients. In addi\u00ad\n3. Patient preparation-based quality improvement strategies           tion, Slough et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "[39] showed better subjective T2WI quality after\n                                                                         administration of HBB in 173 patients in a retrospective study (HBB\n   In addition to MRI acquisition methods, several patient-related fac\u00ad     score 3. 63 vs non-HBB 2. 84, p < 0. 001). The HBB group also had less\ntors can affect image quality of prostate mpMRI. Some of the common     blurring and motion artifacts compared to non-HBB group. No signifi\u00ad\npatient-related factors are rectal air/stool and intestinal peristalsis. cant difference on DWI or apparent diffusion coefficient (ADC) image\nThese can induce artifacts that interfere with image interpretation and     quality were reported in the aforementioned study. Although the results\npossibly mask cancer suspicious lesions (Fig. 4).",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "There is currently no    showed a trend towards improved quality of DCE, it did not reach sta\u00ad\nconsensus about the optimal patient preparation prior to prostate      tistical significance (HBB corrupt data points 2. 47 vs non-HBB 3. 68, p =. Fig. 4. mpMRI of a 72-year-old male with a serum PSA of 6.9 ng/mL. Axial (A), sagittal (B), coronal T2WI (C), high b-value DWI (D), ADC map (E), and DCE MRI (F).\nPatient has a focal lesion (arrow) in right mid peripheral zone which is hypointense on axial (A) and coronal (C) T2WIs, and has a focal contrast uptake on DCE (F).\nHowever, due to large amount of rectal gas, visible on axial and sagittal T2WIs (asterisk), high b-value and ADC map images are distorted and lesion cannot be\nvisualized (arrowheads). Targeted biopsy of the lesion revealed a Gleason grade 7 (3 + 4) prostate adenocarcinoma.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p6_c63",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 6
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "Table 3\nStudies investigating patient preparations. Author &       Study         Country        Study design    Number    Number    MRI      Comparison         Subjective image    Artifacts             Inter-\n  date            period                                             of            of          system                          quality                                observer\n                                                                      patients     readers                                                                     agreement\n  Purysko       2017\u20132018   USA            Retrospective   195        4          3 T      Enema + DR vs    Enema + DR      No significant      \u03ba =\n     et al. enema vs DR vs      resulted in the       difference         0. 25\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "37\n    (2022)                                                                             no preparation      highest overall     between groups\n    [50]                                                                                                    image quality\n  Arnoldner      Unspecified    International    Prospective     150        2          3 T      Enema +         Enema +          x                 \u03ba =\n     et al. endorectal gel       endorectal gel                         0. 38\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "77\n    (2022)                                                                                                                  filling vs no           filling improved\n    [48]                                                                                             preparation       DWI and T2WI\n                                                                                                           image quality\n                                                                                                         and PI-QUAL\n                                                                                                                                scores\n  Reischauer     2017\u20132019    Switzerland     Retrospective   200        2          3 T      Enema vs         Enema resulted    Enema had less    \u03ba =\n     et al. catheter              in the higher         susceptibility-      0. 92\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "95\n    (2021)                                                                                                                        overall image       related artifacts\n    [47]                                                                                                                        quality\n  Schmidt       2018\u20132020    Switzerland     Retrospective   180        2          3 T     HBB vs enema vs   Enema improved   Enema reduced    ICC = 0. 46\n     et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "DR vs             image quality of     artifacts\n    (2021)                                                                                     combination of    DWI and overall\n    [49]                                                                              HBB, enema, and   MRI\n                                                                       DR\n  Sathiadoss     2019\u20132020    Canada         Retrospective   280        3          3 T     DR vs enema vs    Enema + DR      Enema + DR       \u03ba =\n     et al. enema + DR vs      resulted in the       resulted in the     0. 15\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "78\n    (2021)                                                                          enema + DR +      highest T2W and    least DWI\n    [51]                                                                   HBB vs no        DWI image           artifacts\n                                                                                                      preparation          quality\n  Coskun et al. 2016\u20132017   USA            Retrospective   117        2          3 T      Enema vs no      Enema reduced    No significant      \u03ba =\n    (2020)                                                                                           preparation          rectal gas but        difference         0. 08\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "53\n    [44]                                                                                                           with only minor    between groups\n                                                                                                                                             effects on overall\n                                                                                                           image quality\n  Plodeck       2017        Germany        Retrospective   114        2          3 T      Enema vs no        x               Enema had less    \u03ba = 0. 80\n     et al. preparation                                  artifacts on DWI\n    (2020)\n    [45]\n  Slough et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "2015\u20132016   UK             Prospective     173        2          3 T     HBB vs non-HBB   HBB improved    HBB reduced      \u03ba =\n    (2018)                                                                                                  image quality for   T2WI motion      0. 34\u20130. 71\n    [39]                                                                                        T2WI             and blur\n  Ullrich et al. Unspecified   Germany        Prospective     103        2          3 T     HBB vs non-HBB   HBB improved    HBB enhanced     \u03ba =\n    (2017)                                                                                                      anatomic score       artifact score on    0. 95\u20130. 98\n    [38]                                                                                                on T2WI         T2WI\n  Lim et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "2013\u20132014    Canada         Retrospective   60         2          3 T      Enema vs no      No difference in   No significant      x\n    (2014)                                                                                           preparation        image quality on    difference\n    [46]                                                                                        T2WI or ADC      between groups\n  Roethke       2010\u20132011   Germany        Retrospective   70         2          3 T     HBB vs non-HBB   No significant     No significant      \u03ba =\n     et al. difference           difference         0. 37\u20130. 53\n    (2013)                                                                                                  between groups    between groups\n    [41]\nAbbreviations: DR = dietary restrictions; HBB = hyoscine butylbromide; ICC = intraclass correlation coefficient; \u03ba = Cohen\u2019s kappa coefficient.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "0. 052). This may be due to diminished effect of HBB over time after    and reduces image quality by causing susceptibility  artifacts [43]\nadministration. Anti-peristaltic effect from HBB on average lasts around      (Fig. 5). Susceptibility artifacts tend to occur in areas around the air\u00ad\n20 min [40], suggesting that either a second bolus of HBB prior to DCE     \u2013tissue interfaces, such as between the rectum and posterior part of the\nor a combination of HBB with longer-acting glucagon may be beneficial     prostate, where most of prostate cancers are found. Removal of rectal\nin the setting of longer imaging protocols. Lastly, it is worth noting that      air, or the use of prone imaging may overcome susceptibility artifacts. Roethke et al. [41] reported no consequential difference in subjective    MRI technologists often need to identify these issues, but rescanning is\nimage quality or artifacts after administration of HBB.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "This may be     often not possible due to scheduling constraints. Due to these reasons,\npartly due to the smaller sample size of 70 patients and moderate inter-     several techniques to ensure minimal rectal loading before MRI have\nobserver agreement with Cohen\u2019s kappa coefficients of 0. 37\u20130. 53. In    been evaluated, including enemas, rectal catheters, and dietary re\u00ad\nsummary, studies have demonstrated an improvement in image quality      strictions (DR). Self-administration of enema in a hospital setting before\nof T2WI after intravenous administration of HBB. Nonetheless, HBB    MRI may be stressful for many patients, leading to higher risk of un\u00ad\nadministration increases MRI preparation time and cost. It is often     successful bowel preparation.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "Administrating at home the day of the\nassociated with unwanted side  effects, mostly related to  its  anti-    exam can be a suitable alternative to increase the success of the appli\u00ad\ncholinergic activity, such as dry mouth, blurred vision, and dizziness     cation and ensure enema can take effect before the study. [42]. Therefore, the added costs (i. e. , costs associated with administra\u00ad        Studies in the past have mostly examined enema administration vs. tion of the medicine) and potential for adverse reactions should be taken    no patient preparation, and the results have been mixed [44\u201346]. There\ninto consideration when deciding on whether to use HBB for prostate     are also some concerns about the possibility of enema-induced peri\u00ad\nMRI. stalsis which may result in increased motion-related artifacts [5].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "A\n   Rectal loading due to excessive air or stool induces DWI distortion     study has suggested that enema administration was not associated with.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p7_c70",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 7
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757\n\nFig. 5. mpMRI of a 55-year-old man with a serum PSA of 6.7 ng/mL. Axial (A), sagittal (B), coronal T2WI (C), high b-value DWI (D), and ADC map (E). Patient has a\nlesion in right apical-mid peripheral zone which is hypointense on axial (A) and coronal (C) T2WIs. Rectal gas, which can be seen on axial (A) and sagittal (B) T2WIs\n(asterisk), impacts the quality of high b-value DWI (D) and ADC map (E) images which subsequently makes the intraprostatic lesion indistinguishable on these\nsequences (arrowheads). There is also an accompanying local distortion and shining in the posterolateral aspect of the left hemigland on high b-value DWI (D)\n(dashed arrow). Targeted biopsy of the lesion revealed a Gleason grade 7 (3 + 4) prostate adenocarcinoma.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "improvement in image quality nor a reduction in artifacts [46]. How\u00ad     validate the reports of these studies. ever, this study included a relatively small cohort of 60 patients, in       More recent studies have investigated enema administration in\nwhich no patients had significant amount of rectal gas. Moreover, inter-    combination with other patient preparation methods, such as HBB and\nreader agreement was not assessed. Coskun et al. [44] showed that   DR [49\u201351]. In a retrospective study of 180 patients, Schmidt et al. [49]\nenema may diminish rectal air but with minor effects on DWI distortion    concluded that enema improved image quality while HBB and DR did\nand overall image quality. In this study, there was a notable inter-reader     not have any significant effects. Purysko et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "[50] found that enema\nvariability regarding the assessment of image quality and artifacts, with    and/or DE improved the overall image quality of prostate MRI by\nCohen\u2019s kappa coefficients ranging from 0. 08 to 0. 53. Plodeck et al. [45]     decreasing rectal distension and distortion of DWI. Similarly, in a study\nreported that application of enema significantly reduces both the inci\u00ad     consist of 280 patients, Sathiadoss et al. [51] compared five different\ndence and severity of artifacts on DWI in a retrospective study of 114     preparation strategies for prostate MRI: no preparation, DR, enema,\npatients. However, they did not directly analyze the effect of enema on    enema plus DR, enema plus DR and HBB. The study reported enema plus\noverall image quality. In another study, Reischauer et al. [47] compared   DR before prostate MRI yielded the highest T2WI and DWI quality with\nthe use of enema to catheter preparation.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "The authors demonstrated that     the least artifacts on DWI. Rectal distension was reduced significantly\nenema preparation was superior to catheter preparation regarding the     with the administration of enema. Unlike enema and DR, HBB did not\nimage quality of DWI and reduced the occurrence of susceptibility ar\u00ad     result in an improvement in image quality on T2WI or DWI or lessen\ntifacts. Direct comparison to non-enema group was not performed,   DWI artifacts despite diminishing the motion artifacts on T2WI. therefore, no firm conclusion could be reached regarding enema vs non-        In brief, there was an existing heterogeneity in patient cohorts and\nenema groups. Arnoldner et al. [48] incorporated endorectal gel-filling     methodologies in the aforementioned studies.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "Variation in dietary habits\nin addition to the conventional enema to create a novel rectal prepa\u00ad    due to difference in locations and cultures can influence rectal disten\u00ad\nration protocol. In their prospective study, the authors concluded enema     sion and therefore affect image quality. In addition, inconsistency in\nplus endorectal gel-filling improved overall image quality on DWI and     study protocols, such as variability in timing of enema administration\nlesion visibility on T2WI. They have also reported improved PI-QUAL    and dose/type of anti-peristaltic agents can impact image quality as\nscores with their bowel preparation technique. This study did not     well. All the studies identified in this review administered HBB intra\u00ad\ninclude an enema-only cohort either. Overall, studies have shown con\u00ad     venously [38,39,41,49,51].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "HBB can be administered intramuscularly as\nflicting results on whether the use of enema improves image quality and     well, and it has theoretical advantage of a more prolonged action [52]. reduces artifacts on prostate mpMRI. Further research is needed to    Only  one  study  compared  intravenous HBB  administration  to.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p8_c84",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 8
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "intramuscular administration, and there were no significant difference     with proper adherence to PI-RADS technical requirements (Fig. 6). in overall image quality between the two routes of administration [37]. As PI-QUAL was introduced only in 2020, a limited number of studies\nMore  studies are needed  to  further  investigate whether  different    on PI-QUAL and its impact on improving prostate MRI quality have been\nadministration routes of HBB impact prostate MRI quality. Overall,     published [36,48,54\u201358]. The full details are shown in Table 4. Studies\nstudies have shown that the use of anti-spasmodic agents such as HBB    have focused on evaluating the inter-reader agreement of PI-QUAL\ncan reduce rectal motion, improve image quality, particularly T2WI. scores between two readers.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "Most found the reproducibility of PI-\nHBB should be given as late as possible to ensure that MRI takes place   QUAL was moderate with Cohen\u2019s kappa coefficients between 0. 42\nduring the biological activity window of the anti-spasmolytics. Anti-    and 0. 55 [48,54\u201356]. Giganti et al. [58] reported substantial agreement\nspasmodic agents may be beneficial in some patients with hyper-motile    between two experienced radiologists in the assessment of PI-QUAL\nintestine or flatulence. However, in many others it may not be necessary,     (weighted kappa = 0. 82, with 84 % agreement), but  it should be\nand the additional cost and potential for adverse drug reactions should     pointed out that the two readers were involved in the development of\nalways be taken into consideration. On the other hand, past studies on     the PI-QUAL score [8], and presumably were more familiar with the\nthe use of enema before MRI exams have contradicting results.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "Recent     scoring system than the readers from the other studies. They also had\nstudies with larger patient cohorts seem to suggest that the use of a     significantly more prostate MRI reading experience (both read > 1,800\npreparatory rectal enema alone or in conjunction with DR is superior to     prostate MRI scans per year, one with 7 years of experience and the other\nHBB in terms of improving mpMRI image quality with minimal side    with 20 years of experience) compared to average readers. Therefore,\neffects and additional cost. the true inter-reader agreement for PI-QUAL in clinical practice requires\n                                                                             further validation. 4.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "Radiologist evaluation-based standardized quality control           The standardized evaluation and reporting of image quality via PI-\nstrategy                                             QUAL truly fulfills its purpose only if PI-QUAL scores have an objec\u00ad\n                                                                                 tive impact on csPCa (defined as Gleason Grade Group \u22652) detection. PI-RADS aims to standardize and improve the performance and    The limited number of studies so far suggested that higher PI-QUAL\ninterpretation of prostate mpMRI by setting minimum technical stan\u00ad     score may improve the efficiency of diagnostic pathway of prostate\ndards and providing suggestions to improve image quality. In real     cancer by reducing false-positive MRI calls and unnecessary biopsies.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "In\nclinical practice, adherence to these minimum technical standards is    a retrospective study with 50 patients undergoing MRI-TRUS fusion\nhighly variable, especially in non-academic institutions [53]. It must be     biopsy, Potsch et al. [54] reported that overall diagnostic performance\nnoted that adherence to the PI-RADS technical recommendations does     did not differ between studies with optimal diagnostic quality compared\nnot necessarily translate into good-quality prostate mpMRIs [7]. With     to lower diagnostic quality (area under the receiver operating charac\u00ad\n                                                               > 3: 0. 805 vs for PI-QUAL \u22643: 0. 839,some MRIs, better results may be obtained with technical parameters      teristics curve [AUC] for PI-QUAL\n                                             = 0. 55). However, the prevalence of csPCa was lower when the PI-outside the recommendations.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "While technical parameters are critical,    p\n                                                                > 3 (16. 7 % vs 30. 2 %, p = 0. 008). several other factors such as patient motion, rectal air-related artifacts,   QUAL score was \u22643 compared to\n                                                        > 3 also had higher positive predictive value (PI-and coil utilization can impact MRI quality. The available data published     Scans with PI-QUAL\n                                                > 3: 56 % vs PI-QUAL \u22643: 36 %, p = 0. 001). This suggested csPCaover the last decade are conflicting and draw mixed conclusions in terms   QUAL\nof patient preparation and image acquisition.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "This is corroborated by the    may be more apparent with higher quality scans, and the low-quality\nfact that studies often included a different subjective scoring system,    images may lead to false-positive calls and subsequent unnecessary bi\u00ad\nmostly based on a 1\u20135 Likert scale. Even with the recently updated PI-     opsies, lowering the biopsy yield of high PI-RADS scores. However, it is\nRADS v2. 1 recommendations, there is still vast inconsistency on how    worth mentioning that this study used a modified PI-RADS scoring\nto produce images  of the best  quality. Furthermore, there  is no    scheme where the prostate was divided into six regions and each region\nconsensus on what constitutes a good quality prostate MRI and no    was assigned a PI-RADS score. In another retrospective study of 247\nstandardized criteria to assess image quality. patients, Karanasios et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "[55] reported that when comparing PI-QUAL\n   To address these problems and provide a more standardized assess\u00ad    5 to PI-QUAL 3 studies, the PI-RADS 1\u20132 calls increased from 50 to 87 %\nment, Giganti et al. [8] introduced a novel scoring system, PI-QUAL, that    and PI-RADS 3 calls decreased from 31. 8 to 10. 4 %. More patients with\nevaluate each sequence against the PI-RADS standards and assigns a    PI-QUAL 1\u20133 underwent biopsy for PI-RADS 1\u20132 (47 %) and 3 (100 %)\nscore to prostate MRI quality. The PI-QUAL score ranges from 1 to 5,    MRIs compared to patients with PI-QUAL score 4\u20135 (30 and 75 %,\nwhere 1 indicates that none of the three MRI sequences (T2WI, DWI and     respectively). Dinneen et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "[57] specifically investigated the impact of\nDCE) are of diagnostic quality, 3 indicates that at least two MRI se\u00ad    PI-QUAL score on diagnostic accuracy of extra-prostatic extension on\nquences taken together are of acceptable diagnostic quality, and 5    mpMRI. The authors reported the extra-prostatic extension prediction\nmeans that each sequence is independently of optimal diagnostic quality    was more reliable with higher PI-QUAL scores with an AUC of 0. 92 (95\n                                       % CI: 0. 88-0. 96) for PI-QUAL 4\u20135 scans and AUC of 0. 78 (95 % CI:\n                                                                      0. 72\u20130. 84) for PI-QUAL 1\u20133 scans.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "In summary, studies suggest that\n                                                                              better quality scans with higher PI-QUAL scores have limited effect on\n                                                                             overall diagnostic performance of MRI-TRUS fusion biopsy, but they are\n                                                                           associated with improved rates of extra-prostatic extension prediction\n                                                              and increased efficiency of prostate cancer diagnosis by reducing un\u00ad\n                                                                        necessary biopsies. Quality evaluation of MRI sequences is one of the key steps for\n                                                                             successful prostate cancer diagnosis using MRI.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "The current version of\n                                                             PI-QUAL is only the starting point for the evaluation and standardization\n                                                                              of prostate mpMRI quality and diagnostic reliability. Future prospective\n                                                                            validations and refinements of PI-QUAL are under way. One study has\n                                                           shown that PI-QUAL score is strongly correlated with diagnostic value\n                                                              and artifact severity of mpMRI in patients with hip prosthesis at both 1. 5\n                                                              and 3 T [36].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "This suggested that PI-QUAL can be applied to mpMRI in\n                                                                             patients with hip prosthesis. Another factor to consider is that the cur\u00ad\nFig. 6. A diagram explaining how PI-QUAL scores are assigned and their     rent version of PI-QUAL only applies to mpMRI, therefore a biparametric\nimplications. MRI oriented PI-QUAL system may be needed in the future due to the.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p9_c90",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 9
+  },
+  {
+    "text": "Y. Lin et al.                                                                                                               European Journal of Radiology 161 (2023) 110757",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "Table 4\nStudies investigating PI-QUAL. Author & date     Study         Country        Study design    Number    Number    MRI      PI-QUAL       Objective                  Findings\n                    period                                             of            of          system     inter-\n                                                                         patients     readers                observer\n                                                                                              agreement\n  Karanasios       2018       UK             Retrospective   247        3          3 T       \u03ba =          To assess the              Higher PI-QUAL scores are\n     et al. (2022)                                                                                    0. 47\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "51      reproducibility and         associated with decreased\n    [55]                                                                                                       impact of PI-QUAL         uncertainty in MRI and\n                                                                                                                             scores                   improved efficiency for\n                                                                                                                                               cancer diagnosis\n  Potsch et al. 2018\u20132019    Austria         Retrospective   50         2            1. 5 or     \u03ba = 0.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "51      To test the inter-reader    PI-QUAL has a limited\n    (2022) [54]                                                                 3 T                     agreement of PI-QUAL     impact on PI-RADS\n                                                                                                                          score for mpMRI and its     diagnostic performance for\n                                                                                                               impact on diagnostic      MR-TRUS fusion biopsy;\n                                                                                                              performance in an MR-     the prevalence of prostate\n                                                                                          TRUS fusion biopsy        cancer was significantly\n                                                                                                                     population                lower when the PI-QUAL\n                                                                                                                                                      score was \u22643\n  Girometti et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "2020            Italy            Retrospective   66         2            1. 5 T     \u03ba =          To investigate the inter-    The reproducibility of PI-\n    (2022) [56]                                                                                    0. 51\u20130.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "55      reader agreement of PI-   QUAL was moderate;\n                                                                                    QUAL for mpMRI          higher PI-QUAL scores\n                                                                                                                                were associated with\n                                                                                                                                                             excellent inter-reader\n                                                                                                                                     agreement for PI-\n                                                                                                                           RADSv2. 1 categorization\n  Dinneen et al. Unspecified   UK             Retrospective   121        3            1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "5 or    x            To assess the influence of   EPE prediction was more\n    (2022) [57]                                                                 3 T                mpMRI scan quality on      reliable when the MRI scan\n                                                                                                EPE diagnostic accuracy    had a higher PI-QUAL\n                                                                                                                                                      score\n  Arnoldner et al. Unspecified    International    Prospective     150        2          3 T       \u03ba = 0.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "42      To investigate the effects    Rectal preparation\n    (2022) [48]                                                                                                                of a rectal preparation       significantly improved PI-\n                                                                                                                   regimen, that consisted    QUAL scores\n                                                                                                                                 of a rectal cleansing\n                                                                                                enema and an endorectal\n                                                                                                                                gel filling protocol, on\n                                                                                                     PI-QUAL\n  Giganti et al.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "Unspecified   UK             Retrospective   103        2            1. 5 or     \u03ba =          To investigate the inter-    The reproducibility in the\n    (2021) [58]                                                                 3 T       0. 82\u20130. 85      reader reproducibility of    assessment of PI-QUAL\n                                                                                                                        the PI-QUAL score in      between two radiologists\n                                                                                                                                patients enrolled in the     with high expertise in\n                                                                                                    NeuroSAFE PROOF trial     prostate mpMRI was strong\n  Boschheidgen     2016\u20132020   Germany        Retrospective   140        3            1.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "5 or    x            To evaluate image        PI-QUAL is applicable for\n     et al. (2021)                                                                 3 T                        quality and diagnostic      prostate MRI in patients\n    [36]                                                                                                             value of mpMRI in         with total hip replacement\n                                                                                                                                patients with total hip\n                                                                                                                 replacement at 1. 5 and 3\n                                                                                             T\nAbbreviations: \u03ba = Cohen\u2019s kappa coefficient; TRUS = transrectal ultrasound; EPE = extra-prostatic extension.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "rising interest towards prostate MRI without contrast [59]. Defining     the process of converting raw k-space data acquired by an MR scanner\nscan quality is highly subjective and experience dependent, and readers     into a final image. Traditional image reconstruction methods can be\nare likely to disagree on what constitutes optimal quality. The previous     limited by various factors such as loss of SNR and introduction of arti\u00ad\nstudies have shown that the reproducibility of PI-QUAL is likely mod\u00ad      facts [62\u201364]. On the other hand, DLR employs convolutional neural\nerate in clinical practice [48,54\u201356]. Automated tools, including AI    networks to learn the mapping from a large dataset of k-space data to the\nbased on deep learning, may provide a more objective and consistent     corresponding images.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "It can reduce noise and artifacts, therefore results\nassessment  of image  quality and  initial attempts to create semi-     in more accurate and detailed final images [65]. This approach has been\nautomated software have been made [60]. However, such algorithms    shown to provide higher subjective overall image quality, SNR, and\nare under development and not yet widely used in clinical practice. Until     contrast-to-noise ratio (CNR) for both T2WI and DWI than images taken\nthen, attempts on standardizing quality assessment with initiatives such    with the same parameters and processed using other approaches\nas PI-QUAL holds a great value and  initial results from dedicated     [66\u201373]. When correlated to pathology, one study showed diagnostic\nteaching courses on image quality have been shown to be successful    performance for the evaluation of extra-prostatic extension were similar\n[61].",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "Its widespread adoption will be a crucial  first step toward    between DLR and conventional protocol [69]. Furthermore, Wang et al. improving prostate MRI quality. [72] found DLR with the ERC signal turned off had better subjective\n                                                                             overall image quality and less artifacts compared to DLR with the ERC\n5. Artificial intelligence-based quality improvement strategy          signal turned on and to the conventional reconstruction with ERC. This\n                                                                      study suggested that scans acquired without ERC could potentially\n   AI is an emerging technology that is more commonly used in radi\u00ad     benefit from DLR to enhance image quality. Important to note, the\nology in the recent years. AI can improve the quality of prostate MRI     groups with the ERC signal turned off still had the ERC in place.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "This\nthrough various approaches, such as image reconstruction and image    removed confounding factors such as ERC positional differences and\nquality assessment/classification. Although the use of AI is a relatively     technical parameter variations, but it does not allow the direct assess\u00ad\nnew topic for prostate MRI quality, there are few studies investigating    ment of the effect of removing the ERC on overall image quality. In\nthe roles of AI in prostate MRI quality (Table 5). Image reconstruction is     addition to improving image quality, AI-based image reconstruction.",
+    "id": "raw_1-s2.0-S0720048X23000712-main_p10_c103",
+    "source": "1-s2.0-S0720048X23000712-main.pdf",
+    "page": 10
+  },
+  {
+    "text": "CT AND MRI OF\nTHE WHOLE BODY",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p2_c117",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 2
+  },
+  {
+    "text": "VOLUME I\n CT AND MRI OF\nTHE WHOLE BODY\n                Sixth Edition\n\nJohn R. Haaga, MD, FACR, FSIR, FSCBT, FSRS\n                         Gold Medalist AARS and SCBTMRI\n                                   Professor of Radiology\n                 Case Western Reserve University School of Medicine\n                      Emeritus Chairman and Professor of Radiology\n                            University Hospitals/Case Medical Center\n                 Case Western Reserve University School of Medicine\n                                      Cleveland, Ohio\n\nDaniel T. Boll, MD, FSCBT\n                                   Professor of Radiology\n                     Section Chief Abdominal and Oncologic Imaging\n                                   University Hospital of Basel\n                                        Basel, Switzerland",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p3_c118",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 3
+  },
+  {
+    "text": "1600 John F. Kennedy Blvd.\nSte 1800\nPhiladelphia, PA 19103-2899\n\nCT AND MRI OF THE WHOLE BODY, SIXTH EDITION                       ISBN: 978-0-323-11328-1\n                                                          Volume 1 Part Number: 9996117383\n                                                          Volume 2 Part Number: 9996117324\nCopyright \u00a9 2017 by Elsevier, Inc. All rights reserved.\nThe copyright for chapter 2 is owned by the author, Mark Patrick Supanich.\nSeth Kligerman retains right for his original images.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "No part of this publication may be reproduced or transmitted in any form or by any means, electronic or\nmechanical, including photocopying, recording, or any information storage and retrieval system, without\npermission in writing from the publisher. Details on how to seek permission, further information about the\nPublisher\u2019s permissions policies and our arrangements with organizations such as the Copyright Clearance\nCenter and the Copyright Licensing Agency, can be found at our website: www. elsevier. com/permissions. This book and the individual contributions contained in it are protected under copyright by the Publisher\n(other than as may be noted herein). All rights reserved.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "No part of this publication may be reproduced or transmitted in any form or by any\nmeans, electronic or mechanical, including photocopying, recording, or any information storage and retrieval\nsystem, without permission in writing from the publisher, except that, until further notice, instructors\nrequiring their students to purchase CT and MRI of the Whole Body by John R. Haaga, MD, may reproduce the\ncontents or parts thereof for instructional purposes, provided each copy contains a proper copyright notice as\nfollows: Copyright \u00a9 2017 by Elsevier Inc. Details on how to seek permission, further information about the Publisher\u2019s permissions policies and our\narrangements with organizations such as the Copyright Clearance Center and the Copyright Licensing Agency,\ncan be found at our website: www. elsevier. com/permissions.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "This book and the individual contributions contained in it are protected under copyright by the Publisher\n(other than as may be noted herein).",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "Knowledge and best practice in this field are constantly changing. As new research and experience broaden\n  our understanding, changes in research methods, professional practices, or medical treatment may become\n  necessary. Practitioners and researchers must always rely on their own experience and knowledge in evaluating and\n  using any information, methods, compounds, or experiments described herein. In using such information\n  or methods they should be mindful of their own safety and the safety of others, including parties for\n whom they have a professional responsibility. With respect to any drug or pharmaceutical products identified, readers are advised to check the most\n  current information provided (i) on procedures featured or (ii) by the manufacturer of each product to be\n  administered, to verify the recommended dose or formula, the method and duration of administration,\n  and contraindications.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "It is the responsibility of practitioners, relying on their own experience and\n  knowledge of their patients, to make diagnoses, to determine dosages and the best treatment for each\n  individual patient, and to take all appropriate safety precautions. To the fullest extent of the law, neither the Publisher nor the authors, contributors, or editors, assume\n  any liability for any injury and/or damage to persons or property as a matter of products liability,\n  negligence or otherwise, or from any use or operation of any methods, products, instructions, or ideas\n  contained in the material herein. Previous editions copyrighted 2009, 2003, 1994, 1988, and 1983.\n\nLibrary of Congress Cataloging-in-Publication Data",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "Names: Haaga, John R. (John Robert), 1945- , editor. | Boll, Daniel T., editor.\nTitle: CT and MRI of the whole body / edited by John R. Haaga, and Daniel T. Boll.\nDescription: Sixth edition. | Philadelphia, PA : Elsevier, [2017] | Includes bibliographical references and index.\nIdentifiers: LCCN 2016001268 | ISBN 9780323113281 (hardcover : international\n\u2003  edition : alk. paper) | ISBN 9780801670572\nSubjects: | MESH: Tomography, X-Ray Computed | Magnetic Resonance Imaging | Whole Body Imaging\nClassification: LCC RC78.7.T6 | NLM WN 206 | DDC 616.07/54\u2014dc23 LC record available at http://lccn.loc\n.gov/2016001268\n\nExecutive Content Strategist: Robin Carter\nSenior Content Development Specialist: Ann Ruzycka Anderson\nPublishing Services Manager: Patricia Tannian\nSenior Project Manager: Cindy Thoms\nDesign Direction: Amy Buxton\n\nPrinted in China\n\nLast digit is the print number:\u2003  9\u2003  8\u2003  7\u2003  6\u2003  5\u2003  4\u2003  3\u2003  2\u2003  1",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p4_c119",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 4
+  },
+  {
+    "text": "This book is dedicated to Elizabeth E. Haaga, daughter of John and Ellen Haaga, who was born on\n   August 19, 1972, and died December 9, 1985. Beth had a disseminated neuroblastoma, which was\n  diagnosed in 1984. She was treated with a bone marrow transplant and died from graft-versus-host\n  disease and infection. As her parents, we loved her dearly and cherish the memory of her early years\nwhen she was well. After the onset of her illness, we came to know that her gentle and loving nature was\n accompanied by a remarkably strong character. She endured her pain and suffering without bitterness\n   and never sought to hurt those who loved her. Indeed, most incredulously, she tried to lessen our\n   emotional pain even while enduring her physical discomforts.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p5_c126",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "Many authors have marveled at the\n qualities of children, and although Beth\u2019s short life and premature death have left us saddened beyond\n  comprehension, her remarkable courage and sweetness have given us a lasting pride and respect. We\n                                remember her lovingly. The book is also dedicated to my wonderful family: my wife and soul mate, Ellen, and our children,\n   Matthew and Stacie Haaga, Timothy and Molly Haaga, and Rebecca Haaga. Although professional\n      successes are important and rewarding, the joy and pride of a loving family far surpass such\n           accomplishments. All my love to my current family (and any future additions).\n\nJohn R. Haaga",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p5_c126",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 5
+  },
+  {
+    "text": "I am proud that my efforts as a \u201cnarrative diagnostician\u201d have helped young physicians familiarize\nthemselves with the challenges of modern clinical radiology. Hence, professionally, I want to dedicate this\n  book to the wonderful mentors with whom I was honored to work over the years. A hallmark of any\n   medical science is its continuously evolving and expanding knowledge base which, in turn, requires\n  regular reevaluation and revitalization of established workflows. I want to thank my mentors for never\n   tiring in reminding me of this fact and inspiring me to find new approaches to improve patient care.\n\nJonathan S. Lewin, MD (Emory University, Atlanta, GA), a gentleman scholar who guided me through\nthe continuously evolving field of applied MRI physics and the parallel research methods; as a role model\n              he influenced me greatly as I evolved into a scientist and mentor myself.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p6_c128",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 6
+  },
+  {
+    "text": "Jeffrey L. Duerk, PhD (Case Western Reserve University, Cleveland, OH), an exceptional teacher and\n visionary inventor, never tiring of \u201ctranslating\u201d formulas, figures, and (magnetic) field theories, thereby\n bringing together physicists and physicians in order to broaden everyone\u2019s horizon beyond expectation.\n\nErik K. Paulson, MD (Duke University Medical Center, Durham, NC), an outstanding diagnostician,\n   teacher and leader who inspired me not only with his expertise and devotion to medical science and\n    clinical practice but also through his willingness to explore unbeaten paths, thereby assembling an\n        outstanding group of like-minded physicians and clinicians who cross-inspire each other.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p6_c128",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 6
+  },
+  {
+    "text": "And finally, my life-long friend, visionary academician and exceptional mentor, Elmar M. Merkle, MD\n (University Hospital of Basel, Basel, Switzerland), who has been there every step of the way and without\n                  whom my career would not have been possible.\n\nWhen we all met initially, we all were in young stages of our careers. Over the evolving decades, our\n  friendships formed and matured, emphasizing this most important characteristic of mentorship. Even\n now, meeting together with the now Executive Vice President for Health Affairs, the Dean of Biomedical\nEngineering, and two Chairmen of visionary and fascinating radiology departments, respectively, helpful\n   and honest advice is always obtained, for mentorship is seen by these outstanding individuals as a\n                                   lifelong responsibility. Thank you to all.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p6_c128",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 6
+  },
+  {
+    "text": "I also want to dedicate this book to my parents, brother, and wife, who, without having (too much of) a\n  choice, have been there every step of the way and always encouraged me to live a life as a Weltb\u00fcrger,\n      finding friends and mentors all across the world. I will see you at home, wherever this will be;\n                                   thank you for everything.\n\nDaniel T. Boll",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p6_c128",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 6
+  },
+  {
+    "text": "SECTIO N E D I TO R S\n\nKristine A. Blackham, MD                                      Raj M. Paspulati, MD\nAssistant Professor                                                       Associate Professor\nDivisions of Radiology and Neurosurgery                           Department of Radiology\nUniversity Hospitals/Case Medical Center                                University Hospitals/Case Medical Center\nCase Western Reserve University School of Medicine                   Case Western Reserve University School of Medicine\nCleveland, Ohio                                                        Cleveland, Ohio",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Mauricio Castillo, MD                                       Prabhakar Rajiah, MD\nDistinguished Professor of Radiology                                    Associate Professor of Radiology\nChief of Neuroradiology                                               Cardiothoracic Imaging\nUniversity of North Carolina                                             Associate Director of Cardiac CT and MRI\nChapel Hill, North Carolina                                              University of Texas Southwestern Medical Center\n                                                                              Dallas, Texas\nThorsten R. Fleiter, MD\nAssociate Professor                                      Mark R.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Robbin, MD\nDepartment of Diagnostic Imaging and Nuclear Medicine                Professor\nUniversity of Maryland Medical Center                             Department of Radiology\nR Adams Cowley Shock Trauma Center                                   Chief, Musculoskeletal Imaging\nBaltimore, Maryland                                                     University Hospitals/Case Medical Center\n                                                                Case Western Reserve University School of Medicine\nRobert C.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Gilkeson, MD                                              Cleveland, Ohio\nDirector of Cardiothoracic Imaging\nProfessor of Radiology                                       Ehsan Samei, PhD, DABR, FAAPM, FSPIE\nUniversity Hospitals/Case Medical Center                                Professor of Radiology, Medical Physics, Biomedical Engineering,\nCase Western Reserve University School of Medicine                          Physics, and Electrical and Computer Engineering\nCleveland, Ohio                                                           Director, Carl E. Ravin Advanced Imaging Laboratories\n                                                              Founding Chief\nClaudia M.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Hillenbrand, PhD                                            Clinical Imaging Physics Group\nAssociate Member                                          Duke University Medical Center\nDepartment of Diagnostic Imaging                              Durham, North Carolina\nDivision of Translational Imaging Research\nSt. Jude Children\u2019s Research Hospital                                     Jeffrey L. Sunshine, MD, PhD\nMemphis, Tennessee                                                     Professor of Radiology, Neurology, Neurosurgery\n                                                                     Vice Chairman, Department of Radiology\nRichard A.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Leder, MD                                                  University Hospitals/Case Medical Center\nAssociate Professor of Radiology                                    Case Western Reserve University School of Medicine\nClinical Associate in Surgery                                           Chief Medical Information Officer, University Hospitals\nDuke University School of Medicine                                     Cleveland, Ohio\nDurham, North Carolina\n                                                          Frank K. Wacker, MD\nJeong Min Lee, MD                                                         Institute of Diagnostic and Interventional Radiology\nProfessor                                                                University School of Medicine\nDepartment of Radiology                                          Hannover, Germany\nSeoul National University Hospital\nSeoul, Korea.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "Suresh K. Mukherji, MD, MBA, FACR\nProfessor and Chairman\nDepartment of Radiology\nWalter F. Patenge Endowed Chair\nChief Medical Officer and Director of Health Care Delivery\nMichigan State University Health Team\nEast Lansing, Michigan",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p7_c132",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 7
+  },
+  {
+    "text": "C O N T R I BU TORS\n\nJames J. Abrahams, MD                   Mustafa R. Bashir, MD                 Donna G. Blankenbaker, MD\nProfessor, Diagnostic Radiology                  Assistant Professor                              Professor of Radiology\nDiagnostic Radiology Program               Department of Radiology                    Department of Radiology\nFellowship Director, Neuroradiology          Duke University Medical Center                 University of Wisconsin School of Medicine\nYale University School of Medicine           Durham, North Carolina                      and Public Health\nNew Haven, Connecticut                         Tissue Characterization in Liver Imaging         Madison, Wisconsin\nOrbit                                           Using Advanced MR Techniques            Hip and Pelvis",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Michael Abrahams, MD                       Javier Beltran, MD, FACR                Uttam K.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Bodanapally, MBBS\nDepartment of Emergency Medicine          Chairman                                        Assistant Professor\nUniversity of Toledo                        Department of Radiology                    Department of Diagnostic Radiology and\nToledo, Ohio                             Maimonides Medical Center                      Nuclear Medicine\nOrbit                                         Brooklyn, New York                             University of Maryland Medical Center\n                                                    Clinical Director of Musculoskeletal         R Adams Cowley Shock Trauma Center\nFederica Agosta, MD, PhD                      Radiology                                   Baltimore, Maryland\nNeuroimaging Research Unit                   Radisphere National Radiology Group          Traumatic Brain Injury\nInstitute of Experimental Neurology           Beachwood, Ohio\nDivision of Neuroscience                     Knee                                           Phillip M.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Boiselle, MD\nSan Raffaele Scientific Institute                                                                   Professor of Radiology\nVita-Salute San Raffaele University             Stuart Bentley-Hibbert, MD, PhD             Associate Dean for Academic and Clinical\nMilan, Italy                                     Associate Professor of Radiology                      Affairs\nNeurodegenerative Disorders                  Department of Radiology                    Harvard Medical School\n                                        Columbia University Medical Center            Boston, Massachusetts\nMuneeb Ahmed, MD, FSIR              New York, New York                         Airway\nChief                                        Mesentery\nDivision of Vascular and Interventional                                                 Daniel T.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Boll, MD, FSCBT\n   Radiology                            Shweta Bhatt, MD                             Professor of Radiology\nBeth Israel Deaconess Medical Center            Associate Professor                             Section Chief Abdominal and Oncologic\nAssociate Professor of Radiology              Department of Imaging Sciences                 Imaging\nHarvard Medical School                         University of Rochester                          University Hospital of Basel\nBoston, Massachusetts                           Rochester, New York                               Basel, Switzerland\nImage-Guided Ablation of Parenchymal          Kidney                                               Liver: Normal Anatomy, Imaging Techniques,\n   Organs                                                                           and Diffuse Diseases\n                                          Nicholas Bhojwani, MD                        Tissue Characterization in Liver Imaging Using\nSupreeta Arya, MD, DMRD, DNB           Department of Radiology                       Advanced Magnetic Resonance Techniques\nProfessor                                        University Hospitals/Case Medical Center\nRadiodiagnosis                                 Cleveland, Ohio                             Eliana Bonfante, MD\nTata Memorial Hospital                      Knee                                              Assistant Professor of Radiology\nMumbai, India                                  Musculoskeletal Tumors                      Department of Diagnostic and\nPharynx                                                                                             Interventional Imaging\n                                              Sotirios Bisdas, MD, PhD, MSc                University of Texas Health Science Center\nYong Ho Auh, MD                          Neuroradiology Consultant                   Houston, Texas\nProfessor of Radiology                         National Hospital for Neurology and            Spinal Trauma\nWeill Cornell Medical College of Cornell           Neurosurgery\n   University                             Honorary Senior Lecturer                       Jeffrey R.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Brace, MD\nAttending Radiologist                           University College London                       Assistant Professor of Radiology\nNew York-Presbyterian Hospital              London, United Kingdom                       University of Minnesota Medical Center,\nNew York, New York                            Professor of Radiology                            Fairview\nMesentery                                 Department of Neuroradiology               Hennepin County Medical Center\n                                                 Karls Eberhard University                     Minneapolis Veterans Affairs Medical Center\nRomulo Baltazar, MD                       T\u00fcbingen, Germany                           Minneapolis, Minnesota\nAttending Radiologist                        Adenopathy and Neck Masses                      Intracranial Neoplasms\nImaging Subspecialists of North Jersey\nSt.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "Joseph\u2019s Regional Medical Center            Kristine A. Blackham, MD\nPaterson, New Jersey                             Assistant Professor\nKnee                                           Divisions of Radiology and Neurosurgery\n                                                 University Hospitals/Case Medical Center\n                                           Case Western Reserve University\n                                                Cleveland, Ohio\n                                                    Intracranial Neoplasms\n                                                                                                           ix.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p8_c139",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 8
+  },
+  {
+    "text": "x       Contributors",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Miriam A. Bredella, MD                   Onofrio Catalano, MD                      Jared D. Christensen, MD\nAssociate Professor of Radiology                 Assistant Professor of Radiology                  Assistant Professor\nHarvard Medical School                        Division of Abdominal Surgery                Radiology\nDepartment of Radiology                    Harvard Medical School                   Duke University Medical Center\nMusculoskeletal Imaging and Interventions      Boston, Massachusetts                     Durham, North Carolina\nMassachusetts General Hospital                 Pancreas                                        Mediastinal Disease\nBoston, Massachusetts\nShoulder                                Majid Chalian, MD                       Michael Coffey, MD\n                                            Radiology House Staff, PGY3                     Assistant Professor\nMichael K.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Brooks, MD, MPH               Radiology                                   Radiology\nClinical Assistant Professor of Radiology         University Hospitals                         Case Western Reserve University School of\nSUNY-Stony Brook                          Case Western Reserve University                  Medicine\nDepartment of Radiology                       Cleveland, Ohio                                Cleveland, Ohio\nDivision of Musculoskeletal Imaging and       High Resolution 3T Magnetic Resonance          Demyelinating Disease and\n   Intervention                                  Neurography: Applications, Techniques,           Leukoencephalopathies\nWinthrop University Hospital                            Pitfalls\nMineola, New York                                                                 Brian Cox, MD\nDegenerative Disease                         Ronil V.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Chandra, MBBS (Hons), MMed,     Department of Radiology\n                              FRANZCR                                     University of Texas Southwestern Medical\nChristopher Brown, MD                      Associate Professor                              Center\nResearch Analyst                             Neuroradiology Service                           Dallas, Texas\nDepartment of Diagnostic Radiology         Monash Imaging                               High-Resolution 3T Magnetic Resonance\nUniversity of Maryland Medical Center        Monash Health Stroke and Ageing Research        Neurography: Applications, Techniques,\nBaltimore, Maryland                             Centre                                   and Pitfalls\nCoronary Arteries, Heart, and Pericardium      Monash University\n                                           Melbourne, Victoria, Australia                  Kelly L. Cox, DO\nJi Y.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Buethe, MD                                Stroke                                            Assistant Professor\nChief Resident                                                                           Radiology and Imaging Sciences\nDepartment of Radiology                   Tushar Chandra, MD                   Emory University Hospitals and School of\nUniversity Hospitals/Case Medical Center        Clinical Instructor                              Medicine\nCleveland, Ohio                              Radiology                                        Atlanta, Georgia\nImage-Guided Drainages                       Medical College of Wisconsin                 Female Pelvis\n                                           Milwaukee, Wisconsin\nJohn A.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Carrino, MD, MPH                 Pharynx                                    Sheilah Curran-Melendez, MD\nVice Chairman of Radiology                                                          Department of Diagnostic Radiology\nDepartment of Radiology and Imaging        Apeksha Chaturvedi, MD                    Allegheny General Hospital\nHospital for Special Surgery                      Assistant Professor                               Pittsburgh, Pennsylvania\nNew York, New York                          Radiology                                   Meningeal Processes\nHigh-Resolution 3T Magnetic Resonance          University of Rochester Medical Center\nNeurography: Applications, Techniques, and       Rochester, New York                   Hugh D.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Curtin, MD\n    Pitfalls                                     Chest Imaging in the Pediatric Patient            Professor of Radiology\n                                                                                    Harvard Medical School\nFrancesca Caso, MD                      Avneesh Chhabra, MD                       Chief of Radiology\nNeuroimaging Research Unit                 Department of Radiology                      Massachusetts Eye and Ear\nInstitute of Experimental Neurology             University of Texas Southwestern Medical       Boston, Massachusetts\nDivision of Neuroscience                         Center                                  Larynx\nSan Raffaele Scientific Institute                   Dallas, Texas\nVita-Salute San Raffaele University              High-Resolution 3T Magnetic Resonance        Carlo N.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "De Cecco, MD, PhD\nMilan, Italy                                      Neurography: Applications, Techniques,        Assistant Professor\nNeurodegenerative Disorders                    and Pitfalls                             Department of Radiology and Radiological\n                                                                                                    Sciences\nMauricio Castillo, MD                     Dong-il Choi, MD                            Division of Cardiovascular Imaging\nDistinguished Professor of Radiology            Associate Professor                           Medical University of South Carolina\nChief of Neuroradiology                   Sungkyunkwan University School of             Charleston, South Carolina\nUniversity of North Carolina                     Medicine                                Advanced Cardiovascular CT Imaging\nChapel Hill, North Carolina                      Faculty, Department of Radiology\nBrain Proton Magnetic Resonance             Samsung Medical Center\n   Spectroscopy                                  Seoul, Republic of Korea\nCystic Lesions                                       Biliary Tract and Gallbladder.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p9_c146",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 9
+  },
+  {
+    "text": "Contributors          xi",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Alfred Delumpa, MD                   Massimo Filippi, MD                      Ritu R. Gill, MD, MPH\nFellow                                          Professor                                        Associate Radiologist\nDepartment of Neuroradiology               Neuroimaging Research Unit                     Assistant Professor of Radiology\nBaylor College of Medicine                  Department of Neurology                   Brigham and Women\u2019s Hospital\nHouston, Texas                                Division of Neuroscience                     Harvard Medical School\nSpinal Tumors                                      Institute of Experimental Neurology            Boston, Massachusetts\n                                         San Raffaele Scientific Institute                  Disease of the Pleura, Chest Wall, and\nDavid R.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Di Lorenzo, MD                      Vita-Salute San Raffaele University               Diaphragm\nDiagnostic Radiology                          Milan, Italy\nUniversity Hospitals/Case Medical Center        Neurodegenerative Disorders                 John L. Go, MD\nCleveland, Ohio                                                                               Director of Head and Neck Imaging\nPeritoneum                               Thorsten R. Fleiter, MD                     Medical Director of the Imaging Science\n                                                 Associate Professor                              Center\nVikram S.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Dogra, MD                     Department of Diagnostic Imaging and          University of Southern California\nProfessor of Radiology and Urology               Nuclear Medicine                        Keck School of Medicine\nDepartment of Imaging Sciences                 University of Maryland Medical Center         Los Angeles, California\nUniversity of Rochester                 R Adams Cowley Shock Trauma Center          Cerebral Infections and Inflammation\nRochester, New York                            Baltimore, Maryland\nKidney                                      Traumatic Brain Injury                      Joseph R.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Grajo, MD\n                                                                                                     Assistant Professor of Radiology\nDavid Dreizin, MD                    Tom\u00e1s Franquet, MD                          University of Florida College of Medicine\nAssistant Professor                               Chief, Section of Thoracic Imaging               Gainesville, Florida\nDepartment of Diagnostic Radiology and       Radiology                                Male Pelvis\n   Nuclear Medicine                           Hospital de Sant Pau\nUniversity of Maryand Medical Center           Associate Professor of Radiology              Sachin K.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Gujar, MBBS, MD\nR Adams Cowley Shock Trauma Center          Universitat Autonoma de Barcelona              Assistant Professor\nBaltimore, Maryland                            Barcelona, Spain                             Neuroradiology Division\nSpinal Cord Injury                              Nonneoplastic Parenchymal Lung Disease          Russell H. Morgan Department of\nTraumatic Brain Injury                                                                       Radiology and Radiological Science\n                                        Melanie B. Fukui, MD                       Johns Hopkins University School of\nJeremy J. Erasmus, MBBCh                 Aurora Neuroscience Innovation Institute          Medicine\nProfessor                                                St.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Luke\u2019s Medical Center                       Baltimore, Maryland\nDiagnostic Radiology                         Milwaukee, Wisconsin                          Functional Magnetic Resonance Imaging\nUniversity of Texas MD Anderson Cancer       Meningeal Processes\n   Center                                                                      Junyu Guo, PhD\nHouston, Texas                           Stephen R. Fuller, BS              MR Scientist\nNeoplastic Disease of the Lung                 Department of Radiology and Radiological      Diagnostic Imaging\n                                                    Sciences                                             St.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Jude Children\u2019s Research Hospital\nMaryam Etesami, MD                        Division of Cardiovascular Imaging           Memphis, Tennessee\nRadiology                                   Medical University of South Carolina           Contrast-Enhanced Magnetic Resonance\nCase Western Reserve University                Charleston, South Carolina                       Imaging\nUniversity Hospitals Case Medical Center       Advanced Cardiovascular CT Imaging\nCleveland, Ohio                                                            Amit Gupta, MD\nChest Imaging in the Pediatric Patient           Nicholas L.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "Fulton, MD                        Fellow, Neuroradiology\n                                               Resident                                        University Hospitals/Case Medical Center\nSteven Falcone, MD, MBA                   Radiology                                      Cleveland, Ohio\nProfessor                                        University Hospitals/Case Medical Center       Demyelinating Disease and\nRadiology, Neurological Surgery,                 University Heights, Ohio                           Leukoencephalopathies\n   Ophthalmology                               Vasculogenesis\nExecutive Dean for Clinical Affairs                                          Hyun Kwon Ha, MD\nMiller School of Medicine                  Romyll Garcia, MD                            Professor of Radiology\nChief Executive Officer                        Voluntary Assistant Professor                    University of Ulsan College of Medicine\nUniversity of Miami Medical Group            Radiology                                       Professor and Chief of Gastrointestinal\nAssociate Vice President for Medical Affairs      University of Miami                               Section\nUniversity of Miami                        Miami, Florida                            Department of Radiology\nMiami, Florida                                  Systemic Diseases Affecting the Spine           Asan Medical Center\nSystemic Diseases Affecting the Spine                                                               Seoul, Republic of Korea\n                                        Amilcare Gentili, MD                           Gastrointestinal Tract\n                                                Professor\n                                            Radiology\n                                                 University of California\u2013San Diego\n                                         San Diego, California\n                                                 Musculoskeletal Tumors.",
+    "id": "raw_CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive )_p10_c154",
+    "source": "CT and MRI of the Whole Body, 2-Volume Set, 6e, Volume I ( PDFDrive ).pdf",
+    "page": 10
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n\nApplication\n\nModified on: Fri, 6 Mar, 2020 at 9:36 AM",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p1_c163",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 1
+  },
+  {
+    "text": "Why does LI-RADS not apply to patients without risk factors, to patients < 18 years old, or to patients with\n  cirrhosis due to congenital hepatic fibrosis?\n Why does LI-RADS not apply to patients with cirrhosis due to a vascular disorder such as hereditary\n  hemorrhagic telangiectasia, Budd-Chiari syndrome, chronic portal vein occlusion, cardiac congestion, or\n  diffuse nodular regenerative hyperplasia?\n   I am not sure if my patient has cirrhosis. Can I apply CT/MRI LI-RADS?\n My institution is a transplant center and is required to use the OPTN system. Can I use LI-RADS instead of\n  or in addition to OPTN?\n My patient has active extrahepatic primary malignancy.",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p1_c163",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 1
+  },
+  {
+    "text": "Can I use LI-RADS?\n Can I use the LI-RADS diagnostic algorithm in a patient who has cirrhosis and heart failure?\n Why does LI-RADS not apply to single-phase CT or MRI exams?\n How do I interpret and report observations on single-phase CT or MRI in at-risk patients?\n Why shouldn\u2019t I assign a LI-RADS category for path-proven malignancies and for path-proven benign\n  lesions of non-hepatocellular origin?\n  Should I assign a LI-RADS category to path-proven benign lesions of hepatocellular origin (e. g. ,\n  regenerative or dysplastic nodules)?. (https://www.surveymonkey.com/r/RadsFaq?HELPFUL=YES&RADS=LI-RADS&FAQ=FAQ-001)\n    (https://www.surveymonkey.com/r/RadsFaq?HELPFUL=NO&RADS=LI-RADS&FAQ=FAQ-001)\n\nFAQ-001: Why does LI-RADS not apply to patients without risk factors, to patients < 18 years\n     old, or to patients with cirrhosis due to congenital hepatic fibrosis?",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p1_c163",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 1
+  },
+  {
+    "text": "The positive predictive value of imaging for HCC may not be sufficiently high in such patients.\n\nDid you find FAQ-001 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-001)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-001)\n\nhttps://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        1/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p1_c163",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 1
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n\nFAQ-002: Why does LI-RADS not apply to patients with cirrhosis due to a vascular disorder\n   such as hereditary hemorrhagic telangiectasia, Budd-Chiari syndrome, chronic portal vein\n    occlusion, cardiac congestion, or diffuse nodular regenerative hyperplasia?\n\nSuch conditions are associated with formation of benign hyperplastic nodules that may resemble\n    HCC on imaging, potentially causing false positive diagnoses.\n\nDid you find FAQ-002 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-002)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-002)",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p2_c167",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 2
+  },
+  {
+    "text": "FAQ-003: I am not sure if my patient has cirrhosis. Can I apply CT/MRI LI-RADS?\n\nYou can apply LI-RADS and provide a conditional category. For example: \u201c25 mm mass with APHE\n     and washout appearance. If the patient has cirrhosis or chronic hepatitis B, this meets criteria for\n     LR-5 (definitely HCC).\u201d\n\nDid you find FAQ-003 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-003)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-003)\n\nhttps://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        2/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p2_c167",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 2
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n    FAQ-004: My institution is a transplant center and is required to use the OPTN system. Can I\n   use LI-RADS instead of or in addition to OPTN?\n\nYes, you may use LI-RADS in any patient with cirrhosis, chronic hepatitis B, or current or prior\n     HCC. This includes liver transplant candidates and/or recipients with any of those risk factors.\n\nDid you find FAQ-004 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-004)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-004)\n\nFAQ-005: My patient has active extrahepatic primary malignancy. Can I use LI-RADS?",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p3_c169",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 3
+  },
+  {
+    "text": "Yes. LI-RADS may be applied, but assignment of LR-5 should be done with caution because LI-\n    RADS imaging criteria and observation categories were not developed or validated in this setting.\n      Concurrent extrahepatic malignancy reduces the positive predictive value of LR-5 for HCC,\n       especially if the primary tumor is hypervascular. If in doubt, categorize as LR-M rather than LR-5;\n      consider additional imaging and multidisciplinary discussion.\n\nDid you find FAQ-005 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-005)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-005)\n\nFAQ-006: Can I use the LI-RADS diagnostic algorithm in a patient who has cirrhosis and heart\n     failure?",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p3_c169",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 3
+  },
+  {
+    "text": "https://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        3/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p3_c169",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 3
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n      Yes. LI-RADS can be used in a patient with cirrhosis and heart failure, as long as the cirrhosis is not\n     due to the heart failure or other vascular disorder.\n\nDid you find FAQ-006 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-006)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-006)\n\nFAQ-007: Why does LI-RADS not apply to single-phase CT or MRI exams?\n\nCharacterization of all LI-RADS major imaging features is possible only if multiple imaging phases\n      are acquired.",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p4_c172",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 4
+  },
+  {
+    "text": "Did you find FAQ-007 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-007)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-007)\n\nFAQ-008: How do I interpret and report observations on single-phase CT or MRI in at-risk\n    patients?\n\nProvide your best diagnosis or differential diagnosis. Suggest multiphase CT or MRI if a formal LI-\n    RADS categorization would help in patient management.\n\nDid you find FAQ-008 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-008)  No",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p4_c172",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 4
+  },
+  {
+    "text": "https://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        4/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p4_c172",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 4
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n\n(https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-008)\n\nFAQ-009: Why shouldn\u2019t I assign a LI-RADS category for path-proven malignancies and for\n    path-proven benign lesions of non-hepatocellular origin?\n\nLI-RADS is intended to clarify communication. Assigning a LI-RADS category to a pathologically\n      proven lesion (in which there is now certainty about the diagnosis) may cause confusion, especially\n       for LI-RADS categories that convey some uncertainty (i.e., LR-2, LR-3, LR-4, or LR-M).",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p5_c175",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 5
+  },
+  {
+    "text": "Did you find FAQ-009 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-009)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-009)\n\nFAQ-010: Should I assign a LI-RADS category to path-proven benign lesions of hepatocellular\n    origin (e.g., regenerative or dysplastic nodules)?\n\nThese are exceptions to the prior rule. For path-proven regenerative or dysplastic nodules, assign a\n     LI-RADS category in addition to the path diagnosis. Assigning LI-RADS categories alleviates\n       potential harm from false-negative pathology, facilitates monitoring of nodules for possible\n      progression, and informs management decisions.",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p5_c175",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 5
+  },
+  {
+    "text": "Did you find FAQ-010 helpful?   Yes\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=Yes&RADS=LI-RADS&FAQ=FAQ-010)  No\n    (https://app.smartsheet.com/b/form/7737e609386c415d9929772d8505023b?\n    Did%20you%20find%20this%20FAQ%20helpful?=No&RADS=LI-RADS&FAQ=FAQ-010)\n\nhttps://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        5/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p5_c175",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 5
+  },
+  {
+    "text": "5/8/24, 10:26 AM                                                  Application : RADS - Reporting and Data Systems Support\n\nhttps://radssupport.acr.org/support/solutions/articles/11000079463-application                                                                                        6/6",
+    "id": "raw_Application _ RADS - Reporting and Data Systems Support_p6_c178",
+    "source": "Application _ RADS - Reporting and Data Systems Support.pdf",
+    "page": 6
+  }
+]

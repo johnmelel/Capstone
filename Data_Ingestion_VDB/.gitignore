@@ -1,3 +1,15 @@
 */output/
-*/full_dataset/
-*/test_dataset/
+*.db
+*.env
+
+# datasets
+Data_Ingestion_VDB/full_dataset/
+Data_Ingestion_VDB/test_dataset/
+
+# specific files
+/test.ipynb
+/run_pipeline.py
+/rag_tester.py
+/analyze_results.py
+/test_raw_vs_markdown.py
+/page2_only.pdf

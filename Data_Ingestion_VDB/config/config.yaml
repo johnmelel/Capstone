@@ -1,0 +1,38 @@
+embedding:
+  model: "multimodalembedding@001"
+  dimensions: 1408
+  batch_size: 100
+  normalize: true
+
+chunking:
+  method: "semantic"
+  chunk_size: 800
+  overlap: 100
+
+images:
+  min_width: 100
+  min_height: 100
+  extract_captions: true
+  caption_search_radius: 150
+
+tables:
+  detection_method: "text_based"
+  min_rows: 3
+  min_columns: 2
+
+vector_store:
+  type: "milvus"
+  collection_name: "medical_textbooks"
+  metric_type: "COSINE"
+
+processing:
+  test_mode: false
+  max_test_pages: 25
+  skip_existing: true
+  max_workers: 4
+
+api:
+  retry_attempts: 3
+  retry_delay: 2
+  timeout: 30
+  requests_per_minute: 1000
