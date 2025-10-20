@@ -13,10 +13,6 @@
 /papers
 /Final Project/images
 /volumes
-
-
-
-# Data_Ingestion_VDB
 */output/
 *.db
 *.env
@@ -28,3 +24,8 @@ Data_Ingestion_VDB/test_dataset/
 /analyze_results.py
 /test_raw_vs_markdown.py
 /page2_only.pdf
+*.pyc
+medical-agent/MIMIC_data/
+medical-agent/adsp-34002-ip09-team-2-e0cca2d396a9.json
+medical-agent/data/
+memory-bank/
