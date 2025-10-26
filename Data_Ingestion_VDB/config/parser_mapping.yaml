@@ -1,0 +1,12 @@
+# Parser Strategy Mapping
+# Maps data subfolder names to parser classes
+
+# Format:
+# folder_name: ParserClassName
+
+
+# strategy_1_clinical_image: ClinicalImageParser
+# strategy_2_clinical_q&a: ClinicalQAParser
+# strategy_3_textbook: TextbookParser
+# strategy_4_lexicon: LexiconParser
+strategy_5_research: ResearchParser

@@ -11,7 +11,7 @@ class VertexAIEmbedder:
     """Generate embeddings using Vertex AI multimodal model."""
     
     def __init__(self, config: Dict[str, Any], project_id: str, location: str):
-        print("\n🔧 Initializing Vertex AI embedder...")
+        print("\nInitializing Vertex AI embedder...")
         
         # Initialize Vertex AI
         aiplatform.init(project=project_id, location=location)
@@ -84,8 +84,6 @@ class VertexAIEmbedder:
         
         return embedding
     
-
-
     def _embed_image(self, image_path: str, caption: str = "") -> np.ndarray:
         """Embed image with optional caption."""
         from vertexai.vision_models import MultiModalEmbeddingModel, Image as VertexImage

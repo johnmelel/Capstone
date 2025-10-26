@@ -1,6 +1,7 @@
-"""PDF content extraction with smart metadata - COMPLETE VERSION."""
+"""PDF content extraction with HYBRID RAW/MARKDOWN support."""
 
 import fitz  # PyMuPDF
+import pymupdf4llm  # For markdown extraction
 from pathlib import Path
 from typing import List, Dict, Any
 from PIL import Image
@@ -8,7 +9,7 @@ import re
 import io
 
 class PDFExtractor:
-    """Extract text, images, and tables with smart metadata."""
+    """Extract text, images, and tables with smart metadata - HYBRID VERSION."""
     
     def __init__(self, config: Dict[str, Any]):
         self.config = config
@@ -18,9 +19,13 @@ class PDFExtractor:
         self.min_img_height = config['images']['min_height']
     
     def extract_from_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
-        """Extract all content from a PDF."""
+        """Extract all content from a PDF using HYBRID method."""
         print(f"\n{'='*70}")
         print(f" EXTRACTING: {pdf_path.name}")
+        
+        # DETECT EXTRACTION METHOD based on folder
+        extraction_method = self._detect_extraction_method(pdf_path)
+        print(f"   Method: {extraction_method.upper()}")
         print(f"{'='*70}")
         
         doc = fitz.open(pdf_path)
@@ -34,23 +39,27 @@ class PDFExtractor:
             page = doc[page_num]
             print(f"\n   Page {page_num + 1}/{total_pages}")
             
-            # Extract text
-            print("      Extracting text...")
-            text_items = self._extract_text(page, pdf_path.stem, page_num)
+            # Extract text with appropriate method
+            print(f"      Extracting text ({extraction_method})...")
+            if extraction_method == "markdown":
+                text_items = self._extract_text_markdown(pdf_path, page_num, doc)
+            else:
+                text_items = self._extract_text_raw(page, pdf_path.stem, page_num)
+            
             all_items.extend(text_items)
-            print(f"       ✓ {len(text_items)} text chunks")
+            print(f"        {len(text_items)} text chunks")
             
             # Extract images with smart metadata
             print("       Extracting images...")
             image_items = self._extract_images_smart(page, doc, pdf_path.stem, page_num)
             all_items.extend(image_items)
-            print(f"       ✓ {len(image_items)} images")
+            print(f"        {len(image_items)} images")
             
             # Detect tables
             print("      Detecting tables...")
             table_items = self._detect_tables(page, pdf_path.stem, page_num)
             all_items.extend(table_items)
-            print(f"       ✓ {len(table_items)} tables")
+            print(f"        {len(table_items)} tables")
         
         doc.close()
         
@@ -60,114 +69,68 @@ class PDFExtractor:
         
         return all_items
     
-
-    # def _extract_text(self, page, pdf_name: str, page_num: int) -> List[Dict]:
-    #     """Extract text respecting layout (handles columns properly)."""
+    def _detect_extraction_method(self, pdf_path: Path) -> str:
+        """Detect if PDF should use raw or markdown extraction based on folder."""
+        # Check if in raw_extraction folder
+        if "raw_extraction" in str(pdf_path.parent):
+            return "raw"
+        # Check if in markdown_extraction folder
+        elif "markdown_extraction" in str(pdf_path.parent):
+            return "markdown"
+        # Default to markdown if not in a specific folder
+        else:
+            print(f"      PDF not in raw_extraction or markdown_extraction folder")
+            print(f"      Defaulting to MARKDOWN extraction")
+            return "markdown"
+    
+    def _extract_text_raw(self, page, pdf_name: str, page_num: int) -> List[Dict]:
+        """Extract text using RAW PyMuPDF method."""
         
-    #     # Get text as blocks
-    #     blocks = page.get_text("dict")["blocks"]
-        
-    #     # Filter to only text blocks
-    #     text_blocks = [b for b in blocks if b["type"] == 0]
-        
-    #     if not text_blocks:
-    #         return []
-        
-    #     # Detect if this is a multi-column layout
-    #     page_width = page.rect.width
-    #     is_two_column = self._detect_two_column_layout(text_blocks, page_width)
-        
-    #     if is_two_column:
-    #         # Process columns separately
-    #         full_text = self._extract_two_column_text(text_blocks, page_width)
-    #     else:
-    #         # Single column - just sort top-to-bottom
-    #         text_blocks.sort(key=lambda b: b["bbox"][1])
-    #         full_text = ""
-    #         for block in text_blocks:
-    #             block_text = self._extract_block_text(block)
-    #             # ✅ GARBAGE FILTER
-    #             if not self._is_garbage_block(block_text):
-    #                 full_text += block_text + "\n\n"
-        
-    #     if not full_text.strip():
-    #         return []
-        
-    #     # Now chunk the properly extracted text
-    #     chunks = []
-    #     start = 0
-    #     chunk_idx = 0
-        
-    #     while start < len(full_text):
-    #         end = start + self.chunk_size
-    #         chunk_text = full_text[start:end]
-            
-    #         if chunk_text.strip() and len(chunk_text.strip()) > 50:
-    #             fig_refs = self._find_figure_refs(chunk_text)
-    #             table_refs = self._find_table_refs(chunk_text)
-                
-    #             chunks.append({
-    #                 "chunk_id": f"{pdf_name}_p{page_num+1}_text_{chunk_idx}",
-    #                 "type": "text",
-    #                 "content": chunk_text.strip(),
-    #                 "metadata": {
-    #                     "pdf_name": pdf_name,
-    #                     "page": page_num + 1,
-    #                     "chunk_index": chunk_idx,
-    #                     "figure_refs": ", ".join(fig_refs) if fig_refs else None,
-    #                     "table_refs": ", ".join(table_refs) if table_refs else None
-    #                 }
-    #             })
-    #             chunk_idx += 1
-            
-    #         start = end - self.overlap
-        
-    #     return chunks
-
-
-    def _extract_text(self, page, pdf_name: str, page_num: int) -> List[Dict]:
-        """Extract text using PyMuPDF's built-in sorting - SIMPLE VERSION."""
-        
-        # ✅ Let PyMuPDF handle columns automatically
+        #  Let PyMuPDF handle columns automatically
         text = page.get_text("text", sort=True)
         
         if not text.strip():
             return []
         
-        # ✅ Simple chunking with hard 950-char limit
+        #  Simple chunking with hard 950-char limit
         chunks = []
         chunk_idx = 0
         MAX_SIZE = 950
+        OVERLAP_SIZE = self.overlap
         
         # Split by paragraphs
         paragraphs = [p.strip() for p in text.split('\n\n') if p.strip() and len(p.strip()) > 10]
         
         current_chunk = ""
+        overlap_text = ""
         
         for para in paragraphs:
             # If single para is too long, split by sentences
             if len(para) > MAX_SIZE:
                 if current_chunk.strip():
-                    chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx))
+                    chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx, "raw"))
                     chunk_idx += 1
-                    current_chunk = ""
+                    overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                    current_chunk = overlap_text
                 
                 # Split by sentences
                 sentences = [s.strip() + '.' for s in para.split('.') if s.strip()]
                 for sent in sentences:
                     if len(current_chunk) + len(sent) > MAX_SIZE:
                         if current_chunk.strip():
-                            chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx))
+                            chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx, "raw"))
                             chunk_idx += 1
-                        current_chunk = sent + " "
+                            overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                        current_chunk = overlap_text + sent + " "
                     else:
                         current_chunk += sent + " "
             # Check if adding para would exceed
             elif len(current_chunk) + len(para) > MAX_SIZE:
                 if current_chunk.strip():
-                    chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx))
+                    chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx, "raw"))
                     chunk_idx += 1
-                current_chunk = para + "\n\n"
+                    overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                current_chunk = overlap_text + para + "\n\n"
             else:
                 current_chunk += para + "\n\n"
         
@@ -175,93 +138,85 @@ class PDFExtractor:
         if current_chunk.strip():
             if len(current_chunk) > 1000:  # Safety truncate
                 current_chunk = current_chunk[:1000]
-            chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx))
+            chunks.append(self._create_chunk(current_chunk.strip(), pdf_name, page_num, chunk_idx, "raw"))
         
         return chunks
-
-    def _chunk_by_sections(self, text: str, pdf_name: str, page_num: int) -> List[Dict]:
-        """
-        Chunk text by semantic boundaries (sections, paragraphs) but with HARD limit 
-        """
-        MAX_CHUNK_SIZE = 950 # with safety margin below 1024
-
-        chunks = []
-        paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()] # Split by double newlines (paragraph boundaries)
+    
+    def _extract_text_markdown(self, pdf_path: Path, page_num: int, doc) -> List[Dict]:
+        """Extract text using MARKDOWN pymupdf4llm method."""
         
-        current_chunk = ""
-        chunk_idx = 0
-        
-        for para in paragraphs:
-            # skip column markers
-            if para.startswith('---') and 'COLUMN' in para:
-                continue
-
-            # skip very short noise
-            if len(para) < 10:
-                continue
-
-            # if single paragraph exceeds limit, split it by sentences
-            if len(para) > MAX_CHUNK_SIZE:
-                # save current chunk first
-                if current_chunk.strip() and len(current_chunk.strip()) > 50:
-                    chunks.append(self._create_chunk(
-                        current_chunk.strip(), pdf_name, page_num, chunk_idx
-                    ))
-                    chunk_idx += 1
-                    current_chunk = ""
-
-                #split long paragraphs into sentences
-                sentences = [s.strip() + '.' for s in para.split('.') if s.strip()]
-                for sent in sentences:
-                    if len(current_chunk) + len(sent) + 1 > MAX_CHUNK_SIZE:
-                        if current_chunk.strip():
-                            chunks.append(self._create_chunk(
-                                current_chunk.strip(), pdf_name, page_num, chunk_idx
-                            ))
-                            chunk_idx += 1
-                        current_chunk = sent + " "
-                    else: 
-                        current_chunk += sent + " "
-                continue
+        try:
+            # Extract markdown for this specific page
+            md_dict = pymupdf4llm.to_markdown(str(pdf_path), pages=[page_num])
             
-            # check if adding paragraph would exceed limit
-            if len(current_chunk) + len(para) + 2 > MAX_CHUNK_SIZE:
-                # Save current chunk
-                if current_chunk.strip() and len(current_chunk.strip()) > 50:
-                    chunks.append(self._create_chunk(
-                        current_chunk.strip(), pdf_name, page_num, chunk_idx
-                    ))
-                    chunk_idx += 1
-
-                # start new chunk with small overlap
-                sentences = current_chunk.split('. ')
-                if len(sentences) > 1 and len(sentences[-1]) < 200:
-                    overlap = sentences[-1] + '. '
-                    current_chunk = overlap + para + "\n\n"
-                else:
-                    current_chunk = para + "\n\n"
+            if isinstance(md_dict, dict) and 'text' in md_dict:
+                text = md_dict['text']
             else:
-                current_chunk += para + "\n\n"
-
-
+                text = md_dict
+            
+            if not text.strip():
+                return []
+            
+            # Same chunking logic as raw
+            chunks = []
+            chunk_idx = 0
+            MAX_SIZE = 950
+            OVERLAP_SIZE = self.overlap
+            
+            # Split by paragraphs
+            paragraphs = [p.strip() for p in text.split('\n\n') if p.strip() and len(p.strip()) > 10]
+            
+            current_chunk = ""
+            overlap_text = ""
+            
+            for para in paragraphs:
+                # If single para is too long, split by sentences
+                if len(para) > MAX_SIZE:
+                    if current_chunk.strip():
+                        chunks.append(self._create_chunk(current_chunk.strip(), pdf_path.stem, page_num, chunk_idx, "markdown"))
+                        chunk_idx += 1
+                        overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                        current_chunk = overlap_text
+                    
+                    # Split by sentences
+                    sentences = [s.strip() + '.' for s in para.split('.') if s.strip()]
+                    for sent in sentences:
+                        if len(current_chunk) + len(sent) > MAX_SIZE:
+                            if current_chunk.strip():
+                                chunks.append(self._create_chunk(current_chunk.strip(), pdf_path.stem, page_num, chunk_idx, "markdown"))
+                                chunk_idx += 1
+                                overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                            current_chunk = sent + " "
+                        else:
+                            current_chunk += sent + " "
+                # Check if adding para would exceed
+                elif len(current_chunk) + len(para) > MAX_SIZE:
+                    if current_chunk.strip():
+                        chunks.append(self._create_chunk(current_chunk.strip(), pdf_path.stem, page_num, chunk_idx, "markdown"))
+                        chunk_idx += 1
+                        overlap_text = self._get_overlap(current_chunk, OVERLAP_SIZE)
+                    current_chunk = para + "\n\n"
+                else:
+                    current_chunk += para + "\n\n"
+            
             # Save last chunk
-            if current_chunk.strip() and len(current_chunk.strip()) > 50:
-                # ✅ Final safety check
-                if len(current_chunk) > MAX_CHUNK_SIZE:
-                    current_chunk = current_chunk[:MAX_CHUNK_SIZE]
-                    last_period = current_chunk.rfind('. ')
-                    if last_period > MAX_CHUNK_SIZE * 0.7:
-                        current_chunk = current_chunk[:last_period + 1]
-                
-                chunks.append(self._create_chunk(
-                    current_chunk.strip(), pdf_name, page_num, chunk_idx
-                ))
+            if current_chunk.strip():
+                if len(current_chunk) > 1000:  # Safety truncate
+                    current_chunk = current_chunk[:1000]
+                chunks.append(self._create_chunk(current_chunk.strip(), pdf_path.stem, page_num, chunk_idx, "markdown"))
             
             return chunks
+            
+        except Exception as e:
+            print(f"       Markdown extraction failed: {e}")
+            print(f"       Falling back to RAW extraction...")
+            # Fallback to raw if markdown fails
+            page = doc[page_num]
+            return self._extract_text_raw(page, pdf_path.stem, page_num)
 
     def _create_chunk(self, text: str, pdf_name: str, page_num: int, 
-                    chunk_idx: int) -> Dict:
-        """Create a chunk with metadata."""
+                    chunk_idx: int, extraction_method: str) -> Dict:
+        """Create a chunk with metadata including extraction method."""
         fig_refs = self._find_figure_refs(text)
         table_refs = self._find_table_refs(text)
         
@@ -273,10 +228,27 @@ class PDFExtractor:
                 "pdf_name": pdf_name,
                 "page": page_num + 1,
                 "chunk_index": chunk_idx,
+                "extraction_method": extraction_method,  # Track which method used
                 "figure_refs": ", ".join(fig_refs) if fig_refs else None,
                 "table_refs": ", ".join(table_refs) if table_refs else None
             }
         }
+
+    def _get_overlap(self, text: str, overlap_size: int) -> str:
+        """Get the last N characters from text, trying to break at sentence boundary."""
+        if len(text) <= overlap_size:
+            return text
+        
+        # Get last overlap_size characters
+        overlap = text[-overlap_size:]
+        
+        # Try to start at a sentence boundary (look for '. ')
+        sentence_start = overlap.find('. ')
+        if sentence_start != -1 and sentence_start < overlap_size * 0.5:
+            # If we found a sentence start in the first half, use everything after it
+            overlap = overlap[sentence_start + 2:]
+        
+        return overlap
 
     def _extract_images_smart(self, page, doc, pdf_name: str, page_num: int) -> List[Dict]:
         """Extract images with smart figure numbering and panel detection."""
@@ -427,4 +399,16 @@ class PDFExtractor:
         return []
         """Basic table detection."""
         # For now, return empty - can enhance later
+        return []
+
+    def _extract_block_text(self, block) -> str:
+        """Extract text from a block."""
+        text = ""
+        for line in block.get("lines", []):
+            for span in line.get("spans", []):
+                text += span.get("text", "") + " "
+        return text.strip()
+
+    def _detect_tables(self, page, pdf_name: str, page_num: int) -> List[Dict]:
+        """Basic table detection."""
         return []

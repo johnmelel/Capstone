@@ -92,7 +92,7 @@ Instructions:
 
 Answer:"""
     
-    print("🤖 Generating answer with OpenAI...\n")
+    print("Generating answer with OpenAI...\n")
     
     # Call OpenAI
     response = client.chat.completions.create(
@@ -118,10 +118,10 @@ def interactive_query():
     
     while True:
         # Get user query
-        query = input("❓ Your question: ").strip()
+        query = input("Your question: ").strip()
         
         if query.lower() in ['quit', 'exit', 'q']:
-            print("\n👋 Goodbye!")
+            print("\nGoodbye!")
             break
         
         if not query:
@@ -142,7 +142,7 @@ def interactive_query():
             print("\n" + "="*70 + "\n")
             
         except Exception as e:
-            print(f"\n❌ Error: {e}\n")
+            print(f"\nError: {e}\n")
 
 if __name__ == "__main__":
     interactive_query()

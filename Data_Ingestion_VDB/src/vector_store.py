@@ -4,23 +4,43 @@ from pymilvus import connections, Collection, FieldSchema, CollectionSchema, Dat
 from typing import List, Dict, Any
 import numpy as np
 import json
+import os
 
 class VectorStore:
     """Interface to Milvus vector database."""
     
     def __init__(self, config: Dict[str, Any], drop_if_exists: bool = False):
-        print("\n  Initializing Milvus...")
+        print("\n[VectorStore] Initializing Milvus...")
         
-        # Connect to Milvus (embedded mode)
-        connections.connect(
-            alias="default",
-            uri="./milvus_data.db"  
-        )
+        # Check if using cloud or embedded mode
+        milvus_host = os.getenv("MILVUS_HOST")
+        milvus_port = os.getenv("MILVUS_PORT", "19530")
         
+        if milvus_host:
+            # CLOUD MODE - Connect to remote Milvus server
+            print(f"[VectorStore] Connecting to Cloud Milvus: {milvus_host}:{milvus_port}")
+            try:
+                connections.connect(
+                    alias="default",
+                    host=milvus_host,
+                    port=milvus_port,
+                    timeout=10
+                )
+                print(f"[VectorStore] Connected to Cloud Milvus successfully")
+            except Exception as e:
+                print(f"[Error] Failed to connect to Cloud Milvus: {e}")
+                print(f"[Error] Make sure server is running and firewall allows port 19530")
+                raise
+        else:
+            # EMBEDDED MODE - Use local file database
+            print(f"[VectorStore] Using embedded Milvus (local database)")
+            connections.connect(
+                alias="default",
+                uri="./milvus_data.db"
+            )
+
         self.collection_name = config['vector_store']['collection_name']
         self.dimensions = config['embedding']['dimensions']
-        
-        print(f"   ✓ Milvus initialized (embedded mode)")
         
         # Create or get collection
         self._setup_collection(drop_if_exists=drop_if_exists)
@@ -65,9 +85,37 @@ class VectorStore:
             
             print(f"   ✓ Collection created with COSINE index")
     
+    def get_existing_chunk_ids(self) -> set:
+        """Get all existing chunk_ids from the collection."""
+        try:
+            if not hasattr(self, 'collection'):
+                return set()
+            
+            # Query Milvus database for ALL chunk_ids
+            results = self.collection.query(
+                expr="id >= 0",             # get all records
+                output_fields=["chunk_id"], # only fetch chunk_id field
+                limit=16384                 # max allowed by milvus
+            )
+            
+            # run as set for fast lookup
+            return set(r['chunk_id'] for r in results)
+        except Exception as e:
+            print(f"[Warning] Could not fetch existing chunks: {e}")
+            return set()
+
+    def count_entities(self) -> int:
+        """Count total entities in collection."""
+        try:
+            if not hasattr(self, 'collection'):
+                return 0
+            return self.collection.num_entities
+        except:
+            return 0
+
     def add_items(self, items: List[Dict], embeddings: List[np.ndarray]):
         """Add items to vector store."""
-        print(f"\n Uploading {len(items)} vectors to Milvus...")
+        print(f"Uploading {len(items)} vectors to Milvus...")
         
         # Prepare data
         chunk_ids = [item["chunk_id"] for item in items]
@@ -77,7 +125,7 @@ class VectorStore:
         # Convert metadata to JSON strings (Milvus accepts this!)
         metadata_jsons = [json.dumps(item["metadata"]) for item in items]
         
-        documents = [item.get("content", item.get("caption", ""))[:5000] for item in items]
+        documents = [item.get("content", item.get("caption", ""))[:4900] for item in items]
         
         # Insert
         data = [
@@ -92,7 +140,7 @@ class VectorStore:
         self.collection.flush()
         
         print(f"   ✓ Uploaded successfully")
-        print(f"    Total vectors in collection: {self.collection.num_entities}")
+        print(f"   Total vectors in collection: {self.collection.num_entities}")
     
     def search(self, query_embedding: np.ndarray, top_k: int = 10):
         """Search for similar vectors."""
