@@ -1,38 +1,54 @@
+# Embedding Configuration
 embedding:
-  model: "multimodalembedding@001"
-  dimensions: 1408
-  batch_size: 100
-  normalize: true
+  model: "multimodalembedding@001"  # Vertex AI multimodal embedding model
+  dimensions: 1408                  # Vertex AI multimodal embedding dimensions
+  batch_size: 100                   # Batch size for embedding
+  normalize: true                   # L2 normalization
 
+# Chunking Configuration
 chunking:
-  method: "semantic"
-  chunk_size: 800
-  overlap: 100
+  method: "semantic"                # Semantic chunking method
+  chunk_size: 800                   # Chunk size for semantic chunking
+  overlap: 150                      # Overlap for semantic chunking
 
+# Images Configuration
 images:
-  min_width: 100
-  min_height: 100
-  extract_captions: true
-  caption_search_radius: 150
+  min_width: 100                   # Minimum width for image extraction
+  min_height: 100                  # Minimum height for image extraction
+  #extract_captions: true           # Extract captions for images
+  #caption_search_radius: 150       # Search radius for caption extraction
+  save_format: "png"                
 
+# Table extraction configuration
 tables:
-  detection_method: "text_based"
-  min_rows: 3
-  min_columns: 2
+  #detection_method: "text_based" 
+  min_rows: 2
+  #min_columns: 2
+  detect_tables: true
 
+# Vector Store Configuration
 vector_store:
-  type: "milvus"
-  collection_name: "medical_textbooks"
-  metric_type: "COSINE"
+  type: "milvus"                    # Vector store type
+  collection_name: "medical_textbooks" # Collection name for vector store
+  metric_type: "COSINE"             # Metric type for vector store
+  index_type: "IVF_FLAT"            # Index type for vector store
+  nlist: 1024                       # Number of lists for vector store
 
+# Processing Configuration
 processing:
-  test_mode: false
-  max_test_pages: 25
+  #test_mode: false
   skip_existing: true
-  max_workers: 4
+  max_test_pages: 10
+  #max_workers: 4
 
+# API Configuration
 api:
-  retry_attempts: 3
-  retry_delay: 2
-  timeout: 30
-  requests_per_minute: 1000
+  retry_attempts: 3                # Number of retry attempts for API requests
+  retry_delay: 2                   # Delay between retry attempts
+  timeout: 30                      # Timeout for API requests
+  requests_per_minute: 1000        # Requests per minute for API requests
+
+# Output directories (relative to project root: Data_Ingestion_VDB)
+output:
+  extracted_content: "extracted_content"
+  logs: "logs"

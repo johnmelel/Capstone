@@ -1,0 +1,87 @@
+{
+  "pdf_name": "1-s2.0-S0720048X23000712-main",
+  "total_pages": 13,
+  "text_chunks": 47,
+  "images": 9,
+  "tables": 0,
+  "pages_processed": [
+    {
+      "page": 1,
+      "text": 4,
+      "images": 3,
+      "tables": 0
+    },
+    {
+      "page": 2,
+      "text": 3,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 3,
+      "text": 6,
+      "images": 0,
+      "tables": 0
+    },
+    {
+      "page": 4,
+      "text": 3,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 5,
+      "text": 3,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 6,
+      "text": 3,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 7,
+      "text": 4,
+      "images": 0,
+      "tables": 0
+    },
+    {
+      "page": 8,
+      "text": 4,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 9,
+      "text": 3,
+      "images": 1,
+      "tables": 0
+    },
+    {
+      "page": 10,
+      "text": 4,
+      "images": 0,
+      "tables": 0
+    },
+    {
+      "page": 11,
+      "text": 4,
+      "images": 0,
+      "tables": 0
+    },
+    {
+      "page": 12,
+      "text": 3,
+      "images": 0,
+      "tables": 0
+    },
+    {
+      "page": 13,
+      "text": 3,
+      "images": 0,
+      "tables": 0
+    }
+  ]
+}

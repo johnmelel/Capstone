@@ -1,201 +1,122 @@
-# Embedding Architecture
+# Model
+We are currently exploring the use of **Docling** or **MinerU** as parsers. Previously, other parsers such as PyMuPDF and PyMuPDF4LLM were used. However, they failed at appropriately processing tables. Doclingand MinerU should perform much better with the matter. However, one initial challenge faced by our team was the different page formatting and structure between each PDF, and within each file. 
 
-## Core Design
-
-One model (Gemini) embeds everything into the same 768-d vector space.
-
-Text → Gemini → 768-d vector
-Images → Gemini → 768-d vector  
-Tables → Gemini → 768-d vector
-All go to Milvus for search
-
-Same dimensional space = directly comparable = cross-modal search works.
-
-## Key Decisions
-
-### 1. Why Gemini for Everything?
-
-Decision: Use one multimodal model instead of specialized models per type.
-
-Alternatives considered:
-- BioBERT for text + CLIP for images + custom for tables
-- Would create 3 different vector spaces that cannot be compared
-
-Why Gemini wins:
-- Text and images map to SAME space (can compare directly)
-- Reads text inside images (no separate OCR needed)
-- Understands tables from images or markdown
-- Simple: one API, one embedding function
-
-Trade-off:
-- Cost: ~$0.00001 per item (vs free local models)
-- Privacy: data sent to Google (vs local processing)
-- We accept this for simplicity and cross-modal capability
-
-### 2. Why NOT PDFPlumber for Tables?
-
-Decision: Simple text-based detection, let Gemini handle tables as text or images.
-
-Why we skip PDFPlumber:
-- Only works on native PDFs (fails on scanned textbooks)
-- Additional dependency (more code to maintain)
-- Complex table to vector logic (need separate embedding strategy)
-- Structure preservation is hard
-
-Our approach:
-- Native PDF tables: Extract as markdown text, embed with Gemini
-- Scanned PDF tables: Extract table region as image, embed with Gemini
-
-Trade-off:
-- Lose: Perfect table structure extraction
-- Gain: Simpler code, works on all PDFs, unified pipeline
-
-Can add PDFPlumber later if table quality is insufficient.
-
-### 3. Why Milvus Instead of ChromaDB?
-
-Decision: Milvus for vector store.
-
-Comparison:
-- ChromaDB: ~1M vectors max, prototyping-focused, basic HNSW, vertical scaling only
-- Milvus: Billions of vectors, production-ready, multiple index types, horizontal scaling
-
-Why Milvus:
-- Better for 25K+ vectors (our scale)
-- Production-grade
-- More index options for optimization
-
-Trade-off: Requires Docker/server vs ChromaDB embedded option.
-
-### 4. Chunking Strategy
-
-Decision: Simple character-based chunking with overlap.
-
-Why not semantic/paragraph chunking:
-- PDFs have inconsistent structure
-- PyMuPDF text extraction is messy
-- Simple = easier to debug
-
-Parameters:
-- Chunk size: 800 chars (~200 tokens)
-- Overlap: 100 chars (prevents losing context at boundaries)
-
-Can improve later with better parsing.
-
-### 5. Image Embedding Strategy
-
-Decision: Embed caption + image together when caption exists.
-
-Just image: embed(image) - OK
-Image + caption: embed(["Figure 3.2: Heart anatomy", image]) - Better
-
-Why:
-- Captions provide explicit semantics
-- Image provides visual information
-- Gemini fuses both into richer embedding
-
-### 6. Normalization
-
-Decision: L2 normalize all embeddings.
-
-Why:
-Without normalization, vectors with different magnitudes create biased similarity scores.
-With normalization, all vectors have length 1.0, so cosine similarity = dot product (faster).
-
-## Architecture Flow
-
-PDF Document
-→ PyMuPDF Extraction (text blocks, images, tables)
-→ Chunk Organization (chunk_id, type, content, metadata)
-→ Gemini Embedding (everything to 768-d)
-→ L2 Normalization
-→ Milvus Vector Store (with IVF_FLAT index)
-→ Cosine similarity search enabled
-
-## Summary of Trade-offs
-
-Decision: Gemini for all
-- Lose: Cost, privacy
-- Gain: Unified space, cross-modal search
-
-Decision: Skip PDFPlumber
-- Lose: Perfect table extraction
-- Gain: Simplicity, works on scanned PDFs
-
-Decision: Simple chunking
-- Lose: Semantic boundaries
-- Gain: Easy to debug
-
-Decision: Milvus
-- Lose: Easy embedded setup
-- Gain: Production scale
-
-Decision: Normalize embeddings
-- Lose: Raw magnitude info
-- Gain: Fair similarity comparison
-
-Core philosophy: Simplicity + cross-modal capability over perfect extraction.
-
-## What This Enables
-
-Cross-modal search example:
-Query: "heart valve anatomy"
-Returns:
-- Text chunks about valves
-- Images showing valve diagrams
-- Tables with valve measurements
-
-All in one query because everything lives in the same vector space.
-
-## Future Improvements
-
-Without major changes:
-- Add PDFPlumber for better tables
-- Better caption extraction
-- Semantic chunking
-- Query expansion with medical synonyms
-- Hybrid search (semantic + keyword)
-
-If we needed to change:
-- Privacy concerns: Switch to local model (PubMed CLIP + BioBERT)
-- Cost concerns: Use local models
-- Better medical understanding: Fine-tune on medical corpus
-
-But for now: Simple, unified, cross-modal.
+Therefore, we remain using Docling/MinerU as parser, but including rule-base decisions to ensure parsing is correct and adjusted for each document. This results in a complex pipeliene with several adaptations for each document. 
 
 
-┌─────────────────┐
-│  PDF Document   │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────────────────────┐
-│     PyMuPDF Extraction          │
-│  • Text blocks (with overlap)   │
-│  • Images (with captions)       │
-│  • Tables (basic detection)     │
-└────────┬────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────┐
-│    Chunk Organization           │
-│  {chunk_id, type, content,      │
-│   metadata}                     │
-└────────┬────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────┐
-│    Gemini Embedding             │
-│  • Text → 768-d                 │
-│  • Image → 768-d                │
-│  • Table → 768-d                │
-│  • Normalize (L2)               │
-└────────┬────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────┐
-│    Milvus Vector Store          │
-│  • Store embeddings             │
-│  • Build IVF_FLAT index         │
-│  • Enable cosine search         │
-└─────────────────────────────────┘
+# Folder breakdown
+
+We have X documents that can be divided in different groups based on their parsing strategies. In total, we have 5 groups. This is how our folder structure to accommodate for the different processes. In each .py file, we'll add specific post-processing solutions to best improve parsing performance. 
+
+```bash
+Data_Ingestion_VDB/
+├── data/
+│   ├── strategy_1_clinical_image/
+│   ...
+│   └── strategy_5_research/
+│
+├── src/
+│   ├── parsers/
+│   │     ├── __init__.py
+│   │     ├── base_parser.py
+│   │     ├── strategy_1_clinical_image.py
+│   │     ...
+│   │     └── strategy_5_research.py
+│   │               └── main.py              (main pipeline)
+│   │               ├── test.py              (visualize parsed and chunked pdf)
+│   │               ├── cleaning_rules.yaml  (cleaning config)
+│   │               └── post_processor.py    (cleaning logic)
+│   ├── embedders.py
+│   ├── vector_store.py
+│   ├── pipeline.py
+│   └── utils.py
+
+```
+
+# Parsing Strategies
+Parsing strategies will defer based on which file we work on. Currently, we can divide our dataset in 5 groups of PDF type:
+
+**Strategy 1:** Clinical documents (i.e., LIRADS, PIRADS) that have many images, diagrams and tables. These documents require additional multimodal capabilities.
+<p align="center">
+  <img src="images/clinical_image.png" width="200"/>
+  <br>
+  <em>Figure 2</em>
+</p>
+
+**Strategy 2:** Also clinical documents (i.e., LIRADS) formated in a Q&A format. Special parsing and chunking necessary to keep question and answers in same chunk.   
+<p align="center">
+  <img src="images/clinical_text.png" width="200"/>
+  <br>
+  <em>Figure 3</em>
+</p>
+
+**Strategy 3:** Medical textbooks.   
+<p align="center">
+  <img src="images/textbook_1.png" width="200"/>
+  <br>
+  <em>Figure 4 - Diagnostic Imaging: Gastrointestinal by Federle and Raman</em>
+</p>
+<p align="center">
+  <img src="images/textbook_2.png" width="200"/>
+  <br>
+  <em>Figure 5 - Diagnostic Imaging: Gastrointestinal by Federle and Raman</em>
+</p>
+
+**Strategy 4:** Lexicon Tables. There is only one document under this group. 
+<p align="center">
+  <img src="images/lexicon.png" height="200"/>
+  <br>
+  <em>Figure 6</em>
+</p>
+
+**Strategy 5:** Lastly, medical research papers
+<p align="center">
+  <img src="images/research.png" width="200"/>
+  <br>
+  <em>Figure 7 - Prostate MRI and image Quality: It is time to take stock (Yue Lin, Enis C. Yilmaz, Mason J. Belue, and Baris Turkbey)</em>
+</p>
+
+
+Following, we'll specifically explain the post-processing decisions for each group.
+
+## Strategy 1
+
+## Strategy 2
+
+## Strategy 3
+
+## Strategy 4
+
+## Strategy 5
+
+**Changes for all PDFs:**
+Removed:
+- Hyphens from word breaks
+- Journal headers
+- Keywords section
+- Location information regarding published article (e.g., "Hesda, MD, United States)
+- Author names and affiliations
+- Footnotes
+
+
+
+
+
+---
+# ADDITIONAL NOTES, PUT THSI SOMEWHERE LATER
+
+**Keeping the arrows in images as reference:** Another issue we faced was the presence of arrows in some of the images, which were refereced in the caption. The arrows appear in both the image and the captions as a method to guide the student on where to look in the image. Although an incredibly interpretable tool in the human eye, it was a challenge to decide how to embed this reference. We are currently working on the matter.
+
+<p align="center">
+  <img src="images/ex_image_from_textbook.png" width="400"/>
+  <br>
+  <em>Figure 1 – Example of arrow reference</em>
+</p>
+
+I'm currently exploring the opportunity of using a "two-level image embedding"
+1. Image-level embedding -> overall meaning of the image
+2. Region-level embedding -> small sub-area
+
+However, this is a *next-step* analysis.
+
+---
