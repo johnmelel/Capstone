@@ -4,53 +4,61 @@ Test script to verify all components are working before running the full pipelin
 
 import os
 import sys
-from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
+# Import Config after loading env
+from src.config import Config
+
 def test_env_variables():
     """Test that all required environment variables are set"""
     print("\n" + "="*60)
-    print("TEST 1: Environment Variables")
+    print("TEST 1: Environment Variables & Configuration")
     print("="*60)
     
-    required_vars = [
-        'GCS_BUCKET_NAME',
-        'GOOGLE_SERVICE_ACCOUNT_JSON',
-        'MILVUS_URI',
-        'MILVUS_API_KEY',
-        'GEMINI_API_KEY'
+    config_vars = [
+        ('GCS_BUCKET_NAME', Config.GCS_BUCKET_NAME),
+        ('GCS_BUCKET_PREFIX', Config.GCS_BUCKET_PREFIX),
+        ('GOOGLE_SERVICE_ACCOUNT_JSON', Config.GOOGLE_SERVICE_ACCOUNT_JSON),
+        ('MILVUS_URI', Config.MILVUS_URI),
+        ('MILVUS_API_KEY', Config.MILVUS_API_KEY),
+        ('MILVUS_COLLECTION_NAME', Config.MILVUS_COLLECTION_NAME),
+        ('GEMINI_API_KEY', Config.GEMINI_API_KEY),
+        ('EMBEDDING_MODEL', Config.EMBEDDING_MODEL),
+        ('MAX_TOKENS_PER_CHUNK', Config.MAX_TOKENS_PER_CHUNK),
+        ('CHUNK_SIZE', Config.CHUNK_SIZE),
+        ('CHUNK_OVERLAP', Config.CHUNK_OVERLAP),
+        ('BATCH_SIZE', Config.BATCH_SIZE),
     ]
     
     missing = []
-    for var in required_vars:
-        value = os.getenv(var)
-        if not value:
-            missing.append(var)
-            print(f"❌ {var}: NOT SET")
+    for var_name, value in config_vars:
+        if value is None or (isinstance(value, str) and not value):
+            missing.append(var_name)
+            print(f"❌ {var_name}: NOT SET")
         else:
             # Mask sensitive values
-            if 'KEY' in var or 'API' in var:
-                display_value = value[:10] + "..." if len(value) > 10 else "***"
+            if 'KEY' in var_name or 'API' in var_name:
+                display_value = str(value)[:10] + "..." if len(str(value)) > 10 else "***"
             else:
                 display_value = value
-            print(f"✓ {var}: {display_value}")
+            print(f"✓ {var_name}: {display_value}")
     
     if missing:
         print(f"\n❌ Missing variables: {', '.join(missing)}")
         return False
     
-    # Check if service account file exists
-    service_account_path = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
-    if not Path(service_account_path).exists():
-        print(f"❌ Service account file not found: {service_account_path}")
+    # Validate configuration using Config.validate()
+    try:
+        Config.validate()
+        print("\n✓ Configuration validation passed!")
+    except Exception as e:
+        print(f"\n❌ Configuration validation failed: {e}")
         return False
-    else:
-        print(f"✓ Service account file found: {service_account_path}")
     
-    print("\n✓ All environment variables are set!")
+    print("✓ All environment variables are set!")
     return True
 
 
@@ -63,23 +71,23 @@ def test_gemini_api():
     try:
         import google.generativeai as genai
         
-        # Configure API
-        genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+        # Configure API using Config
+        genai.configure(api_key=Config.GEMINI_API_KEY)
         print("✓ Gemini API configured")
         
-        # Test embedding
+        # Test embedding using configured model
         result = genai.embed_content(
-            model='models/text-embedding-005',
+            model=f'models/{Config.EMBEDDING_MODEL}',
             content='This is a test sentence for embedding.',
             task_type='retrieval_document'
         )
-        print(f"✓ Embedding generated successfully")
+        print("✓ Embedding generated successfully")
         print(f"  Embedding dimension: {len(result['embedding'])}")
         
         # Test token counting
         model = genai.GenerativeModel('gemini-pro')
         token_result = model.count_tokens('This is a test sentence')
-        print(f"✓ Token counting working")
+        print("✓ Token counting working")
         print(f"  Token count: {token_result.total_tokens}")
         
         print("\n✓ Gemini API is working!")
@@ -99,21 +107,20 @@ def test_gcs_connection():
     try:
         from google.cloud import storage
         
-        # Set credentials
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        # Set credentials using Config
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = Config.GOOGLE_SERVICE_ACCOUNT_JSON
         
         # Create client
         client = storage.Client()
         print("✓ GCS client created")
         
-        # Get bucket
-        bucket_name = os.getenv('GCS_BUCKET_NAME')
-        bucket = client.bucket(bucket_name)
+        # Get bucket using Config
+        bucket = client.bucket(Config.GCS_BUCKET_NAME)
         
-        # List files
-        prefix = os.getenv('GCS_BUCKET_PREFIX', '')
-        blobs = list(bucket.list_blobs(max_results=5, prefix=prefix))
-        print(f"✓ Connected to bucket: {bucket_name}")
+        # List files using Config prefix
+        blobs = list(bucket.list_blobs(max_results=5, prefix=Config.GCS_BUCKET_PREFIX))
+        print(f"✓ Connected to bucket: {Config.GCS_BUCKET_NAME}")
+        print(f"  Prefix: {Config.GCS_BUCKET_PREFIX or '(root)'}")
         print(f"  Found {len(blobs)} files (showing max 5)")
         
         # Count PDFs
@@ -139,16 +146,17 @@ def test_milvus_connection():
     try:
         from pymilvus import connections, utility
         
-        # Connect
+        # Connect using Config
         connections.connect(
-            uri=os.getenv('MILVUS_URI'),
-            token=os.getenv('MILVUS_API_KEY')
+            uri=Config.MILVUS_URI,
+            token=Config.MILVUS_API_KEY
         )
-        print("✓ Connected to Milvus")
+        print(f"✓ Connected to Milvus: {Config.MILVUS_URI}")
         
         # List collections
         collections = utility.list_collections()
         print(f"  Existing collections: {collections if collections else 'None'}")
+        print(f"  Target collection: {Config.MILVUS_COLLECTION_NAME}")
         
         # Disconnect
         connections.disconnect("default")
@@ -168,23 +176,25 @@ def test_components():
     print("="*60)
     
     try:
-        # Test config
-        from src.config import Config
+        # Test config - already loaded, just validate again
         Config.validate()
         print("✓ Configuration validated")
         
-        # Test chunker
+        # Test chunker using Config values
         from src.chunker import TextChunker
         chunker = TextChunker()
         test_text = "This is a test sentence. " * 100
         chunks = chunker.chunk_text(test_text)
         print(f"✓ Chunker working: Created {len(chunks)} chunks")
+        print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars")
+        print(f"  Max tokens per chunk: {Config.MAX_TOKENS_PER_CHUNK}")
         
-        # Test embedder
+        # Test embedder using Config
         from src.embedder import TextEmbedder
         embedder = TextEmbedder()
         embeddings = embedder.embed_text(["Test sentence 1", "Test sentence 2"])
         print(f"✓ Embedder working: Generated embeddings with shape {embeddings.shape}")
+        print(f"  Using model: {Config.EMBEDDING_MODEL}")
         
         print("\n✓ All components are working!")
         return True
@@ -211,23 +221,25 @@ def test_single_pdf():
         from src.ingest import IngestionPipeline
         from google.cloud import storage
         
-        # Set credentials
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        # Set credentials using Config
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = Config.GOOGLE_SERVICE_ACCOUNT_JSON
         
-        # Get first PDF
+        # Get first PDF using Config values
         client = storage.Client()
-        bucket = client.bucket(os.getenv('GCS_BUCKET_NAME'))
-        prefix = os.getenv('GCS_BUCKET_PREFIX', '')
-        blobs = list(bucket.list_blobs(prefix=prefix, max_results=10))
+        bucket = client.bucket(Config.GCS_BUCKET_NAME)
+        blobs = list(bucket.list_blobs(prefix=Config.GCS_BUCKET_PREFIX, max_results=10))
         pdf_blobs = [b for b in blobs if b.name.lower().endswith('.pdf')]
         
         if not pdf_blobs:
             print("❌ No PDF files found in bucket")
+            print(f"  Bucket: {Config.GCS_BUCKET_NAME}")
+            print(f"  Prefix: {Config.GCS_BUCKET_PREFIX or '(root)'}")
             return False
         
         print(f"Testing with: {pdf_blobs[0].name}")
+        print(f"  File size: {pdf_blobs[0].size / 1024:.2f} KB")
         
-        # Initialize pipeline
+        # Initialize pipeline (uses Config internally)
         pipeline = IngestionPipeline()
         
         # Process single PDF
