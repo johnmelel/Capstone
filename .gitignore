@@ -38,3 +38,4 @@ Data_Ingestion_VDB/tests/
 Data_Ingestion_VDB/docling/
 
 data_ingestion/.env
+data_ingestion/service_account.json
