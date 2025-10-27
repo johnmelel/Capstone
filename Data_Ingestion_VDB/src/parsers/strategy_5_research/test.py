@@ -1,5 +1,6 @@
 """
-python3 -m src.parsers.strategy_5_research.test | tee output.txt
+Strategy 5 - test.py
+python3 -m src.parsers.strategy_5_research.test | tee src/parsers/strategy_5_research/output.txt
 """
 
 import sys

@@ -1,49 +1,5 @@
-
 """
-Research Paper Parser (Strategy 5) - USING docling
-
-STEPS: 
-1. Opens PDF using docling parser
-2. Extracts text with structure awareness (sections, paragraphs)
-3. Detects and extracts tables with structure preservation
-4. Identifies figures and associates them with captions
-5. Creates chunks with rich metadata
-6. Saves extracted content to disk
-
-docling FEATURES USED:
-- PDF parsing with layout analysis
-- Table detection and structure extraction
-- Figure extraction with bounding boxes
-- Caption detection and association
-- Section hierarchy detection
-
-OUTPUT STRUCTURE:
-Each chunk dictionary contains:
-{
-    'chunk_id': str,              # Format: {pdf_name}_p{page}_{type}_{index}
-    'type': 'text'|'image'|'table',
-    'content': str,               # Text content (for text/table chunks)
-    'image_path': str,            # Path to saved image (for image chunks)
-    'caption': str,               # Caption text (for images/tables)
-    'metadata': {
-        'pdf_name': str,
-        'page': int,
-        'strategy_name': str,
-        'figure_id': str,         # e.g., "Figure_1A"
-        'table_id': str,          # e.g., "Table_2"
-        'section': str,           # Document section if detected
-        ... additional fields ...
-    }
-}
-
-CHUNKING STRATEGY:
-- Text: Semantic chunking with overlap
-- Images: One chunk per image with caption
-- Tables: One chunk per table with caption and data
-- Maintains references between text and figures/tables
-
-DEPENDENCIES:
-Requires: pip install docling
+Strategy 5 - main.py
 """
 
 from pathlib import Path
@@ -63,32 +19,18 @@ except ImportError:
     DOCLING_AVAILABLE = False
     import fitz  # PyMuPDF fallback
 
+
+pipeline_options = PdfPipelineOptions()
+pipeline_options.generate_picture_images = True  
+
 class ResearchParser(BaseParser):
-    """
-    Parser for research papers using docling.
-    
-    INITIALIZATION:
-    - Checks if docling is available
-    - Sets up output directories
-    - Configures chunking parameters
-    
-    PARSING WORKFLOW:
-    1. Load PDF with docling
-    2. Extract structured content (text blocks, images, tables)
-    3. Process and chunk text content
-    4. Extract images with captions
-    5. Extract tables with structure
-    6. Create metadata for all chunks
-    7. Save extracted content
-    """
-    
     def __init__(self, config: Dict[str, Any], output_dir: Path):
         super().__init__(config, output_dir)
         self.strategy_name = "research_paper"
         
         if DOCLING_AVAILABLE:
             print(f"        [ResearchParser] Initialized with docling parser")
-            self.converter = DocumentConverter()
+            self.converter = DocumentConverter(pipeline_options=pipeline_options)
         else:
             print(f"[ResearchParser] WARNING: Using fallback PyMuPDF parser")
             print(f"[ResearchParser] Install docling for better results")
@@ -106,23 +48,6 @@ class ResearchParser(BaseParser):
         }
     
     def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
-        """
-        Parse research paper PDF and extract all content.
-        
-        Steps:
-        1. Check if docling is available
-        2. Parse PDF (docling or fallback)
-        3. Extract text, images, tables
-        4. Create chunks with metadata
-        5. Log extraction summary
-        
-        Args:
-            pdf_path: Path to PDF file
-            max_pages: Optional page limit for testing
-            
-        Returns:
-            List of chunk dictionaries
-        """
         # print(f"\n{'='*70}")
         # print(f"[ResearchParser] Starting extraction: {pdf_path.name}")
         # print(f"{'='*70}")
@@ -204,14 +129,20 @@ class ResearchParser(BaseParser):
             traceback.print_exc()
             return self._parse_with_pymupdf_fallback(pdf_path, max_pages)
         
-        # Summary
-        print(f"\n{'-'*70}")
-        print(f"|   [Summary] Extraction complete for {pdf_name}                             |")
-        print(f"|     - Text chunks: {len([c for c in all_chunks if c['type']=='text'])}     |")
-        print(f"|     - Images: {len([c for c in all_chunks if c['type']=='image'])}         |")
-        print(f"|     - Tables: {len([c for c in all_chunks if c['type']=='table'])}         |")
-        print(f"|     - Total: {len(all_chunks)}                                             |")
-        print(f"{'-'*70}")
+        # Count chunks by type
+        text_count = len([c for c in all_chunks if c['type'] == 'text'])
+        image_count = len([c for c in all_chunks if c['type'] == 'image'])
+        table_count = len([c for c in all_chunks if c['type'] == 'table'])
+
+        # Print clean summary
+        print(f"\n{'─' * 70}")
+        print(f"|  [Summary] Extraction complete for {pdf_name}")
+        print(f"{'─' * 70}")
+        print(f"|  Text chunks: {text_count}")
+        print(f"|  Images:      {image_count}")
+        print(f"|  Tables:      {table_count}")
+        print(f"|  Total:       {len(all_chunks)}")
+        print(f"{'─' * 70}")
         
         return all_chunks   
 
