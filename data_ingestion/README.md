@@ -7,8 +7,8 @@ A Python application for processing PDFs from Google Cloud Storage, extracting t
 - ☁️ **Direct GCS Processing** - Process PDFs directly from Google Cloud Storage without local downloads
 - 📁 **Recursive folder support** - Process from all subfolders/prefixes automatically
 - 📄 Extract text from PDFs using PyMuPDF (fast and accurate)
-- ✂️ Split text into overlapping chunks for better semantic search
-- 🧠 Generate embeddings using sentence-transformers
+- ✂️ Split text into token-aware chunks (max 2048 tokens for Gemini)
+- 🧠 Generate embeddings using Google Gemini text-embedding-005 API
 - 🗄️ Store embeddings in Milvus vector database
 - 🐳 Docker support for easy deployment
 - ✅ Comprehensive test suite
@@ -137,17 +137,18 @@ MILVUS_URI=your-milvus-uri
 MILVUS_API_KEY=your-api-key
 MILVUS_COLLECTION_NAME=pdf_embeddings
 
-# Embedding Configuration
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
+# Gemini Embedding Configuration
+GEMINI_API_KEY=your-gemini-api-key  # Get from https://makersuite.google.com/app/apikey
+EMBEDDING_MODEL=text-embedding-005
+MAX_TOKENS_PER_CHUNK=2048
 
 # Processing Configuration
-CHUNK_SIZE=512
-CHUNK_OVERLAP=50
+CHUNK_SIZE=1500  # Characters (validated against token limit)
+CHUNK_OVERLAP=150
 BATCH_SIZE=100
-
-# Local Storage
-DOWNLOAD_DIR=./downloads
 ```
+
+**Important**: See [GEMINI_SETUP.md](GEMINI_SETUP.md) for detailed Gemini API configuration.
 
 ## Usage
 
@@ -227,9 +228,11 @@ pytest -v
 | `MILVUS_URI` | Milvus server URI | Required |
 | `MILVUS_API_KEY` | Milvus API key/token | Required |
 | `MILVUS_COLLECTION_NAME` | Name of Milvus collection | `pdf_embeddings` |
-| `EMBEDDING_MODEL` | Sentence-transformers model name | `sentence-transformers/all-MiniLM-L6-v2` |
-| `CHUNK_SIZE` | Maximum characters per chunk | `512` |
-| `CHUNK_OVERLAP` | Overlap between chunks | `50` |
+| `GEMINI_API_KEY` | Google Gemini API key | Required |
+| `EMBEDDING_MODEL` | Gemini embedding model name | `text-embedding-005` |
+| `MAX_TOKENS_PER_CHUNK` | Maximum tokens per chunk | `2048` |
+| `CHUNK_SIZE` | Maximum characters per chunk | `1500` |
+| `CHUNK_OVERLAP` | Overlap between chunks | `150` |
 | `BATCH_SIZE` | Batch size for processing | `100` |
 
 ## Architecture
@@ -244,8 +247,8 @@ Google Cloud Storage → Direct Stream Processing → Extract Text → Chunk Tex
 
 1. **GCS Client**: Authenticates with GCS and lists PDF blobs from bucket
 2. **PDFExtractor**: Extracts text from PDFs using PyMuPDF (fitz) - fast, accurate, and reliable
-3. **TextChunker**: Splits text into overlapping chunks with metadata
-4. **TextEmbedder**: Generates embeddings using sentence-transformers
+3. **TextChunker**: Splits text into token-aware overlapping chunks (max 2048 tokens)
+4. **TextEmbedder**: Generates 768-dim embeddings using Google Gemini text-embedding-005 API
 5. **MilvusVectorStore**: Manages Milvus collection and operations
 6. **IngestionPipeline**: Orchestrates the entire workflow
 
@@ -314,13 +317,18 @@ Or set in `.env`:
 GCS_RECURSIVE=false
 ```
 
-### Custom Embedding Model
+### Gemini API Configuration
 
-You can use any model from [Hugging Face sentence-transformers](https://huggingface.co/sentence-transformers):
+The pipeline uses Google's Gemini `text-embedding-005` model:
 
-```env
-EMBEDDING_MODEL=sentence-transformers/all-mpnet-base-v2
-```
+- **Embedding Dimension**: 768
+- **Max Tokens**: 2048 per request
+- **Pricing**: ~$0.000025 per 1,000 characters (very cheap)
+- **Free Tier**: 1,500 requests per day
+
+Get your API key from [Google AI Studio](https://makersuite.google.com/app/apikey).
+
+See [GEMINI_SETUP.md](GEMINI_SETUP.md) for complete setup instructions.
 
 ### Custom Chunking Strategy
 
@@ -352,6 +360,7 @@ For issues and questions:
 
 ## Acknowledgments
 
-- [sentence-transformers](https://www.sbert.net/) for embedding models
+- [Google Gemini API](https://ai.google.dev/) for high-quality text embeddings
 - [Milvus](https://milvus.io/) for vector database
 - [Google Cloud Storage](https://cloud.google.com/storage) for file storage
+- [PyMuPDF](https://pymupdf.readthedocs.io/) for PDF processing
