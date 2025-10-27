@@ -37,3 +37,4 @@ Data_Ingestion_VDB/full_dataset/
 Data_Ingestion_VDB/tests/
 Data_Ingestion_VDB/docling/
 
+data_ingestion/.env
