@@ -22,12 +22,14 @@ class Config:
     MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
     
-    # Embedding Configuration
-    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+    # Gemini Embedding Configuration
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-005")
+    MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
     
     # Processing Configuration
-    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "512"))
-    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "50"))
+    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1500"))
+    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
     BATCH_SIZE = int(os.getenv("BATCH_SIZE", "100"))
     
     # Local Storage (removed - no longer needed for stream processing)
@@ -40,6 +42,7 @@ class Config:
             ("GCS_BUCKET_NAME", cls.GCS_BUCKET_NAME),
             ("MILVUS_URI", cls.MILVUS_URI),
             ("MILVUS_API_KEY", cls.MILVUS_API_KEY),
+            ("GEMINI_API_KEY", cls.GEMINI_API_KEY),
         ]
         
         missing_fields = [field for field, value in required_fields if not value]

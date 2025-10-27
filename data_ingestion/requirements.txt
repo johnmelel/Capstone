@@ -5,9 +5,8 @@ google-auth==2.25.2
 # PDF Processing
 PyMuPDF==1.23.8
 
-# Embeddings
-sentence-transformers==2.2.2
-torch==2.1.2
+# Embeddings - Gemini API
+google-generativeai==0.3.2
 
 # Vector Store
 pymilvus==2.3.4
