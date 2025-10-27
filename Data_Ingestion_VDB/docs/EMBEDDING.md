@@ -22,7 +22,8 @@ Data_Ingestion_VDB/
 │   │     ├── strategy_1_clinical_image.py
 │   │     ...
 │   │     └── strategy_5_research.py
-│   │               └── main.py              (main pipeline)
+│   │               ├── __init__.py
+│   │               ├── main.py              (main pipeline)
 │   │               ├── test.py              (visualize parsed and chunked pdf)
 │   │               ├── cleaning_rules.yaml  (cleaning config)
 │   │               └── post_processor.py    (cleaning logic)

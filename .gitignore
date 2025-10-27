@@ -29,12 +29,11 @@ memory-bank/
 /docs
 
 
-Data_Ingestion_VDB/data/strategy_1_clinical_image/
-Data_Ingestion_VDB/data/strategy_2_clinical_q&a/
-Data_Ingestion_VDB/data/strategy_3_textbook/
-Data_Ingestion_VDB/data/strategy_4_lexicon/
-Data_Ingestion_VDB/data/strategy_5_research/
+Data_Ingestion_VDB/output.txt
+Data_Ingestion_VDB/data/
 Data_Ingestion_VDB/extracted_content/
 Data_Ingestion_VDB/test_dataset/
 Data_Ingestion_VDB/full_dataset/
 Data_Ingestion_VDB/tests/
+Data_Ingestion_VDB/docling/
+

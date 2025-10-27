@@ -12,6 +12,9 @@ from pathlib import Path
 from typing import List, Dict, Any
 from abc import ABC, abstractmethod
 import json
+from PIL import Image
+import io
+
 
 
 class BaseParser(ABC):
@@ -101,29 +104,31 @@ class BaseParser(ABC):
         metadata.update(kwargs)
         return metadata
     
-    def save_image(self, image_data: bytes, pdf_name: str, 
-                   page_num: int, img_index: int, ext: str = 'png') -> Path:
-        """
-        Save an extracted image to disk.
+    def save_image(self, image_data, pdf_name: str, 
+                page_num: int, img_index: int, ext: str = 'png') -> Path:
+        """Save both PIL Images and raw bytes"""
         
-        Args:
-            image_data: Raw image bytes
-            pdf_name: PDF name for filename
-            page_num: Page number
-            img_index: Image index on that page
-            ext: File extension (default: png)
-            
-        Returns:
-            Path to saved image file
-        """
         filename = f"{pdf_name}_p{page_num}_img_{img_index}.{ext}"
         filepath = self.images_dir / filename
         
+        # Check type and convert if needed
+        if isinstance(image_data, Image.Image):
+            # Convert PIL Image to bytes
+            buffer = io.BytesIO()
+            image_data.save(buffer, format='PNG')
+            image_bytes = buffer.getvalue()
+        elif isinstance(image_data, bytes):
+            # Already bytes
+            image_bytes = image_data
+        else:
+            raise TypeError(f"Cannot handle image type: {type(image_data)}")
+        
+        # Write to disk
         with open(filepath, 'wb') as f:
-            f.write(image_data)
+            f.write(image_bytes)
         
         return filepath
-    
+
     def save_table_csv(self, table_data: str, pdf_name: str, 
                        page_num: int, table_index: int) -> Path:
         """

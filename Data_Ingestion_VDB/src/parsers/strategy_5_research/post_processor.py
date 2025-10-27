@@ -1,13 +1,5 @@
 """
-1. Loads cleaning rules from cleaning_rules.yaml
-2. Removes noise patterns (authors, journal headers, keywords)
-3. Normalizes text (removes hyphens from line breaks)
-4. Creates semantic chunks with overlap
-
-HOW TO USE:
-    from post_processor import clean_and_chunk
-    chunks = clean_and_chunk(raw_text, pdf_name, page_num)
-===============================================================================
+Strategy 5 - post_processor.py
 """
 
 import re
