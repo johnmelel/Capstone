@@ -85,7 +85,7 @@ def test_gemini_api():
         print(f"  Embedding dimension: {len(result['embedding'])}")
         
         # Test token counting
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         token_result = model.count_tokens('This is a test sentence')
         print("✓ Token counting working")
         print(f"  Token count: {token_result.total_tokens}")
