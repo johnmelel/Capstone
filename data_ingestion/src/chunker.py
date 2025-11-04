@@ -14,16 +14,16 @@ logger = logging.getLogger(__name__)
 
 
 class TextChunker:
-    """Class to split text into chunks for embedding with token limit awareness"""
+    """Class to split text into chunks for embedding with token-based limits"""
     
     def __init__(self, chunk_size: int = None, chunk_overlap: int = None, max_tokens: int = None):
         """
-        Initialize text chunker
+        Initialize text chunker with token-based limits
         
         Args:
-            chunk_size: Maximum size of each chunk in characters
-            chunk_overlap: Number of characters to overlap between chunks
-            max_tokens: Maximum number of tokens per chunk (for Gemini: 2048)
+            chunk_size: Target size of each chunk in TOKENS (not characters)
+            chunk_overlap: Number of TOKENS to overlap between chunks
+            max_tokens: Hard maximum number of tokens per chunk (for Gemini: 2048)
         """
         self.chunk_size = chunk_size or Config.CHUNK_SIZE
         self.chunk_overlap = chunk_overlap or Config.CHUNK_OVERLAP
@@ -32,11 +32,14 @@ class TextChunker:
         if self.chunk_overlap >= self.chunk_size:
             raise ValueError("chunk_overlap must be less than chunk_size")
         
+        if self.chunk_size > self.max_tokens:
+            raise ValueError(f"chunk_size ({self.chunk_size}) cannot exceed max_tokens ({self.max_tokens})")
+        
         # Configure Gemini for token counting
         try:
             genai.configure(api_key=Config.GEMINI_API_KEY)
             self.model = genai.GenerativeModel('gemini-pro')
-            logger.info("Using Google Gemini API for token counting")
+            logger.info("Using Google Gemini API for token-based chunking")
         except Exception as e:
             logger.warning(f"Could not initialize Gemini for token counting: {e}. Using estimation.")
             self.model = None
@@ -61,25 +64,84 @@ class TextChunker:
         # Rough estimation: 1 token ≈ 4 characters for English text
         return len(text) // 4
     
-    def _validate_chunk_tokens(self, chunk: str) -> bool:
+    def _find_chunk_end_by_tokens(self, text: str, start: int, target_tokens: int) -> tuple[int, int]:
         """
-        Check if chunk is within token limit
+        Find the end position in text that fits within target token count
         
         Args:
-            chunk: Text chunk to validate
+            text: Full text to chunk
+            start: Starting position in text
+            target_tokens: Target number of tokens for this chunk
             
         Returns:
-            True if within limit, False otherwise
+            Tuple of (end_position, actual_token_count)
         """
+        # Estimate initial character length (average 4 chars per token)
+        estimated_chars = target_tokens * 4
+        end = min(start + estimated_chars, len(text))
+        
+        # Extract initial chunk
+        chunk = text[start:end]
         token_count = self._count_tokens(chunk)
-        if token_count > self.max_tokens:
-            logger.warning(f"Chunk exceeds token limit: {token_count} tokens (max: {self.max_tokens})")
-            return False
-        return True
+        
+        # Binary search approach for efficiency
+        if token_count > target_tokens:
+            # Chunk too big, reduce it
+            while token_count > target_tokens and end > start + 100:
+                # Reduce by estimated overage
+                overage_ratio = token_count / target_tokens
+                end = start + int((end - start) / overage_ratio)
+                chunk = text[start:end]
+                token_count = self._count_tokens(chunk)
+        else:
+            # Chunk might be too small, try to expand it
+            while token_count < target_tokens and end < len(text):
+                # Estimate how much more we can add
+                remaining_tokens = target_tokens - token_count
+                additional_chars = remaining_tokens * 4
+                new_end = min(end + additional_chars, len(text))
+                
+                new_chunk = text[start:new_end]
+                new_token_count = self._count_tokens(new_chunk)
+                
+                if new_token_count <= target_tokens:
+                    end = new_end
+                    chunk = new_chunk
+                    token_count = new_token_count
+                    
+                    # If we didn't grow much, stop trying
+                    if new_end == end or new_end >= len(text):
+                        break
+                else:
+                    # Would exceed limit, stop here
+                    break
+        
+        # Try to end at a natural boundary (sentence or word)
+        if end < len(text):
+            # Look for sentence boundary in the last 20% of chunk
+            search_start = max(start, end - len(chunk) // 5)
+            sentence_end = text.rfind('.', search_start, end)
+            if sentence_end != -1 and sentence_end > start:
+                test_chunk = text[start:sentence_end + 1]
+                test_tokens = self._count_tokens(test_chunk)
+                if test_tokens <= target_tokens:
+                    end = sentence_end + 1
+                    token_count = test_tokens
+            else:
+                # Look for word boundary
+                space = text.rfind(' ', search_start, end)
+                if space != -1 and space > start:
+                    test_chunk = text[start:space]
+                    test_tokens = self._count_tokens(test_chunk)
+                    if test_tokens <= target_tokens:
+                        end = space
+                        token_count = test_tokens
+        
+        return end, token_count
     
     def chunk_text(self, text: str) -> List[str]:
         """
-        Split text into overlapping chunks with token limit awareness
+        Split text into overlapping chunks using token-based limits
         
         Args:
             text: Text to chunk
@@ -93,50 +155,57 @@ class TextChunker:
         chunks = []
         start = 0
         text_length = len(text)
+        total_tokens_processed = 0
         
         while start < text_length:
-            # Calculate end position based on character chunk_size
-            end = start + self.chunk_size
+            # Find chunk end based on target token count
+            end, token_count = self._find_chunk_end_by_tokens(
+                text, start, self.chunk_size
+            )
             
-            # If this is not the last chunk and we're in the middle of a word,
-            # try to find a better breaking point
-            if end < text_length:
-                # Look for sentence ending
-                sentence_end = text.rfind('.', start, end)
-                if sentence_end != -1 and sentence_end > start + self.chunk_size // 2:
-                    end = sentence_end + 1
-                else:
-                    # Look for word boundary
-                    space = text.rfind(' ', start, end)
-                    if space != -1 and space > start + self.chunk_size // 2:
-                        end = space + 1
-            
-            # Extract chunk
+            # Extract and clean chunk
             chunk = text[start:end].strip()
             
             if chunk:
-                # Validate token count and adjust if necessary
-                while not self._validate_chunk_tokens(chunk) and len(chunk) > 100:
-                    # Reduce chunk size by 10% and try again
-                    reduction = int(len(chunk) * 0.1)
-                    chunk = chunk[:-reduction].strip()
-                    # Try to end at a sentence or word boundary
-                    last_period = chunk.rfind('.')
-                    last_space = chunk.rfind(' ')
-                    if last_period > len(chunk) * 0.8:
-                        chunk = chunk[:last_period + 1].strip()
-                    elif last_space > len(chunk) * 0.8:
-                        chunk = chunk[:last_space].strip()
+                chunks.append(chunk)
+                total_tokens_processed += token_count
+                logger.debug(f"Chunk {len(chunks)}: {token_count} tokens, {len(chunk)} chars")
                 
-                if chunk:
-                    chunks.append(chunk)
-                    # Update end position based on actual chunk used
-                    end = start + len(chunk)
+                # Calculate overlap in characters for next chunk
+                # We need to go back by approximately chunk_overlap tokens
+                if end < text_length:
+                    # Estimate character position for overlap
+                    overlap_chars = self.chunk_overlap * 4  # Rough estimate
+                    
+                    # Find actual position that gives us the desired token overlap
+                    overlap_start = max(start, end - overlap_chars)
+                    test_chunk = text[overlap_start:end]
+                    overlap_tokens = self._count_tokens(test_chunk)
+                    
+                    # Adjust if needed
+                    while overlap_tokens < self.chunk_overlap and overlap_start > start:
+                        overlap_start = max(start, overlap_start - 100)
+                        test_chunk = text[overlap_start:end]
+                        overlap_tokens = self._count_tokens(test_chunk)
+                    
+                    while overlap_tokens > self.chunk_overlap and overlap_start < end - 100:
+                        overlap_start = min(end - 100, overlap_start + 100)
+                        test_chunk = text[overlap_start:end]
+                        overlap_tokens = self._count_tokens(test_chunk)
+                    
+                    start = overlap_start
+                else:
+                    start = end
+            else:
+                # Empty chunk, move forward to avoid infinite loop
+                start = end
             
-            # Move start position with overlap
-            start = end - self.chunk_overlap
+            # Safety check: ensure forward progress
+            if start >= text_length or (len(chunks) > 0 and start <= end - text_length // 1000):
+                break
         
-        logger.info(f"Split text into {len(chunks)} chunks (max {self.max_tokens} tokens each)")
+        avg_tokens = total_tokens_processed / len(chunks) if chunks else 0
+        logger.info(f"Split text into {len(chunks)} chunks (avg {avg_tokens:.0f} tokens, max {self.max_tokens})")
         return chunks
     
     def chunk_with_metadata(
@@ -203,12 +272,12 @@ def chunk_text_simple(
     chunk_overlap: int = None
 ) -> List[str]:
     """
-    Convenience function to chunk text
+    Convenience function to chunk text using token-based limits
     
     Args:
         text: Text to chunk
-        chunk_size: Maximum size of each chunk
-        chunk_overlap: Overlap between chunks
+        chunk_size: Target number of tokens per chunk (default: 1800)
+        chunk_overlap: Number of tokens to overlap between chunks (default: 100)
         
     Returns:
         List of text chunks
