@@ -11,6 +11,7 @@ from .utils import clean_text
 
 logger = logging.getLogger(__name__)
     
+class PDFExtractor:
     def extract_text(self, pdf_source: Union[Path, Any]) -> Optional[str]:
         """
         Extract text from PDF using PyMuPDF
