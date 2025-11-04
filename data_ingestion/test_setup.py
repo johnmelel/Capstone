@@ -188,7 +188,15 @@ def test_components():
         print(f"Testing chunker with input size: {len(test_text)} characters")
         print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars, Max tokens: {Config.MAX_TOKENS_PER_CHUNK}")
         start_time = time.time()
-        chunks = chunker.chunk_text(test_text)
+        print("Calling chunker.chunk_text()...")
+        try:
+            chunks = chunker.chunk_text(test_text)
+            print("chunker.chunk_text() returned!")
+        except Exception as e:
+            print(f"Exception during chunking: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
         elapsed = time.time() - start_time
         print(f"✓ Chunker working: Created {len(chunks)} chunks in {elapsed:.3f} seconds")
         if len(chunks) == 0:
@@ -198,6 +206,7 @@ def test_components():
             print(f"  Last chunk: '{chunks[-1][:50]}...' ({len(chunks[-1])} chars)")
             print("  Token counts for first 3 chunks:")
             for i, chunk in enumerate(chunks[:3]):
+                print(f"    Debug: Counting tokens for chunk {i+1}...")
                 try:
                     tokens = chunker._count_tokens(chunk)
                 except Exception as e:
