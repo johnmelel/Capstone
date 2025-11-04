@@ -13,6 +13,16 @@ from .utils import clean_text
 logger = logging.getLogger(__name__)
     
 class PDFExtractor:
+    def __init__(self, extract_images: bool = False):
+        """
+        Initialize PDF extractor
+        
+        Args:
+            extract_images: Whether to extract text from images using OCR (not currently implemented)
+        """
+        self.extract_images = extract_images
+        logger.info(f"PDFExtractor initialized (extract_images={extract_images})")
+    
     def extract_text(self, pdf_source: Union[Path, Any]) -> Optional[str]:
         """
         Extract text from PDF using PyMuPDF
