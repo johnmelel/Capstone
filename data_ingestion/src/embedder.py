@@ -5,7 +5,8 @@ from typing import List, Union
 import numpy as np
 import time
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from .config import Config
 
@@ -33,11 +34,11 @@ class TextEmbedder:
         
         logger.info(f"Initializing Gemini embedding model: {self.model_name}")
         
-        # Configure Gemini API
-        genai.configure(api_key=self.api_key)
+        # Initialize Genai client
+        self.client = genai.Client(api_key=self.api_key)
         
-        # text-embedding-005 produces 768-dimensional embeddings
-        self.embedding_dim = 768
+        # Use configured embedding dimension
+        self.embedding_dim = Config.EMBEDDING_DIMENSION
         logger.info(f"Model initialized. Embedding dimension: {self.embedding_dim}")
     
     def _count_tokens(self, text: str) -> int:
@@ -51,9 +52,11 @@ class TextEmbedder:
             Number of tokens
         """
         try:
-            # Use Google's count_tokens API
-            model = genai.GenerativeModel(Config.EMBEDDING_MODEL)
-            result = model.count_tokens(text)
+            # Use Google's count_tokens API with the client
+            result = self.client.models.count_tokens(
+                model=self.model_name,
+                contents=text
+            )
             return result.total_tokens
         except Exception as e:
             logger.warning(f"Could not count tokens via API: {e}. Using estimation.")
@@ -139,12 +142,17 @@ class TextEmbedder:
             embeddings = []
             for i, t in enumerate(processed_texts):
                 try:
-                    result = genai.embed_content(
-                        model=f"models/{self.model_name}",
-                        content=t,
-                        task_type="retrieval_document"
+                    result = self.client.models.embed_content(
+                        model=self.model_name,
+                        contents=t,
+                        config=types.EmbedContentConfig(
+                            task_type="RETRIEVAL_DOCUMENT",
+                            output_dimensionality=self.embedding_dim
+                        )
                     )
-                    embeddings.append(result['embedding'])
+                    # Extract embedding values from the response
+                    embedding_obj = result.embeddings[0]
+                    embeddings.append(embedding_obj.values)
                     
                     # Rate limiting - be nice to the API
                     if i < len(processed_texts) - 1:

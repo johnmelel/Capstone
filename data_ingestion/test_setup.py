@@ -69,24 +69,31 @@ def test_gemini_api():
     print("="*60)
     
     try:
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
         
-        # Configure API using Config
-        genai.configure(api_key=Config.GEMINI_API_KEY)
+        # Initialize client
+        client = genai.Client(api_key=Config.GEMINI_API_KEY)
         print("✓ Gemini API configured")
         
-        # Test embedding using configured model
-        result = genai.embed_content(
-            model=f'models/{Config.EMBEDDING_MODEL}',
-            content='This is a test sentence for embedding.',
-            task_type='retrieval_document'
+        # Test embedding using configured model with output dimensionality
+        result = client.models.embed_content(
+            model=Config.EMBEDDING_MODEL,
+            contents='This is a test sentence for embedding.',
+            config=types.EmbedContentConfig(
+                task_type='RETRIEVAL_DOCUMENT',
+                output_dimensionality=Config.EMBEDDING_DIMENSION
+            )
         )
+        embedding_obj = result.embeddings[0]
         print("✓ Embedding generated successfully")
-        print(f"  Embedding dimension: {len(result['embedding'])}")
+        print(f"  Embedding dimension: {len(embedding_obj.values)}")
         
         # Test token counting
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        token_result = model.count_tokens('This is a test sentence')
+        token_result = client.models.count_tokens(
+            model='gemini-2.5-flash',
+            contents='This is a test sentence'
+        )
         print("✓ Token counting working")
         print(f"  Token count: {token_result.total_tokens}")
         

@@ -24,7 +24,8 @@ class Config:
     
     # Gemini Embedding Configuration
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))
     MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
     
     # Processing Configuration (TOKEN-BASED, not characters)
