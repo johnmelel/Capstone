@@ -204,14 +204,14 @@ def test_components():
         else:
             print(f"  First chunk: '{chunks[0][:50]}...' ({len(chunks[0])} chars)")
             print(f"  Last chunk: '{chunks[-1][:50]}...' ({len(chunks[-1])} chars)")
-            print("  Token counts for first 3 chunks:")
-            for i, chunk in enumerate(chunks[:3]):
-                print(f"    Debug: Counting tokens for chunk {i+1}...")
-                try:
-                    tokens = chunker._count_tokens(chunk)
-                except Exception as e:
-                    tokens = f"Error: {e}"
-                print(f"    Chunk {i+1}: {tokens} tokens, {len(chunk)} chars")
+            if chunks:
+                print("  Token counts for first 3 chunks (estimated):")
+                for i, chunk in enumerate(chunks[:3]):
+                    try:
+                        tokens = chunker._estimate_tokens(chunk)
+                    except Exception as e:
+                        tokens = f"Error: {e}"
+                    print(f"    Chunk {i+1}: ~{tokens} tokens, {len(chunk)} chars")
         if elapsed > 5:
             print(f"⚠️ Chunking took longer than expected: {elapsed:.2f} seconds")
 
