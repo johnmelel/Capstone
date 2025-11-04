@@ -157,6 +157,13 @@ class MilvusVectorStore:
                 chunk_indices,
                 total_chunks_list,
             ]
+
+            # Debug: Print types and sample values for each field
+            field_names = ["id", "embedding", "text", "file_name", "file_hash", "chunk_index", "total_chunks"]
+            for idx, field in enumerate(data):
+                types_set = set(type(x) for x in field)
+                logger.info(f"Field '{field_names[idx]}' types: {types_set}")
+                logger.info(f"Field '{field_names[idx]}' sample values: {field[:3]}")
             
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")

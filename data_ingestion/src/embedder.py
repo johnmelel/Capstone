@@ -6,6 +6,7 @@ import numpy as np
 import time
 
 import google.generativeai as genai
+from google.generativeai.types import EmbedContentConfig
 
 from .config import Config
 
@@ -138,15 +139,17 @@ class TextEmbedder:
                     t = self._truncate_text(t)
                 processed_texts.append(t)
             
-            # Generate embeddings using Gemini API with specified output dimension
+            # Generate embeddings using Gemini API with output_dimensionality config
             embeddings = []
             for i, t in enumerate(processed_texts):
                 try:
+                    # Use config parameter for output_dimensionality (correct API format)
+                    config = EmbedContentConfig(output_dimensionality=self.embedding_dim)
                     result = genai.embed_content(
                         model=f"models/{self.model_name}",
                         content=t,
                         task_type="retrieval_document",
-                        output_dimensionality=self.embedding_dim
+                        config=config
                     )
                     embeddings.append(result['embedding'])
                     
