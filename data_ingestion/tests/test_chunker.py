@@ -35,17 +35,16 @@ class TestTextChunker:
         assert chunks[0] == text
     
     def test_chunk_long_text(self):
-        """Test chunking long text"""
-        chunker = TextChunker(chunk_size=50, chunk_overlap=10)
-        text = "This is a long text. " * 10  # Repeat to make it long
+        """Test chunking long text with token-based chunking"""
+        text = "This is a long text. " * 50  # Make it long enough for multiple chunks
+        chunker = TextChunker(chunk_size=30, chunk_overlap=5)  # 30 tokens per chunk, 5 tokens overlap
         chunks = chunker.chunk_text(text)
-        
-        # Should create multiple chunks
+        # Should create multiple chunks if total tokens > chunk_size
         assert len(chunks) > 1
-        
-        # Each chunk should be roughly the chunk size
+        # Each chunk should be roughly the chunk size in tokens
         for chunk in chunks[:-1]:  # All but last
-            assert len(chunk) <= chunker.chunk_size + 50  # Some flexibility
+            token_count = chunker._count_tokens(chunk)
+            assert token_count <= chunker.chunk_size + 5  # Some flexibility
     
     def test_chunk_with_sentence_boundaries(self):
         """Test that chunker respects sentence boundaries"""
