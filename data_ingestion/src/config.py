@@ -27,9 +27,11 @@ class Config:
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-005")
     MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
     
-    # Processing Configuration
-    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1500"))
-    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))
+    # Processing Configuration (TOKEN-BASED, not characters)
+    # CHUNK_SIZE: Target tokens per chunk (default 1792 leaves 256 token buffer)
+    # CHUNK_OVERLAP: Tokens to overlap between chunks (default 64 tokens ≈ 16 words)
+    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1792"))
+    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "64"))
     BATCH_SIZE = int(os.getenv("BATCH_SIZE", "100"))
     
     # Local Storage (removed - no longer needed for stream processing)
