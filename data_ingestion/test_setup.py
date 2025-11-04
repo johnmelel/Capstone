@@ -182,20 +182,38 @@ def test_components():
         
         # Test chunker using Config values
         from src.chunker import TextChunker
+        import time
         chunker = TextChunker()
         test_text = "This is a test sentence. " * 100
+        print(f"Testing chunker with input size: {len(test_text)} characters")
+        print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars, Max tokens: {Config.MAX_TOKENS_PER_CHUNK}")
+        start_time = time.time()
         chunks = chunker.chunk_text(test_text)
-        print(f"✓ Chunker working: Created {len(chunks)} chunks")
-        print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars")
-        print(f"  Max tokens per chunk: {Config.MAX_TOKENS_PER_CHUNK}")
-        
+        elapsed = time.time() - start_time
+        print(f"✓ Chunker working: Created {len(chunks)} chunks in {elapsed:.3f} seconds")
+        if len(chunks) == 0:
+            print("❌ No chunks produced! Check input and config.")
+        else:
+            print(f"  First chunk: '{chunks[0][:50]}...' ({len(chunks[0])} chars)")
+            print(f"  Last chunk: '{chunks[-1][:50]}...' ({len(chunks[-1])} chars)")
+            print("  Token counts for first 3 chunks:")
+            for i, chunk in enumerate(chunks[:3]):
+                try:
+                    tokens = chunker._count_tokens(chunk)
+                except Exception as e:
+                    tokens = f"Error: {e}"
+                print(f"    Chunk {i+1}: {tokens} tokens, {len(chunk)} chars")
+        if elapsed > 5:
+            print(f"⚠️ Chunking took longer than expected: {elapsed:.2f} seconds")
+
         # Test embedder using Config
         from src.embedder import TextEmbedder
         embedder = TextEmbedder()
+        print("Testing embedder...")
         embeddings = embedder.embed_text(["Test sentence 1", "Test sentence 2"])
         print(f"✓ Embedder working: Generated embeddings with shape {embeddings.shape}")
         print(f"  Using model: {Config.EMBEDDING_MODEL}")
-        
+
         print("\n✓ All components are working!")
         return True
         
