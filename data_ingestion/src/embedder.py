@@ -52,7 +52,7 @@ class TextEmbedder:
         """
         try:
             # Use Google's count_tokens API
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel(Config.EMBEDDING_MODEL)
             result = model.count_tokens(text)
             return result.total_tokens
         except Exception as e:
