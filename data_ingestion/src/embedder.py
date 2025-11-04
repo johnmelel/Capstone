@@ -16,29 +16,28 @@ logger = logging.getLogger(__name__)
 class TextEmbedder:
     """Class to generate embeddings from text using Gemini API"""
     
-    def __init__(self, model_name: str = None, api_key: str = None):
+    def __init__(self, model_name: str = None, api_key: str = None, embedding_dimension: int = None):
         """
         Initialize text embedder with Gemini API
         
         Args:
             model_name: Name of the Gemini embedding model to use
             api_key: Gemini API key (optional, defaults to config)
+            embedding_dimension: Output dimension for embeddings (optional, defaults to config)
         """
         self.model_name = model_name or Config.EMBEDDING_MODEL
         self.api_key = api_key or Config.GEMINI_API_KEY
+        self.embedding_dim = embedding_dimension or Config.EMBEDDING_DIMENSION
         self.max_tokens = Config.MAX_TOKENS_PER_CHUNK
         
         if not self.api_key:
             raise ValueError("GEMINI_API_KEY is required for text embeddings")
         
         logger.info(f"Initializing Gemini embedding model: {self.model_name}")
+        logger.info(f"Embedding dimension: {self.embedding_dim}")
         
         # Configure Gemini API
         genai.configure(api_key=self.api_key)
-        
-        # text-embedding-005 produces 768-dimensional embeddings
-        self.embedding_dim = 768
-        logger.info(f"Model initialized. Embedding dimension: {self.embedding_dim}")
     
     def _count_tokens(self, text: str) -> int:
         """
@@ -139,14 +138,15 @@ class TextEmbedder:
                     t = self._truncate_text(t)
                 processed_texts.append(t)
             
-            # Generate embeddings using Gemini API
+            # Generate embeddings using Gemini API with specified output dimension
             embeddings = []
             for i, t in enumerate(processed_texts):
                 try:
                     result = genai.embed_content(
                         model=f"models/{self.model_name}",
                         content=t,
-                        task_type="retrieval_document"
+                        task_type="retrieval_document",
+                        output_dimensionality=self.embedding_dim
                     )
                     embeddings.append(result['embedding'])
                     
@@ -203,7 +203,8 @@ class TextEmbedder:
 
 def embed_texts(
     texts: Union[str, List[str]],
-    model_name: str = None
+    model_name: str = None,
+    embedding_dimension: int = None
 ) -> np.ndarray:
     """
     Convenience function to embed texts
@@ -211,10 +212,11 @@ def embed_texts(
     Args:
         texts: Text or list of texts to embed
         model_name: Name of the model to use
+        embedding_dimension: Output dimension for embeddings
         
     Returns:
         Numpy array of embeddings
     """
-    embedder = TextEmbedder(model_name=model_name)
+    embedder = TextEmbedder(model_name=model_name, embedding_dimension=embedding_dimension)
     return embedder.embed_text(texts)
 
