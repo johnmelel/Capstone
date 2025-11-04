@@ -3,8 +3,9 @@
 import logging
 from pathlib import Path
 from typing import Optional, Dict, Any, Union
+import io
 
-import fitz  # PyMuPDF
+import pdfplumber
 
 from .utils import clean_text
 
@@ -38,7 +39,7 @@ class PDFExtractor:
                     return None
                 
                 source_name = pdf_source.name
-                doc = fitz.open(pdf_source)
+                pdf = pdfplumber.open(pdf_source)
                 
             else:
                 # GCS blob (assume it has download_as_bytes method)
@@ -53,10 +54,10 @@ class PDFExtractor:
                 
                 # Open blob as stream with timeout consideration
                 blob_data = pdf_source.download_as_bytes()
-                doc = fitz.open(stream=blob_data, filetype="pdf")
+                pdf = pdfplumber.open(io.BytesIO(blob_data))
             
             text_parts = []
-            num_pages = len(doc)
+            num_pages = len(pdf.pages)
             logger.debug(f"Processing {num_pages} pages")
             
             # Limit processing to reasonable number of pages to prevent timeouts
@@ -68,15 +69,15 @@ class PDFExtractor:
                     logger.warning(f"Timeout reached processing {source_name}, stopping at page {page_num}")
                     break
                     
-                page = doc[page_num]
+                page = pdf.pages[page_num]
                 
                 # Extract text from page
-                text = page.get_text()
+                text = page.extract_text()
                 
-                if text.strip():
+                if text and text.strip():
                     text_parts.append(text)
             
-            doc.close()
+            pdf.close()
             
             # Combine all text
             full_text = "\n".join(text_parts)
@@ -115,7 +116,7 @@ class PDFExtractor:
                     return None
                 
                 source_name = pdf_source.name
-                doc = fitz.open(pdf_source)
+                pdf = pdfplumber.open(pdf_source)
                 
             else:
                 # GCS blob
@@ -124,32 +125,32 @@ class PDFExtractor:
                 
                 # Open blob as stream
                 blob_data = pdf_source.download_as_bytes()
-                doc = fitz.open(stream=blob_data, filetype="pdf")
+                pdf = pdfplumber.open(io.BytesIO(blob_data))
             
             # Extract text
             text_parts = []
-            for page in doc:
-                text = page.get_text()
-                if text.strip():
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text and text.strip():
                     text_parts.append(text)
             
             full_text = "\n".join(text_parts)
             cleaned_text = clean_text(full_text) if full_text else ""
             
-            # Extract metadata
+            # Extract metadata (pdfplumber's metadata is more limited)
             metadata = {
-                'title': doc.metadata.get('title', ''),
-                'author': doc.metadata.get('author', ''),
-                'subject': doc.metadata.get('subject', ''),
-                'creator': doc.metadata.get('creator', ''),
-                'producer': doc.metadata.get('producer', ''),
-                'creation_date': doc.metadata.get('creationDate', ''),
-                'modification_date': doc.metadata.get('modDate', ''),
-                'num_pages': len(doc),
+                'title': pdf.metadata.get('Title', '') if pdf.metadata else '',
+                'author': pdf.metadata.get('Author', '') if pdf.metadata else '',
+                'subject': pdf.metadata.get('Subject', '') if pdf.metadata else '',
+                'creator': pdf.metadata.get('Creator', '') if pdf.metadata else '',
+                'producer': pdf.metadata.get('Producer', '') if pdf.metadata else '',
+                'creation_date': pdf.metadata.get('CreationDate', '') if pdf.metadata else '',
+                'modification_date': pdf.metadata.get('ModDate', '') if pdf.metadata else '',
+                'num_pages': len(pdf.pages),
                 'file_name': source_name
             }
             
-            doc.close()
+            pdf.close()
             
             return {
                 'text': cleaned_text,
@@ -176,14 +177,14 @@ class PDFExtractor:
                 # Local file
                 if not pdf_source.exists():
                     return 0
-                doc = fitz.open(pdf_source)
+                pdf = pdfplumber.open(pdf_source)
             else:
                 # GCS blob
                 blob_data = pdf_source.download_as_bytes()
-                doc = fitz.open(stream=blob_data, filetype="pdf")
+                pdf = pdfplumber.open(io.BytesIO(blob_data))
             
-            page_count = len(doc)
-            doc.close()
+            page_count = len(pdf.pages)
+            pdf.close()
             return page_count
             
         except Exception as e:
