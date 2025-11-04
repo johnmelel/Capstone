@@ -5,8 +5,8 @@ google-auth==2.25.2
 # PDF Processing - Using pdfplumber (pure Python, no system dependencies)
 pdfplumber==0.10.3
 
-# Embeddings - Gemini API
-google-generativeai==0.3.2
+# Embeddings - Gemini API (New SDK)
+google-genai>=1.0.0
 
 # Vector Store
 pymilvus==2.3.4
