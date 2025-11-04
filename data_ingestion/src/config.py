@@ -22,7 +22,11 @@ class Config:
     MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
     
-    # Gemini Embedding Configuration
+    # Gemini Embedding Configuration (New SDK)
+    # The new google-genai SDK supports models like:
+    # - gemini-embedding-001 (768 dimensions)
+    # - text-embedding-004 (768 dimensions)
+    # - text-embedding-005 (768 dimensions)
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
     EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))  # Embedding model output dimension

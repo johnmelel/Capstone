@@ -1,5 +1,6 @@
 """
 Test script to verify all components are working before running the full pipeline
+Updated for the new google-genai SDK
 """
 
 import os
@@ -63,37 +64,49 @@ def test_env_variables():
 
 
 def test_gemini_api():
-    """Test Gemini API connection and embedding"""
+    """Test Gemini API connection and embedding with new SDK"""
     print("\n" + "="*60)
-    print("TEST 2: Gemini API Connection")
+    print("TEST 2: Gemini API Connection (New SDK)")
     print("="*60)
     
     try:
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
         
-        # Configure API using Config
-        genai.configure(api_key=Config.GEMINI_API_KEY)
-        print("✓ Gemini API configured")
+        # Create client using new SDK
+        client = genai.Client(api_key=Config.GEMINI_API_KEY)
+        print("✓ Gemini client created with new SDK")
         
-        # Test embedding using configured model
-        result = genai.embed_content(
-            model=f'models/{Config.EMBEDDING_MODEL}',
-            content='This is a test sentence for embedding.',
-            task_type='retrieval_document'
+        # Test embedding using new SDK
+        config = types.EmbedContentConfig(
+            task_type="RETRIEVAL_DOCUMENT",
+            output_dimensionality=768
+        )
+        
+        result = client.models.embed_content(
+            model=Config.EMBEDDING_MODEL,
+            contents='This is a test sentence for embedding.',
+            config=config
         )
         print("✓ Embedding generated successfully")
-        print(f"  Embedding dimension: {len(result['embedding'])}")
+        print(f"  Embedding dimension: {len(result.embeddings[0].values)}")
         
-        # Test token counting
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        token_result = model.count_tokens('This is a test sentence')
-        print("✓ Token counting working")
-        print(f"  Token count: {token_result.total_tokens}")
+        # Test token counting with tokenizer
+        try:
+            tokenizer = genai.LocalTokenizer(model_name='gemini-2.0-flash-exp')
+            token_result = tokenizer.compute_tokens('This is a test sentence')
+            print("✓ Token counting working")
+            print(f"  Token count: {token_result.token_count}")
+        except Exception as e:
+            print(f"⚠️  Token counting unavailable: {e}")
+            print("  (This is optional - estimation will be used)")
         
-        print("\n✓ Gemini API is working!")
+        print("\n✓ Gemini API (new SDK) is working!")
         
     except Exception as e:
         print(f"❌ Gemini API test failed: {e}")
+        import traceback
+        traceback.print_exc()
         pytest.fail(f"Gemini API test failed: {e}")
 
 
@@ -167,9 +180,9 @@ def test_milvus_connection():
 
 
 def test_components():
-    """Test individual pipeline components"""
+    """Test individual pipeline components with new SDK"""
     print("\n" + "="*60)
-    print("TEST 5: Pipeline Components")
+    print("TEST 5: Pipeline Components (New SDK)")
     print("="*60)
     
     try:
@@ -213,15 +226,16 @@ def test_components():
         if elapsed > 5:
             print(f"⚠️ Chunking took longer than expected: {elapsed:.2f} seconds")
 
-        # Test embedder using Config
+        # Test embedder using new SDK
         from src.embedder import TextEmbedder
         embedder = TextEmbedder()
-        print("Testing embedder...")
+        print(f"Testing embedder with new SDK (model: {Config.EMBEDDING_MODEL})...")
         embeddings = embedder.embed_text(["Test sentence 1", "Test sentence 2"])
         print(f"✓ Embedder working: Generated embeddings with shape {embeddings.shape}")
         print(f"  Using model: {Config.EMBEDDING_MODEL}")
+        print(f"  Embedding dimension: {embedder.get_embedding_dimension()}")
 
-        print("\n✓ All components are working!")
+        print("\n✓ All components are working with new SDK!")
         
     except Exception as e:
         print(f"❌ Component test failed: {e}")
@@ -263,13 +277,13 @@ def test_single_pdf():
         print(f"Testing with: {pdf_blobs[0].name}")
         print(f"  File size: {pdf_blobs[0].size / 1024:.2f} KB")
         
-        # Initialize pipeline (uses Config internally)
+        # Initialize pipeline (uses Config and new SDK internally)
         pipeline = IngestionPipeline()
         
         # Process single PDF
         pipeline.process_pdf_blob(pdf_blobs[0])
         
-        print("\n✓ Single PDF processed successfully!")
+        print("\n✓ Single PDF processed successfully with new SDK!")
         
     except Exception as e:
         print(f"❌ PDF processing test failed: {e}")
@@ -281,12 +295,14 @@ def test_single_pdf():
 def main():
     """Run all tests"""
     print("="*60)
-    print("DATA INGESTION PIPELINE - SETUP TEST")
+    print("DATA INGESTION PIPELINE - SETUP TEST (NEW SDK)")
+    print("="*60)
+    print("Now using google-genai SDK (new unified SDK)")
     print("="*60)
     
     tests = [
         ("Environment Variables", test_env_variables),
-        ("Gemini API", test_gemini_api),
+        ("Gemini API (New SDK)", test_gemini_api),
         ("Google Cloud Storage", test_gcs_connection),
         ("Milvus Database", test_milvus_connection),
         ("Pipeline Components", test_components),

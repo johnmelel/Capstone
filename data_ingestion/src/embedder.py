@@ -1,11 +1,12 @@
-"""Text embedding module using Google Gemini API"""
+"""Text embedding module using Google Gemini API (New SDK)"""
 
 import logging
 from typing import List, Union
 import numpy as np
 import time
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from .config import Config
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class TextEmbedder:
-    """Class to generate embeddings from text using Gemini API"""
+    """Class to generate embeddings from text using Gemini API (New SDK)"""
     
     def __init__(self, model_name: str = None, api_key: str = None, embedding_dimension: int = None):
         """
@@ -36,12 +37,19 @@ class TextEmbedder:
         logger.info(f"Initializing Gemini embedding model: {self.model_name}")
         logger.info(f"Embedding dimension: {self.embedding_dim}")
         
-        # Configure Gemini API
-        genai.configure(api_key=self.api_key)
+        # Initialize Gemini client with the new SDK
+        self.client = genai.Client(api_key=self.api_key)
+        
+        # Initialize tokenizer for token counting
+        try:
+            self.tokenizer = genai.LocalTokenizer(model_name='gemini-2.0-flash-exp')
+        except Exception as e:
+            logger.warning(f"Could not initialize tokenizer: {e}. Will use estimation.")
+            self.tokenizer = None
     
     def _count_tokens(self, text: str) -> int:
         """
-        Count tokens in text using Google's API
+        Count tokens in text using the tokenizer
         
         Args:
             text: Text to count tokens for
@@ -50,14 +58,14 @@ class TextEmbedder:
             Number of tokens
         """
         try:
-            # Use Google's count_tokens API
-            model = genai.GenerativeModel(Config.EMBEDDING_MODEL)
-            result = model.count_tokens(text)
-            return result.total_tokens
+            if self.tokenizer:
+                result = self.tokenizer.compute_tokens(text)
+                return result.token_count
         except Exception as e:
-            logger.warning(f"Could not count tokens via API: {e}. Using estimation.")
-            # Rough estimation: 1 token ≈ 4 characters for English text
-            return len(text) // 4
+            logger.warning(f"Could not count tokens via tokenizer: {e}. Using estimation.")
+        
+        # Rough estimation: 1 token ≈ 4 characters for English text
+        return len(text) // 4
     
     def _validate_text_length(self, text: str) -> bool:
         """
@@ -115,7 +123,7 @@ class TextEmbedder:
     
     def embed_text(self, text: Union[str, List[str]]) -> np.ndarray:
         """
-        Generate embeddings for text using Gemini API
+        Generate embeddings for text using Gemini API (New SDK)
         
         Args:
             text: Single text string or list of text strings
@@ -138,17 +146,25 @@ class TextEmbedder:
                     t = self._truncate_text(t)
                 processed_texts.append(t)
             
-            # Generate embeddings using Gemini API with specified output dimension
+            # Generate embeddings using Gemini API with new SDK
             embeddings = []
             for i, t in enumerate(processed_texts):
                 try:
-                    result = genai.embed_content(
-                        model=f"models/{self.model_name}",
-                        content=t,
-                        task_type="retrieval_document",
+                    # Use the new SDK's embed_content method
+                    config = types.EmbedContentConfig(
+                        task_type="RETRIEVAL_DOCUMENT",
                         output_dimensionality=self.embedding_dim
                     )
-                    embeddings.append(result['embedding'])
+                    
+                    result = self.client.models.embed_content(
+                        model=self.model_name,
+                        contents=t,
+                        config=config
+                    )
+                    
+                    # Extract embedding values from the response
+                    embedding_values = result.embeddings[0].values
+                    embeddings.append(embedding_values)
                     
                     # Rate limiting - be nice to the API
                     if i < len(processed_texts) - 1:
@@ -219,4 +235,3 @@ def embed_texts(
     """
     embedder = TextEmbedder(model_name=model_name, embedding_dimension=embedding_dimension)
     return embedder.embed_text(texts)
-

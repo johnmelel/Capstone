@@ -1,43 +1,56 @@
-"""Tests for text embedder"""
+"""Tests for text embedder using the new google-genai SDK"""
 
 import pytest
 import numpy as np
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, MagicMock
 from src.embedder import TextEmbedder, embed_texts
 
 
 @pytest.fixture
-def mock_gemini_api():
-    """Mock Gemini API calls"""
-    with patch('src.embedder.genai') as mock_genai:
-        # Mock configure
-        mock_genai.configure = Mock()
+def mock_genai_client():
+    """Mock Gemini API client for the new SDK"""
+    with patch('src.embedder.genai.Client') as mock_client_class:
+        # Mock client instance
+        mock_client = MagicMock()
         
-        # Mock embed_content
-        mock_genai.embed_content.return_value = {'embedding': list(np.random.rand(768))}
+        # Mock embed_content response
+        mock_embedding_response = Mock()
+        mock_embedding = Mock()
+        mock_embedding.values = list(np.random.rand(768))
+        mock_embedding_response.embeddings = [mock_embedding]
         
-        # Mock GenerativeModel and count_tokens
-        mock_model_instance = Mock()
+        mock_client.models.embed_content.return_value = mock_embedding_response
+        
+        mock_client_class.return_value = mock_client
+        
+        yield mock_client_class
+
+
+@pytest.fixture
+def mock_tokenizer():
+    """Mock tokenizer for the new SDK"""
+    with patch('src.embedder.genai.LocalTokenizer') as mock_tokenizer_class:
+        mock_tokenizer_instance = Mock()
         mock_token_result = Mock()
-        mock_token_result.total_tokens = 10
-        mock_model_instance.count_tokens.return_value = mock_token_result
-        mock_genai.GenerativeModel.return_value = mock_model_instance
+        mock_token_result.token_count = 10
+        mock_tokenizer_instance.compute_tokens.return_value = mock_token_result
+        mock_tokenizer_class.return_value = mock_tokenizer_instance
         
-        yield mock_genai
+        yield mock_tokenizer_class
 
 
 class TestTextEmbedder:
-    """Test TextEmbedder class"""
+    """Test TextEmbedder class with new SDK"""
     
-    def test_initialization(self, mock_gemini_api):
-        """Test embedder initialization"""
+    def test_initialization(self, mock_genai_client, mock_tokenizer):
+        """Test embedder initialization with new SDK"""
         embedder = TextEmbedder(model_name="text-embedding-004", api_key="test-key")
         
         assert embedder.model_name == "text-embedding-004"
         assert embedder.embedding_dim == 768
-        mock_gemini_api.configure.assert_called_with(api_key="test-key")
+        mock_genai_client.assert_called_once_with(api_key="test-key")
     
-    def test_embed_single_text(self, mock_gemini_api):
+    def test_embed_single_text(self, mock_genai_client, mock_tokenizer):
         """Test embedding single text"""
         embedder = TextEmbedder()
         
@@ -48,7 +61,7 @@ class TestTextEmbedder:
         assert embedding.shape[0] == 1
         assert embedding.shape[1] == 768
     
-    def test_embed_multiple_texts(self, mock_gemini_api):
+    def test_embed_multiple_texts(self, mock_genai_client, mock_tokenizer):
         """Test embedding multiple texts"""
         embedder = TextEmbedder()
         
@@ -58,9 +71,11 @@ class TestTextEmbedder:
         assert isinstance(embeddings, np.ndarray)
         assert embeddings.shape[0] == 3
         assert embeddings.shape[1] == 768
-        assert mock_gemini_api.embed_content.call_count == 3
+        
+        # With new SDK, we call embed_content for each text
+        assert embedder.client.models.embed_content.call_count == 3
     
-    def test_embed_batch(self, mock_gemini_api):
+    def test_embed_batch(self, mock_genai_client, mock_tokenizer):
         """Test batch embedding"""
         embedder = TextEmbedder()
         
@@ -71,16 +86,16 @@ class TestTextEmbedder:
         
         assert len(embeddings) == 25
         # Should have called embed_content 25 times
-        assert mock_gemini_api.embed_content.call_count == 25
+        assert embedder.client.models.embed_content.call_count == 25
     
-    def test_get_embedding_dimension(self, mock_gemini_api):
+    def test_get_embedding_dimension(self, mock_genai_client, mock_tokenizer):
         """Test getting embedding dimension"""
         embedder = TextEmbedder()
         
         dim = embedder.get_embedding_dimension()
         assert dim == 768
     
-    def test_convenience_function(self, mock_gemini_api):
+    def test_convenience_function(self, mock_genai_client, mock_tokenizer):
         """Test convenience function"""
         texts = ["Text 1", "Text 2"]
         embeddings = embed_texts(texts, model_name="test-model")
@@ -88,10 +103,31 @@ class TestTextEmbedder:
         assert isinstance(embeddings, np.ndarray)
         assert embeddings.shape == (2, 768)
     
-    def test_embed_empty_list(self, mock_gemini_api):
+    def test_embed_empty_list(self, mock_genai_client, mock_tokenizer):
         """Test embedding empty list"""
         embedder = TextEmbedder()
         
         embeddings = embedder.embed_text([])
         assert isinstance(embeddings, np.ndarray)
         assert embeddings.shape == (0, 768)
+    
+    def test_token_counting(self, mock_genai_client, mock_tokenizer):
+        """Test token counting functionality"""
+        embedder = TextEmbedder()
+        
+        text = "This is a test sentence."
+        token_count = embedder._count_tokens(text)
+        
+        assert token_count == 10  # From our mock
+        mock_tokenizer.return_value.compute_tokens.assert_called_once_with(text)
+    
+    def test_text_truncation(self, mock_genai_client, mock_tokenizer):
+        """Test text truncation when exceeding token limit"""
+        embedder = TextEmbedder()
+        embedder.max_tokens = 5  # Set a low limit for testing
+        
+        long_text = "This is a very long text that exceeds the token limit."
+        truncated = embedder._truncate_text(long_text)
+        
+        assert len(truncated) < len(long_text)
+        assert embedder._count_tokens(truncated) <= embedder.max_tokens
