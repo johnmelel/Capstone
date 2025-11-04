@@ -4,6 +4,7 @@ Test script to verify all components are working before running the full pipelin
 
 import os
 import sys
+import pytest
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -48,7 +49,7 @@ def test_env_variables():
     
     if missing:
         print(f"\n❌ Missing variables: {', '.join(missing)}")
-        return False
+        pytest.fail(f"Missing variables: {', '.join(missing)}")
     
     # Validate configuration using Config.validate()
     try:
@@ -56,10 +57,9 @@ def test_env_variables():
         print("\n✓ Configuration validation passed!")
     except Exception as e:
         print(f"\n❌ Configuration validation failed: {e}")
-        return False
+        pytest.fail(f"Configuration validation failed: {e}")
     
     print("✓ All environment variables are set!")
-    return True
 
 
 def test_gemini_api():
@@ -91,11 +91,10 @@ def test_gemini_api():
         print(f"  Token count: {token_result.total_tokens}")
         
         print("\n✓ Gemini API is working!")
-        return True
         
     except Exception as e:
         print(f"❌ Gemini API test failed: {e}")
-        return False
+        pytest.fail(f"Gemini API test failed: {e}")
 
 
 def test_gcs_connection():
@@ -130,11 +129,10 @@ def test_gcs_connection():
             print(f"  Example: {pdf_blobs[0].name}")
         
         print("\n✓ Google Cloud Storage is working!")
-        return True
         
     except Exception as e:
         print(f"❌ GCS test failed: {e}")
-        return False
+        pytest.fail(f"GCS test failed: {e}")
 
 
 def test_milvus_connection():
@@ -162,11 +160,10 @@ def test_milvus_connection():
         connections.disconnect("default")
         
         print("\n✓ Milvus is working!")
-        return True
         
     except Exception as e:
         print(f"❌ Milvus test failed: {e}")
-        return False
+        pytest.fail(f"Milvus test failed: {e}")
 
 
 def test_components():
@@ -201,6 +198,7 @@ def test_components():
         print(f"✓ Chunker working: Created {len(chunks)} chunks in {elapsed:.3f} seconds")
         if len(chunks) == 0:
             print("❌ No chunks produced! Check input and config.")
+            pytest.fail("No chunks produced! Check input and config.")
         else:
             print(f"  First chunk: '{chunks[0][:50]}...' ({len(chunks[0])} chars)")
             print(f"  Last chunk: '{chunks[-1][:50]}...' ({len(chunks[-1])} chars)")
@@ -224,13 +222,12 @@ def test_components():
         print(f"  Using model: {Config.EMBEDDING_MODEL}")
 
         print("\n✓ All components are working!")
-        return True
         
     except Exception as e:
         print(f"❌ Component test failed: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        pytest.fail(f"Component test failed: {e}")
 
 
 def test_single_pdf():
@@ -242,7 +239,7 @@ def test_single_pdf():
     response = input("Do you want to test processing one PDF? (y/n): ").lower()
     if response != 'y':
         print("Skipped")
-        return True
+        pytest.skip("User skipped PDF processing test")
     
     try:
         from src.ingest import IngestionPipeline
@@ -261,7 +258,7 @@ def test_single_pdf():
             print("❌ No PDF files found in bucket")
             print(f"  Bucket: {Config.GCS_BUCKET_NAME}")
             print(f"  Prefix: {Config.GCS_BUCKET_PREFIX or '(root)'}")
-            return False
+            pytest.fail(f"No PDF files found in bucket {Config.GCS_BUCKET_NAME} with prefix {Config.GCS_BUCKET_PREFIX}")
         
         print(f"Testing with: {pdf_blobs[0].name}")
         print(f"  File size: {pdf_blobs[0].size / 1024:.2f} KB")
@@ -273,13 +270,12 @@ def test_single_pdf():
         pipeline.process_pdf_blob(pdf_blobs[0])
         
         print("\n✓ Single PDF processed successfully!")
-        return True
         
     except Exception as e:
         print(f"❌ PDF processing test failed: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        pytest.fail(f"PDF processing test failed: {e}")
 
 
 def main():
