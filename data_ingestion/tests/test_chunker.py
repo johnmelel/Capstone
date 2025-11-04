@@ -43,7 +43,7 @@ class TestTextChunker:
         assert len(chunks) > 1
         # Each chunk should be roughly the chunk size in tokens
         for chunk in chunks[:-1]:  # All but last
-            token_count = chunker._count_tokens(chunk)
+            token_count = chunker._estimate_tokens(chunk)
             assert token_count <= chunker.chunk_size + 5  # Some flexibility
     
     def test_chunk_with_sentence_boundaries(self):
