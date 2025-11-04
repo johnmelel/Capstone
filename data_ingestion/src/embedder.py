@@ -128,6 +128,10 @@ class TextEmbedder:
             if isinstance(text, str):
                 text = [text]
             
+            # Handle empty list
+            if len(text) == 0:
+                return np.empty((0, self.embedding_dim), dtype=np.float32)
+            
             # Validate and truncate texts if necessary
             processed_texts = []
             for t in text:
