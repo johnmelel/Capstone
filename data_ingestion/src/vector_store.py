@@ -148,6 +148,9 @@ class MilvusVectorStore:
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
             
+            # Check if primary key is auto_id
+            is_auto_id = self.collection.schema.auto_id
+
             # Prepare data
             data = [
                 embeddings_np,
@@ -157,6 +160,11 @@ class MilvusVectorStore:
                 chunk_indices,
                 total_chunks_list,
             ]
+
+            if not is_auto_id:
+                # Generate primary keys if auto_id is false
+                primary_keys = [uuid.uuid4().int >> 64 for _ in range(len(embeddings))]
+                data.insert(0, primary_keys)
             
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")
