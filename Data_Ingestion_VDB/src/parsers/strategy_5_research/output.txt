@@ -1,0 +1,1124 @@
+[Warning] Docling not installed.
+[Info] Install with: pip install docling
+
+Available PDFs:
+  [1] s00261-019-02302-x.pdf
+  [2] 1-s2.0-S0720048X23000712-main.pdf
+  [3] prostatemri2.pdf
+  [4] westphalen-et-al-2020-variability-of-the-positive-predictive-value-of-pi-rads-for-prostate-mri-across-26-centers.pdf
+
+Select PDF: 
+Process all pages? (y/n): 
+View chunked or full markdown? (c/f): 
+Loading s00261-019-02302-x.pdf...
+Extracted 42,934 characters (raw)
+
+Cleaning and chunking with post_processor...
+
+✓ Created 68 clean chunks
+
+✓ Removed -4,744 characters of noise (-11.0%)
+
+
+================================================================================
+CHUNKS (CLEANED) - Total: 68
+================================================================================
+
+--- CHUNK 1 ---
+
+	## SPECIAL SECTION: MALE PELVIS
+	
+	## Prostate MR: pitfalls and benign lesions
+	
+	Aritrick Chatterjee 1 · Stephen Thomas 1 · Aytekin Oto 1
+	
+	Published online: 8 November 2019 © Springer Science+Business MediaC, part of Springer Nature 2019
+	
+	## Abstract
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_0
+	  chars: 247, words: 39
+
+--- CHUNK 2 ---
+
+	· Stephen Thomas 1 · Aytekin Oto 1
+	
+	Published online: 8 November 2019 © Springer Science+Business MediaC, part of Springer Nature 2019
+	
+	## Abstract
+	
+	
+	
+	Multiparametric MRI (mpMRI) of the prostate has evolved to be an integral component for the diagnosis, risk stratification, staging, and targeting of prostate cancer. However, anatomic and histologic mimics of prostate cancer on mpMRI exist. Anatomic feature that mimic prostate cancer on mpMRI include anterior fibromuscular stroma, normal central zone, periprostatic venous plexus, and thickened surgical capsule (transition zone pseudocapsule). Benign conditions such as post-biopsy hemorrhage, prostatitis or inflammation, focal prostate atrophy, benign prostatic hyperplasia nodules, and prostatic calcifications can also mimic prostate cancer on mpMRI.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_1
+	  chars: 809, words: 110
+
+--- CHUNK 3 ---
+
+	or inflammation, focal prostate atrophy, benign prostatic hyperplasia nodules, and prostatic calcifications can also mimic prostate cancer on mpMRI.
+	
+	
+	
+	Technical challenges and other pitfalls such as image distortion, motion artifacts, and endorectal coil placements can also limit the efficacy of mpMRI. Knowledge of prostate anatomy, location of the lesion and its imaging features on different sequences, and being familiar with the common pitfalls are critical for the radiologists who interpret mpMRI. Therefore, this article reviews the pitfalls (anatomic structures and technical challenges) and benign lesions or abnormalities that may mimic prostate cancer on mpMRI and how to interpret them.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_2
+	  chars: 701, words: 99
+
+--- CHUNK 4 ---
+
+	Keywords mpMRI · Prostate cancer · DWI · Pitfalls · Benign lesions
+	
+	## Introduction
+	
+	Multiparametric MRI (mpMRI) of the prostate has evolved to be an integral component for the diagnosis, risk stratification, and staging of prostate cancer (PCa). Despite, the increasing use of mpMRI for prostate cancer diagnosis, about 15-30% of all clinically significant cancers can be missed by radiologists . Moreover, there is large inter-observer variability in the interpretation of mpMRI among radiologists . In addition, there are several pitfalls which can mimic prostate cancer or hinder its diagnosis on mpMRI. Normal anatomical structures and benign processes may have similar imaging features to PCa and lead to false positive results. Some of these entities can be recognized by their imaging features, while others cannot be confidently distinguished from PCa. Knowledge of prostate anatomy,
+	
+	* Aytekin Oto aoto@radiology.bsd.uchicago.edu
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_3
+	  chars: 939, words: 138
+
+--- CHUNK 5 ---
+
+	Knowledge of prostate anatomy,
+	
+	* Aytekin Oto aoto@radiology.bsd.uchicago.edu
+	
+	
+	
+	Aritrick Chatterjee aritrick@uchicago.edu
+	
+	Stephen Thomas sthomas@radiology.bsd.uchicago.edu
+	
+	1 Department of Radiology, University of Chicago, 5841 South Maryland Avenue, Chicago 60637A
+	
+	<!-- image -->
+	
+	location of the lesion and its imaging features on different sequences, and being familiar with the common pitfalls are critical for the radiologists who interpret mpMRI. In this article, we will review the pitfalls (anatomic structures and technical challenges) and benign lesions or abnormalities and that may mimic PCa on mpMRI.
+	
+	## Anatomic structures mimicking PCa
+	
+	## Anterior fibromuscular stroma
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_4
+	  chars: 688, words: 90
+
+--- CHUNK 6 ---
+
+	lenges) and benign lesions or abnormalities and that may mimic PCa on mpMRI.
+	
+	## Anatomic structures mimicking PCa
+	
+	## Anterior fibromuscular stroma
+	
+	
+	
+	The anterior fibromuscular stroma (AFMS) is a band of fibromuscular tissue that forms the anterior surface of the prostate, and is located anterior to the transition zone. It is composed of connective tissue, smooth muscle, and some skeletal muscle. It extends from the apex to the base of the prostate. It is typically thicker at midline. The prostate capsule blends with the AFMS and in the majority of cases (89%), the AFMS forms the only anterior covering of the prostate . Laterally, the AFMS fuses with the lateral pelvic fascia and covers outermost regions of the lateral and anterior surfaces of the prostate in the majority of cases (85%) . AFMS has low signal on T2WI with low ADC values and therefore, can obscure an anterior tumor or mimic PCa when asymmetric (Fig. 1).
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_5
+	  chars: 933, words: 156
+	  figures: Fig. 1
+
+--- CHUNK 7 ---
+
+	AFMS has low signal on T2WI with low ADC values and therefore, can obscure an anterior tumor or mimic PCa when asymmetric (Fig. 1).
+	
+	
+	
+	Normal AFMS has a benign
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_6
+	  chars: 159, words: 29
+	  figures: Fig. 1
+
+--- CHUNK 8 ---
+
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	Fig. 1 57-year-old man with thickened AFMS that mimics prostate cancer. Axial T2WI ( a ) shows thickened AFMS (arrows) with low signal in the left side mimicking cancer (arrow), while the AFMS on the contralateral side appears normal. The left AFMS shows diffused low signal on ADC map ( b ), but shows no early enhancement
+	
+	<!-- image -->
+	
+	progressive (type 1) curve at DCE . Symmetric appearance and DCE-MRI characteristics are helpful in differentiating AFMS from anterior cancer.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_7
+	  chars: 617, words: 103
+	  figures: Fig. 1
+
+--- CHUNK 9 ---
+
+	Symmetric appearance and DCE-MRI characteristics are helpful in differentiating AFMS from anterior cancer.
+	
+	
+	
+	Anterior cancers account for about 20% of all PCa and tend to have higher rates of extracapsular extension . Most anterior tumors are located in the anterior third and inferior half of the TZ or in the AFMS . In contrast to AFMS, anterior tumors are asymmetric and have a washout (type-3) enhancement curve with earlier enhancement than normal AFMS . The consultation of T2W images in coronal and sagittal planes can confirm the continuity of the hypertrophic anterior fibromuscular stroma with the benign tissue .
+	
+	## Normal central zone
+	
+	The currently utilized prostate zonal anatomy is based on the classical work done by McNeal, who proposed different prostate 'zones' based on anatomic location and histologic
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_8
+	  chars: 824, words: 129
+
+--- CHUNK 10 ---
+
+	state zonal anatomy is based on the classical work done by McNeal, who proposed different prostate 'zones' based on anatomic location and histologic
+	
+	
+	
+	on DCE-MRI ( c ). The thickened AFMS was found to be benign on prostatectomy. The patient had multifocal, diffuse prostate cancer in rest of the prostate. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_9
+	  chars: 377, words: 64
+
+--- CHUNK 11 ---
+
+	The patient had multifocal, diffuse prostate cancer in rest of the prostate. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	
+	
+	and embryologic features . Anatomically, the seminal vesicles are located posterosuperiorly and drain into the mid prostatic urethra via the ejaculatory ducts in the region of the verumontanum. The central zone surrounds the ejaculatory ducts and is located posterior to the transition zone and the urethra proximal to the verumontanum . Typically, the central zone (CZ) is symmetric, is homogenous low signal on T2WI, has low uniform ADC and does not show focal early enhancement on DCE-MRI as seen in Fig. 2. However, the ADC of benign CZ is lower than the ADC of other zones of the prostate and has overlap even with significant PCa . On DCE-MRI, the normal CZ has a progressive (type 1) or plateau (type 2) enhancement curve .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_10
+	  chars: 881, words: 150
+	  figures: Fig. 2
+
+--- CHUNK 12 ---
+
+	On DCE-MRI, the normal CZ has a progressive (type 1) or plateau (type 2) enhancement curve .
+	
+	
+	
+	DCE-MRI and symmetric appearances at expected location are the key features differentiating normal CZ from cancer.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_11
+	  chars: 210, words: 33
+
+--- CHUNK 13 ---
+
+	With age, the CZ undergoes distortion with hypertrophy of the transition zone (TZ) from prostatic hyperplasia, the CZ is compressed and displaced towards the base of the
+	
+	Fig. 2 68-year-old man with normal central zone. The right central zone (arrows) appears as a region of hypointensity on T2WI ( a ), restricted diffusion seen as low signal on ADC map ( b ). However, no
+	
+	<!-- image -->
+	
+	early focal enhancement on DCE-MRI ( c ) in central zone as seen here is indicative of benign tissue. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_12
+	  chars: 600, words: 107
+	  figures: Fig. 2
+
+--- CHUNK 14 ---
+
+	The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	
+	
+	(B) ADC map prostate gland . While central zone cancers account only for 0.5-2.5% of all PCa, they tend to have a higher Gleason grade, and more likely to invade the seminal vesicles, and have extracapsular extension. They are also prone to biochemical recurrence after prostatectomy . Uneven hypertrophy of the TZ can cause asymmetric displacement of the CZ which can be seen as an area of focal signal abnormality near the peripheral zone (PZ) and present as a pseudolesion (asymmetric CZ). The asymmetric CZ will have a benign enhancement curve on DCE-MRI.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_13
+	  chars: 670, words: 113
+
+--- CHUNK 15 ---
+
+	lity near the peripheral zone (PZ) and present as a pseudolesion (asymmetric CZ). The asymmetric CZ will have a benign enhancement curve on DCE-MRI.
+	
+	
+	
+	Another CZ related pitfall is the presence of focal hypointense region near the ejaculatory glands at the base of the prostate. This is related to the posterior bulging of the central zone over the verumontanum. This pitfall can show mildly restricted diffusion and early focal enhancement on DCE-MRI. The use of coronal and sagittal planes can be useful to demonstrate continuity and symmetry of the CZ.
+	
+	## Periprostatic venous plexus
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_14
+	  chars: 588, words: 94
+
+--- CHUNK 16 ---
+
+	The use of coronal and sagittal planes can be useful to demonstrate continuity and symmetry of the CZ.
+	
+	## Periprostatic venous plexus
+	
+	
+	
+	The prostate is drained by the periprostatic venous plexus that lies along the posterolateral aspect of the gland. This plexus then communicates with the dorsal venous plexus (Santorini) and hemorrhoidal venous plexus posteriorly to drain into the internal iliac vein . The diameter and number of the veins varies by age and is more pronounced in younger patients and patients with smaller glands .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_15
+	  chars: 536, words: 86
+
+--- CHUNK 17 ---
+
+	The diameter and number of the veins varies by age and is more pronounced in younger patients and patients with smaller glands .
+	
+	
+	
+	The periprostatic veins are tubular structures and can be hypointense on T2W and ADC depending on blood flow velocity and turbulence (Fig. 3). Veins close to the peripheral zone may be mistaken for a peripheral zone PCa particularly in areas where the prostatic pseudocapsule is indistinct and partial volume averaging can hinder discerning the prostate boundary . The periprostatic draining veins mostly enhance avidly on DCE-MRI (venous plexus
+	
+	(C) Early phase DCE-MRI
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_16
+	  chars: 602, words: 95
+	  figures: Fig. 3
+
+--- CHUNK 18 ---
+
+	The periprostatic draining veins mostly enhance avidly on DCE-MRI (venous plexus
+	
+	(C) Early phase DCE-MRI
+	
+	
+	
+	with low ADC). Following the veins as tubular structures on multiple planes and recognizing, the prostate boundary will help the reader identify the plexus. Layering signal intensities within the thrombosed or slow flowing vessels can be seen on DWI/ADC and T2W images. This feature can help to identify a vein of the periprostatic plexus. A hyperintense rim around the periprostatic venous plexus can be seen on T2W images (especially coronal view) .
+	
+	## Thick surgical capsule (transition zone pseudocapsule)
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_17
+	  chars: 619, words: 94
+
+--- CHUNK 19 ---
+
+	und the periprostatic venous plexus can be seen on T2W images (especially coronal view) .
+	
+	## Thick surgical capsule (transition zone pseudocapsule)
+	
+	
+	
+	The transition zone and the peripheral zone both have similar embryological origin. The surgical capsule of the prostate separates the transition zone from the peripheral zone . It is composed of fibromuscular stroma and compressed glandular tissue. This band forms a landmark for surgical enucleation or ablation of transitional zone benign prostate hyperplastic nodules . Poor definition of the surgical capsule on T2-weighted images can sometimes be seen adjacent to transition zone cancers . This band of tissue can also hypertrophy with age and enlargement of the transition zone .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_18
+	  chars: 738, words: 112
+
+--- CHUNK 20 ---
+
+	This band of tissue can also hypertrophy with age and enlargement of the transition zone .
+	
+	
+	
+	The surgical capsule is hypointense on T2W with low ADC due to dense compressed fibromuscular tissue and does not demonstrate early focal enhancement (Fig. 4 shows thick pseudocapsule). Its symmetric crescentic band like shape and location should help identify this anatomic landmark.
+	
+	## Benign lesions mimicking PCa
+	
+	## Post-biopsy hemorrhage
+	
+	Blood products from biopsy accumulate along the needle track and can be larger than the expected needle track. The prostate normally produces citrate which is an anti-coagulant
+	
+	<!-- image -->
+	
+	Fig. 3 57-year-old man with periprostatic vein in the right posterolateral side mimicking prostate cancer. The periprostatic vein in the right posterolateral side (arrows) in the peripheral zone appears as a region of hypointensity on T2WI ( a ), with restricted diffusion
+	
+	<!-- image -->
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_19
+	  chars: 922, words: 141
+	  figures: Fig. 4, Fig. 3
+
+--- CHUNK 21 ---
+
+	ht posterolateral side (arrows) in the peripheral zone appears as a region of hypointensity on T2WI ( a ), with restricted diffusion
+	
+	<!-- image -->
+	
+	
+	
+	(hypointensity) seen on ADC map ( b ) mimicking prostate cancer. However, periprostatic vein does not show early focal enhancement on DCE-MRI ( c ) in this case. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	(A) T2-weighted MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	(D) Pre-contrast T1W-MRI
+	
+	Fig. 4 71-year-old man with thickened surgical capsule mimicking prostate cancer. The surgical capsule (arrows) appears as a region of hypointensity on T2WI ( a ), with focal diffusion restriction (hypoin-
+	
+	<!-- image -->
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_20
+	  chars: 751, words: 124
+	  figures: Fig. 4
+
+--- CHUNK 22 ---
+
+	The surgical capsule (arrows) appears as a region of hypointensity on T2WI ( a ), with focal diffusion restriction (hypoin-
+	
+	<!-- image -->
+	
+	
+	
+	that causes protracted bleeding and after biopsy, therefore causing T2 signal intensity decrease. Similar to prostate cancer, hemorrhage is hypointense on T2W and show restricted diffusion (hypointense on ADC) on mpMRI (Fig. 5), and therefore can mimic or obscure focal PCa . However, a matching area of T1 hyperintensity is key to differentiating it from prostate cancer. Hemorrhage can demonstrate focal, diffuse, wedge shaped, or striated high signal on T1W. The intrinsic high T1 of hemorrhage also limits DCE evaluation without subtraction images.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_21
+	  chars: 695, words: 106
+	  figures: Fig. 5
+
+--- CHUNK 23 ---
+
+	The intrinsic high T1 of hemorrhage also limits DCE evaluation without subtraction images.
+	
+	
+	
+	Post-biopsy hemorrhage decreases with time with hemorrhagic changes seen in 72.2% patients at 4 weeks, 57.1% at 4-6 weeks and 52% after 6 weeks . Post-biopsy hemorrhage can be detected up to 4 months after biopsy. A delay of 6-8 weeks after biopsy has been suggested to decrease the confounding imaging findings of prostate hemorrhage . Hemorrhage can obscure underlying PCa .
+	
+	The 'T1 hemorrhage exclusion sign' is defined as a welldefined region of hypointensity on T1-weighted images that is completely surrounded by an area of high signal intensity.
+	
+	tensity) seen on ADC map ( b ) mimicking prostate cancer, but shows no early focal enhancement on DCE-MRI ( c ). The mpMRI images were taken on a 3T MRI system with an endorectal coil
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_22
+	  chars: 832, words: 138
+
+--- CHUNK 24 ---
+
+	cking prostate cancer, but shows no early focal enhancement on DCE-MRI ( c ). The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	
+	
+	The presence of the T1 hemorrhage exclusion sign with a corresponding area of low signal intensity on T2-weighted images has been shown be strongly predictive of prostate cancer (95% positive predictive value) . This can be seen in Fig. 5.
+	
+	## Prostatitis/inflammation
+	
+	Acute and chronic prostatitis can cause signal changes in the PZ that may be indistinguishable from PCa. Acute bacterial infection is most commonly caused by Escherichia coli and accounts for up to 10% of all prostatitis diagnoses. Acute prostatitis has a bimodal age distribution affecting men aged 20 to 40 years of age and men older than 70 years . Acute prostatitis results in an influx of neutrophils into the prostate.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_23
+	  chars: 846, words: 141
+	  figures: Fig. 5
+
+--- CHUNK 25 ---
+
+	Acute prostatitis results in an influx of neutrophils into the prostate.
+	
+	
+	
+	Chronic bacterial prostatitis is thought to result from undertreated acute prostatitis and may be caused by infection moving from the distal urethra to the prostate and with
+	
+	Fig. 5 61-year-old man with hemorrhage and biopsy confirmed prostate cancer undergoes prostate MRI for staging. Axial T2WI ( a ) shows a focal low signal area in the right peripheral zone (arrow), Axial ADC map ( b )  shows corresponding low ADC (arrow), Postcontrast T1 ( c )  show brisk enhancement of the lesion, biopsy con-
+	
+	<!-- image -->
+	
+	firmed PCa, Axial pre-contrast T1 ( d ) shows the area 'spared' (arrow) with surrounding hemorrhage, also known as T1 hemorrhage exclusion sign. The mpMRI images were taken on a 3T MRI system without an endorectal coil, using pelvic phases array coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_24
+	  chars: 883, words: 146
+	  figures: Fig. 5
+
+--- CHUNK 26 ---
+
+	The mpMRI images were taken on a 3T MRI system without an endorectal coil, using pelvic phases array coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	
+	
+	(B) ADC map a lifetime prevalence of 1.8% to 8.2% . The predominant cell type is a lymphocytic infiltrate.
+	
+	Prostatitis can be focal or diffuse involving both the PZ and TZ. On MRI, the affected areas are hypointense on T2W and ADC with mild to moderate diffusion restriction due to the increased inflammatory cellular infiltrate (Fig. 6). The mean ADC of PCa was found to be significantly lower compared with non-cancerous tissue with prostatitis . Similarly, wedge-shaped areas of prostatitis are mildly hypointense on ADC maps . The clinical history of the patient plays a crucial role in distinguishing focal prostatitis from the presence of PCa.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_25
+	  chars: 796, words: 131
+	  figures: Fig. 6
+
+--- CHUNK 27 ---
+
+	The clinical history of the patient plays a crucial role in distinguishing focal prostatitis from the presence of PCa.
+	
+	
+	
+	Granulomatous prostatitis (GP) is an inflammatory condition characterized by the histologic presence of epithelioid granulomas with or without other inflammatory cells and is secondary to prior mycobacterial or fungal infection, prostate biopsy, or systemic granulomatous infection . The diagnosis of GP is on the rise due to increased transurethral resection of the prostate (TURP), needle biopsy procedures, and extensive use of intravesical Bacillus Calmette-Guerin (BCG) instillation for the treatment of non-muscle invasive bladder cancer (NMIBC) . Clinically, granulomatous prostatitis may present as a focal or diffuse area of induration, often giving a stony hard feel on rectal exam with normal to raised serum PSA levels and/or hematuria.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_26
+	  chars: 870, words: 126
+
+--- CHUNK 28 ---
+
+	ent as a focal or diffuse area of induration, often giving a stony hard feel on rectal exam with normal to raised serum PSA levels and/or hematuria.
+	
+	
+	
+	It may co-exist with areas of PCa and diagnosis is based on needle biopsy and pathological analysis . Granulomatous inflammation without a causative agent termed non-specific granulomatous prostatitis accounts for 75% of cases. On MRI, focal granulomatous prostatitis has low signal on T2W and low ADC making it difficult to discriminate from PCa with the lesions having lower mean ADC values than higher-grade PCa and are typically assigned higher PI-RADS scores of 4/5 .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_27
+	  chars: 624, words: 101
+
+--- CHUNK 29 ---
+
+	(C) Early phase DCE-MRI
+	
+	## Focal prostate atrophy
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_28
+	  chars: 50, words: 8
+
+--- CHUNK 30 ---
+
+	(C) Early phase DCE-MRI
+	
+	## Focal prostate atrophy
+	
+	Focal prostate atrophy (FPA) is a common histologic diagnosis found in 73% of biopsy specimens, and occurs most commonly in the PZ. The most common causes of atrophy are inflammation, androgen therapy, and irradiation. The histologic types are proliferative atrophy (PA) and proliferative inflammatory atrophy (PIA) being the most common type [38-40]. The theory of chronic inflammation from PIA leading to accumulated genetic mutations and cellular proliferation causing PCa has not been established. The histologic diagnosis of PIA in negative biopsies correlates with a decreased frequency of detecting PCa in men with persistent suspicion of PCa.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_29
+	  chars: 702, words: 104
+
+--- CHUNK 31 ---
+
+	The histologic diagnosis of PIA in negative biopsies correlates with a decreased frequency of detecting PCa in men with persistent suspicion of PCa.
+	
+	
+	
+	There is a positive and significant association between the extent of atrophy and the total or free serum PSA elevation possibly due to damaged epithelial cells in atrophic acini . The imaging features of FPA overlap with PCa on histology and mpMRI .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_30
+	  chars: 402, words: 66
+
+--- CHUNK 32 ---
+
+	On MRIA is seen as a focal area of volume loss usually with wedge-shaped appearance. It is hypointense on T2W, with moderate diffusion restriction and moderate early enhancement on DCE-MR images. Figure 7 shows a focal atrophy that appears as wedge-shaped lesion on T2W. About 26% of peripheral wedge-shaped lesions are associated with non-specific atrophy . However, the diffusion restriction and tissue enhancement is usually less marked than PCa . Asymmetric volume loss due to atrophy can be a way to differentiate focal atrophy from PCa .
+	
+	## Benign prostatic hyperplasia nodules in the Transition zone
+	
+	Benign prostatic hyperplasia (BPH) is a histologic diagnosis of cystic, stromal, and glandular epithelial hyperplasia that occurs in the transition zone (TZ) with a prevalence of 50 to 60% by age 60 years . There are four
+	
+	<!-- image -->
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_31
+	  chars: 846, words: 136
+
+--- CHUNK 33 ---
+
+	dular epithelial hyperplasia that occurs in the transition zone (TZ) with a prevalence of 50 to 60% by age 60 years . There are four
+	
+	<!-- image -->
+	
+	
+	
+	Fig. 6 49-year-old man with prostatitis mimicking prostate cancer. Prostatitis (arrows) appears as regions of hypointensity in the left peripheral zone on T2WI ( a ), with restricted diffusion (hypointensity) seen on ADC map ( b ) and early focal enhancement on DCE-MRI ( c )
+	
+	<!-- image -->
+	
+	mimicking prostate cancer. Chronic inflammation was found on prostatectomy. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_32
+	  chars: 709, words: 120
+	  figures: Fig. 6
+
+--- CHUNK 34 ---
+
+	system with an endorectal coil
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	
+	
+	Fig. 7 59-year-old man with focal prostate atrophy mimicking prostate cancer. The focal prostate atrophy (arrows) appears as a wedgeshaped lesion in the left peripheral zone with hypointensity on T2WI ( a ), with mildly restricted diffusion (hypointensity) seen on ADC map ( b ) and early focal enhancement on DCE-MRI ( c ) mimicking
+	
+	<!-- image -->
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_33
+	  chars: 501, words: 83
+	  figures: Fig. 7
+
+--- CHUNK 35 ---
+
+	( a ), with mildly restricted diffusion (hypointensity) seen on ADC map ( b ) and early focal enhancement on DCE-MRI ( c ) mimicking
+	
+	<!-- image -->
+	
+	
+	
+	different types of BPH nodules: cystic, stromal, glandular, and mixed . Stromal nodules are hypointense on T2-weighted images due to proliferation of fibromuscular components. They have low ADC signal and demonstrate early enhancement with washout on DCE-MR images mimicking PCa (Fig. 8) . Glandular BPH are not hyperintense on ADC and T2 as previously thought , and have similar appearance on mpMRI as stromal BPH . Cystic BPH are well demarcated and, have higher fluid content due to cystic ectasia and hyperplastic glandular components. They tend to be hyperintense on T2 and ADC images and do not show any early enhancement of DCE-MRI, making it easy to distinguish from PCa.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_34
+	  chars: 831, words: 138
+	  figures: Fig. 8
+
+--- CHUNK 36 ---
+
+	They tend to be hyperintense on T2 and ADC images and do not show any early enhancement of DCE-MRI, making it easy to distinguish from PCa.
+	
+	
+	
+	A recent study showed that quantitative ADC values could be used to differentiate between PCa and BPH, as ADC for PCa was lower compared to all BPH types. T2
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_35
+	  chars: 300, words: 55
+
+--- CHUNK 37 ---
+
+	prostate cancer. On prostatectomy, the suspected lesion was found to have focal atrophy along with intraluminal blood and hemosiderinladen macrophages. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	values were found to be significantly lower in PCa compared to cystic BPH only, while glandular and stromal BPH showed no significant difference from PCa. DCEMRI was not found to be useful for distinguishing PCa from BPH.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_36
+	  chars: 445, words: 71
+
+--- CHUNK 38 ---
+
+	only, while glandular and stromal BPH showed no significant difference from PCa. DCEMRI was not found to be useful for distinguishing PCa from BPH.
+	
+	
+	
+	About one quarter of all prostate cancers occur in the TZ, making it important to differentiate between benign BPH nodules and TZ cancers . Transition zone cancers are larger, and have higher Gleason grade compared to peripheral zone lesions . Morphology on T2WI can be used to differentiate PCa from BPH nodules. BPH nodules are rounded and better demarcated than PCa. Transition zone PCa have irregular margins, are lenticular shaped, and may show invasion of the AFMS. They have lower ADC values than BPH nodules, although the difference is less profound with the stromal nodules .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_37
+	  chars: 735, words: 120
+
+--- CHUNK 39 ---
+
+	They have lower ADC values than BPH nodules, although the difference is less profound with the stromal nodules .
+	
+	
+	
+	Fig. 8 53-year-old man with BPH mimicking prostate cancer. The stromal BPH (arrows) appears as a region of hypointensity on T2WI ( a ), with restricted diffusion (hypointensity) seen on ADC map ( b ), and shows early focal enhancement on DCE-MRI ( c ), mimicking
+	
+	<!-- image -->
+	
+	prostate cancer. Other clinical finding included a PI-RADS 5 lesion in the right peripheral zone that was found to be Gleason 4 + 3 cancer on prostatectomy. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(B) ADC map
+	
+	## BPH nodules in the peripheral zone
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_38
+	  chars: 746, words: 131
+	  figures: Fig. 8
+
+--- CHUNK 40 ---
+
+	m with an endorectal coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(B) ADC map
+	
+	## BPH nodules in the peripheral zone
+	
+	
+	
+	Benign prostatic nodules can be found in the peripheral zone (PZ) of the prostate and tend to be glandular in etiology . Histologic tissue analysis suggests some of these nodules originate from the PZ and are not the extension or herniation of TZ nodules . BPH nodules located in the PZ (Fig. 9) are usually well circumscribed, ovoid or round, and do not extend to the capsule . They have low T2 and ADC signal with avid early enhancement and washout very similar to PZ cancers. Their well-defined borders, location (adjacent to TZ), and round shape are the important imaging findings in their differentiation from PZ cancer. In some cases, stromal tumors of uncertain malignant potential (STUMP) can appear like nodular region like BPH and extend into the PZ mimicking cancer .
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_39
+	  chars: 930, words: 159
+	  figures: Fig. 9
+
+--- CHUNK 41 ---
+
+	ome cases, stromal tumors of uncertain malignant potential (STUMP) can appear like nodular region like BPH and extend into the PZ mimicking cancer .
+	
+	
+	
+	(C) Early phase DCE-MRI
+	
+	(C) Early phase DCE-MRI
+	
+	(D) Pre-contrast T1W-MRI
+	
+	## Prostatic calcifications
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_40
+	  chars: 255, words: 38
+
+--- CHUNK 42 ---
+
+	and extend into the PZ mimicking cancer .
+	
+	
+	
+	(C) Early phase DCE-MRI
+	
+	(C) Early phase DCE-MRI
+	
+	(D) Pre-contrast T1W-MRI
+	
+	## Prostatic calcifications
+	
+	
+	
+	Prostatic calcifications are relatively common radiologic findings on CT and increases with age over 40 years. They can be associated with disease processes such as BPH, infection, and metabolic abnormalities . Corpora amylacea are presumably precursors to calcified 'stones'. Analysis of the proteins in prostatic corpora amylacea and calculi found that the predominant proteins comprising these concretions are proteins involved in acute inflammation, and in particular proteins contained in neutrophil granules . Prostate calcifications in the prostate are commonly seen at the junction between the transition zone and peripheral zone against the background of BPH.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_41
+	  chars: 820, words: 117
+
+--- CHUNK 43 ---
+
+	tate calcifications in the prostate are commonly seen at the junction between the transition zone and peripheral zone against the background of BPH.
+	
+	
+	
+	They are typically hypointense on T2W and ADC, with low signal intensity on DWI at all b values due to the dielectric effect of calcium in the calcification and do not show early enhance on DCE-MRI (Fig. 10). Complete lack of enhancement on MRI is important in their differentiation from PCa. Correlation with CT can be helpful in confirming focal calcification. While corpora amylacea
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_42
+	  chars: 537, words: 87
+	  figures: Fig. 10
+
+--- CHUNK 44 ---
+
+	Fig. 9 53-year-old man with ectopic BPH in the peripheral zone mimicking prostate cancer. The BPH nodule in the left mid prostate (arrows) appears as a well-circumscribed round region of hypointensity on T2WI ( a ), with highly restricted diffusion (hypointensity) seen
+	
+	<!-- image -->
+	
+	on ADC map ( b ) mimicking prostate cancer. However, it does not show early focal enhancement on DCE-MRI ( c ) like other peripheral zone cancer. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	<!-- image -->
+	
+	Fig. 10 84-year-old man with prostatic calcification mimicking prostate cancer. Prostatic calcification in the right peripheral zone (arrows) appears as a foci of low signal on axial T2WI, and shows some punctate foci of low signal that is subtle on ADC map ( b ).
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_43
+	  chars: 785, words: 134
+	  figures: Fig. 9, Fig. 10
+
+--- CHUNK 45 ---
+
+	peripheral zone (arrows) appears as a foci of low signal on axial T2WI, and shows some punctate foci of low signal that is subtle on ADC map ( b ).
+	
+	
+	
+	However, post-contrast DCE-MRI ( c ) shows no enhancement (arrow). Pre-contrast T1W image ( d ) shows hypointense foci in the right peripheral zone. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	<!-- image -->
+	
+	(A) T2-weighted MRI
+	
+	(B) ADC map
+	
+	(C) Early phase DCE-MRI
+	
+	Fig. 11 65-year-old man undergoing prostate MRI found to  have an endorectal coil artifact mimicking prostate cancer. Incompletely assessed mildly T2-hypointense focus within the left peripheral zone, in the area of artifact related to the endorectal coil  seen on T2W
+	
+	<!-- image -->
+	
+	can occur within foci of prostatic adenocarcinoma, their incidence is low and are more associated with low Gleason grade cancers .
+	
+	## Other pitfalls
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_44
+	  chars: 882, words: 148
+	  figures: Fig. 11
+
+--- CHUNK 46 ---
+
+	an occur within foci of prostatic adenocarcinoma, their incidence is low and are more associated with low Gleason grade cancers .
+	
+	## Other pitfalls
+	
+	
+	
+	Technical challenges can also limit the efficacy of mpMRI. Image distortion, motion artifacts, and endorectal coil placements can affect the PCa diagnosis results using mpMRI.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_45
+	  chars: 327, words: 49
+
+--- CHUNK 47 ---
+
+	Image distortion, motion artifacts, and endorectal coil placements can affect the PCa diagnosis results using mpMRI.
+	
+	
+	
+	DWI especially is susceptible to image distortion. DWI uses echo-planar imaging, where gradients are switched to generate diffusion weighting (different b values). This changing magnetic field induces eddy currents, which in turn can create change in the main magnetic field, time-varying gradients, and also degrade the speed and efficiency of gradient switching. Therefore, this leads to a wide range of image artifacts, including shearing, shading, scaling, blurring, and spatial misregistration. High b value DWI is highly susceptible to anatomic distortions and warping, which can lead to obscurity of lesion and false positives. Figure 10 in addition to calcification also shows spatial misregistration between ADC and other mpMRI sequences due to artifacts from DWI echo-planar sequence.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_46
+	  chars: 914, words: 131
+
+--- CHUNK 48 ---
+
+	n addition to calcification also shows spatial misregistration between ADC and other mpMRI sequences due to artifacts from DWI echo-planar sequence.
+	
+	
+	
+	image ( a ), with corresponding area with restricted diffusion (hypointensity) seen on ADC map ( b ) and artifact on DCE-MRI ( c ) mimicking prostate cancer. The mpMRI images were taken on a 3T MRI system with an endorectal coil
+	
+	The presence of stool and rectal gas can produce anatomic distortion/artifacts due to magnetic susceptibility. The use of enema to void the rectum of stool can be effective . The use of left-right phase encoding instead of anterior-posterior can mitigate distortion due to stool and rectal gas. The presence of rectal gas and movement can affect ADC calculations and DCE-MRI images.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_47
+	  chars: 764, words: 124
+
+--- CHUNK 49 ---
+
+	The presence of rectal gas and movement can affect ADC calculations and DCE-MRI images.
+	
+	
+	
+	The use of an endorectal coil can induce artifacts. The antenna on the endorectal coil is recommended to be placed at 2 and 10 o'clock position. However, improper coil placement can lead to the artifacts from the antenna which can mimic cancer. Figure 11 shows artifact from an endorectal coil that mimics PCa.
+	
+	## Conclusion
+	
+	While mpMRI is a robust application for the diagnosis, staging and targeting of prostate cancer, anatomic, and histologic mimics of prostate cancer exist. Some of these pitfalls can be recognized by evaluating all sequences (summarized in Table 1), while some can only be confirmed with histopathologic evaluation. It is important for the radiologists to recognize these pitfalls while interpreting prostate MRI.
+	
+	<!-- image -->
+	
+	Table 1 Differentiating prostate cancer from it mimics on mpMRI
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_48
+	  chars: 911, words: 143
+	  tables: Table 1, Table 1
+
+--- CHUNK 50 ---
+
+	ogists to recognize these pitfalls while interpreting prostate MRI.
+	
+	<!-- image -->
+	
+	Table 1 Differentiating prostate cancer from it mimics on mpMRI
+	
+	
+	
+	| Anatomic structures mimicking prostate cancer | |
+	|-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+	| Anterior fibromuscular stroma | Symmetric appearance and DCE-MRI characteristics (benign progressive type 1 curve) are helpful in differentiating AFMS from anterior cancer.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_49
+	  chars: 755, words: 54
+	  tables: Table 1
+
+--- CHUNK 51 ---
+
+	troma | Symmetric appearance and DCE-MRI characteristics (benign progressive type 1 curve) are helpful in differentiating AFMS from anterior cancer.
+	
+	
+	
+	Consultation of T2W images in coronal and sagittal planes can confirm the continuity of the hypertrophic anterior fibromuscular stroma with the benign tissue |
+	| Normal central zone | DCE-MRI (progressive type 1 or plateau type 2 enhancement curve) and symmetric appearances at expected location are the key features differentiating normal CZ from cancer. The use of coronal and sagittal planes can be useful to demonstrate continuity and symmetry of the CZ |
+	| Periprostatic venous plexus | Periprostatic venous plexus enhance avidly on DCE-MRI. Following the veins as tubular structures on multiple planes and recognition of the prostate boundary will help the reader identify the plexus.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_50
+	  chars: 842, words: 127
+
+--- CHUNK 52 ---
+
+	Following the veins as tubular structures on multiple planes and recognition of the prostate boundary will help the reader identify the plexus.
+	
+	
+	
+	Layering signal intensities within the thrombosed or slow flowing vessels can be seen on DWI/ADC and T2W images |
+	| Thick surgical capsule | Does not demonstrate early focal enhancement. Its symmetric crescentic band like shape and location should help identify this anatomic landmark |
+	| Benign lesions mimicking PCa | |
+	| Post-biopsy hemorrhage | T1 hyperintensity is key to differentiating hemorrhage from prostate cancer |
+	| Prostatitis/inflammation | ADC of prostate cancer is lower compared with non-cancerous tissue with prosta- titis.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_51
+	  chars: 689, words: 105
+
+--- CHUNK 53 ---
+
+	emorrhage from prostate cancer |
+	| Prostatitis/inflammation | ADC of prostate cancer is lower compared with non-cancerous tissue with prosta- titis.
+	
+	
+	
+	The clinical history of the patient plays a crucial role in distinguishing focal prostatitis from the presence of PCa |
+	| Focal prostate atrophy | The diffusion restriction and tissue contrast enhancement on DCE-MRI in atrophy is usually less marked than prostate cancer. Asymmetric volume loss due to atro- phy can be a way to differentiate focal atrophy from PCa |
+	| Benign prostatic hyperplasia nodules in the Transition zone | Morphology on T2W images can be used to differentiate prostate cancer from BPH nodules. BPH nodules are rounded and better demarcated than PCa.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_52
+	  chars: 726, words: 115
+
+--- CHUNK 54 ---
+
+	ne | Morphology on T2W images can be used to differentiate prostate cancer from BPH nodules. BPH nodules are rounded and better demarcated than PCa.
+	
+	
+	
+	BPH nodules tend to have higher ADC values compared to cancer, although the difference is less profound with stromal nodules |
+	| BPH nodules in the peripheral zone | Their well-defined borders, location (adjacent to TZ and do not extend to the capsule) and shape (usually well circumscribed, ovoid or round) are the important imaging findings in their differentiation from PZ cancer |
+	| Prostatic calcifications | Complete lack of enhancement on MRI is important in their differentiation from PCa |
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_53
+	  chars: 650, words: 106
+
+--- CHUNK 55 ---
+
+	- Imaging-Influence of a Computer-aided Diagnosis System. Radiology. 2014; 271(3):761-9. 4. Kiyoshima K, Yokomizo A, Yoshida T, et al. Anatomical Features of Periprostatic Tissue and its Surroundings: a Histological Analysis of 79 Radical Retropubic Prostatectomy Specimens. 5. Kiyoshima K, Yokomizo A, Yoshida T, et al. Anatomical features of periprostatic tissue and its surroundings: a histological analysis of 79 radical retropubic prostatectomy specimens. Jpn J Clin Oncol. 2004; 34(8):463-8. 6. Ward E, Baad M, Peng Y, et al. Multi-parametric MR imaging of the anterior fibromuscular stroma and its differentiation from prostate cancer. Abdom Radiol (NY). 2017; 42(3):926-34. 7. Koppie TM, Bianco FJ, Jr., Kuroiwa K, et al. The clinical features of anterior prostate cancers. BJU Int.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_54
+	  chars: 790, words: 115
+
+--- CHUNK 56 ---
+
+	2017; 42(3):926-34. 7. Koppie TM, Bianco FJ, Jr., Kuroiwa K, et al. The clinical features of anterior prostate cancers. BJU Int.
+	
+	
+	
+	2006; 98(6):1167-71. 8. Bouye S, Potiron E, Puech P, Leroy X, Lemaitre L, Villers A. Transition zone and anterior stromal prostate cancers: zone of origin and intraprostatic patterns of spread at histopathology. Prostate. 2009; 69(1):105-13. 9. Panebianco V, Giganti F, Kitzing YX, et al. An update of pitfalls in prostate mpMRI: a practical approach through the lens of PIRADS v. 2 guidelines. Insights into Imaging. 2018; 9(1):87-101. 10. McNeal JE. Regional morphology and pathology of the prostate. Am J Clin Pathol. 1968; 49(3):347-57. 11. Vargas HA, Akin O, Franiel T, et al. Normal Central Zone of the Prostate and Central Zone Involvement by Prostate
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_55
+	  chars: 790, words: 125
+
+--- CHUNK 57 ---
+
+	## Compliance with ethical standards
+	
+	Conflict of interest Dr. Aritrick Chatterjee and Dr. Stephen Thomas have no disclosures. Dr. Aytekin Oto has the following disclosures. Research Grant, Koninklijke Philips NV Research Grant, Guerbet SA Research Grant, Profound Medical Inc. Medical Advisory Board, Profound Medical Inc Speaker, Bracco Group.
+	
+	## References
+	
+	1. Borofsky S, George AK, Gaur S, et al. What Are We Missing? False-Negative Cancers at Multiparametric MR Imaging of the Prostate. Radiology. 2018; 286(1):186-95.
+	2. Fütterer JJ, Briganti A, De Visschere P, et al. Can Clinically Significant Prostate Cancer Be Detected with Multiparametric Magnetic Resonance Imaging? A Systematic Review of the Literature. European Urology. 2015; 68(6):1045-53.
+	3. Niaf E, Lartizien C, Bratan F, et al. Prostate Focal Peripheral Zone Lesions: Characterization at Multiparametric MR
+	
+	<!-- image -->
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_56
+	  chars: 894, words: 128
+
+--- CHUNK 58 ---
+
+	Niaf E, Lartizien C, Bratan F, et al. Prostate Focal Peripheral Zone Lesions: Characterization at Multiparametric MR
+	
+	<!-- image -->
+	
+	
+	
+	- Cancer: Clinical and MR Imaging Implications. Radiology 2012; 262(3):894-902. 12. Gupta RT, Kauffman CR, Garcia-Reyes K, et al. Apparent Diffusion Coefficient Values of the Benign Central Zone of the Prostate: Comparison With Low- and High-Grade Prostate Cancer. AJR Am J Roentgenol. 2015; 205(2):331-6. 13. Hansford BG, Karademir I, Peng Y, et al. Dynamic contrastenhanced MR imaging features of the normal central zone of the prostate. Acad Radiol. 2014; 21(5):569-77. 14. Rosenkrantz AB, Taneja SS. Radiologist, be aware: ten pitfalls that confound the interpretation of multiparametric prostate MRI. AJR Am J Roentgenol. 2014; 202(1):109-20. 15. Cohen RJ, Shannon BA, Phillips M, Moorin RE, Wheeler TM, Garrett KL.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_57
+	  chars: 856, words: 127
+
+--- CHUNK 59 ---
+
+	AJR Am J Roentgenol. 2014; 202(1):109-20. 15. Cohen RJ, Shannon BA, Phillips M, Moorin RE, Wheeler TM, Garrett KL.
+	
+	
+	
+	Central zone carcinoma of the prostate gland: a distinct tumor type with poor prognostic features. J Urol. 2008; 179(5):1762-7; discussion 7. 16. Cristini C, Di Pierro GB, Leonardo C, De Nunzio C, Franco G. Safe digital isolation of the santorini plexus during radical retropubic prostatectomy. BMC Urol. 2013; 13:13. 17. Allen KS, Kressel HY, Arger PH, Pollack HM. Age-related changes of the prostate: evaluation by MR imaging. AJR Am J Roentgenol. 1989; 152(1):77-81. 18. Ayala AG, Ro JY, Babaian R, Troncoso P, Grignon DJ. The prostatic capsule: does it exist? Its importance in the staging and treatment of prostatic carcinoma. Am J Surg Pathol. 1989; 13(1):21-7. 19. Poon PY, Bronskill MJ, Poon CS, McCallum RW, Bruce AW, Henkelman RM.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_58
+	  chars: 858, words: 138
+
+--- CHUNK 60 ---
+
+	Am J Surg Pathol. 1989; 13(1):21-7. 19. Poon PY, Bronskill MJ, Poon CS, McCallum RW, Bruce AW, Henkelman RM.
+	
+	
+	
+	Identification of the Periprostatic Venous Plexus by MR Imaging. Journal of computer assisted tomography. 1991; 15(2):265-8. 20. Bhavsar A, Verma S. Anatomic imaging of the prostate. Biomed Res Int. 2014; 2014:728539. 21. Kahokehr AA, Gilling PJ. Which laser works best for benign prostatic hyperplasia? Curr Urol Rep. 2013; 14(6):614-9. 22. Kitzing YX, Prando A, Varol C, Karczmar GS, Maclean F, Oto A. Benign Conditions That Mimic Prostate Carcinoma: MR Imaging Features with Histopathologic Correlation. RadioGraphics. 2016; 36(1):162-75. 23. Semple JE. Surgical capsule of the benign enlargement of the prostate. Its development and action. Br Med J. 1963; 1(5346):1640-3. 24. White S, Hricak H, Forstner R, et al. Prostate cancer: effect of postbiopsy hemorrhage on interpretation of MR images.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_59
+	  chars: 911, words: 137
+
+--- CHUNK 61 ---
+
+	1963; 1(5346):1640-3. 24. White S, Hricak H, Forstner R, et al. Prostate cancer: effect of postbiopsy hemorrhage on interpretation of MR images.
+	
+	
+	
+	Radiology. 1995; 195(2):385-90. 25. Chatterjee A, Tokdemir S, Gallan AJ, et al. Multiparametric MRI Features and Pathologic Outcome of Wedge-Shaped Lesions in the Peripheral Zone on T2-Weighted Images of the Prostate. AJR Am J Roentgenol. 2019; 212(1):124-9. 26. Sharif-Afshar AR, Feng T, Koopman S, et al. Impact of post prostate biopsy hemorrhage on multiparametric magnetic resonance imaging. Can J Urol. 2015; 22(2):7698-702. 27. Qayyum A, Coakley FV, Lu Y, et al. Organ-confined prostate cancer: effect of prior transrectal biopsy on endorectal MRI and MR spectroscopic imaging. AJR Am J Roentgenol. 2004; 183(4):1079-83. 28. Rosenkrantz AB, Kopec M, Kong X, et al. Prostate cancer vs. post-biopsy hemorrhage: diagnosis with T2- and diffusionweighted imaging. J Magn Reson Imaging.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_60
+	  chars: 934, words: 138
+
+--- CHUNK 62 ---
+
+	Prostate cancer vs. post-biopsy hemorrhage: diagnosis with T2- and diffusionweighted imaging. J Magn Reson Imaging.
+	
+	
+	
+	2010; 31(6):1387-94. 29. Barrett T, Vargas HA, Akin O, Goldman DA, Hricak H. Value of the hemorrhage exclusion sign on T1-weighted prostate MR images for the detection of prostate cancer. Radiology. 2012; 263(3):751-7. 30. Roberts RO, Lieber MM, Rhodes T, Girman CJ, Bostwick DG, Jacobsen SJ. Prevalence of a physician-assigned diagnosis of prostatitis: the Olmsted County Study of Urinary Symptoms and Health Status Among Men. Urology. 1998; 51(4):578-84. 31. Coker TJ, Dierfeldt DM. Acute Bacterial Prostatitis: Diagnosis and Management. Am Fam Physician. 2016; 93(2):114-20. 32. Holt JD, Garrett WA, McCurry TK, Teichman JM. Common Questions About Chronic Prostatitis. Am Fam Physician. 2016; 93(4):290-6. 33. Gurses B, Tasdelen N, Yencilek F, et al. Diagnostic utility of DTI in prostate cancer.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_61
+	  chars: 918, words: 134
+
+--- CHUNK 63 ---
+
+	Am Fam Physician. 2016; 93(4):290-6. 33. Gurses B, Tasdelen N, Yencilek F, et al. Diagnostic utility of DTI in prostate cancer.
+	
+	
+	
+	Eur J Radiol. 2011; 79(2):172-6. 34. Rais-Bahrami S, Nix JW, Turkbey B, et al. Clinical and multiparametric MRI signatures of granulomatous prostatitis. Abdom Radiol (NY). 2017. 35. Shukla P, Gulwani HV, Kaur S. Granulomatous prostatitis: clinical and histomorphologic survey of the disease in a tertiary care hospital. Prostate Int. 2017; 5(1):29-34. 36. Stillwell TJ, Engen DE, Farrow GM. The clinical spectrum of granulomatous prostatitis: a report of 200 cases. J Urol. 1987; 138(2):320-3. 37. Bour L, Schull A, Delongchamps NB, et al. Multiparametric MRI features of granulomatous prostatitis and tubercular prostate abscess. Diagn Interv Imaging. 2013; 94(1):84-90. 38. Benedetti I, Bettin A, Reyes N.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_62
+	  chars: 838, words: 125
+
+--- CHUNK 64 ---
+
+	Diagn Interv Imaging. 2013; 94(1):84-90. 38. Benedetti I, Bettin A, Reyes N.
+	
+	
+	
+	Inflammation and focal atrophy in prostate needle biopsy cores and association to prostatic adenocarcinoma. Ann Diagn Pathol. 2016; 24:55-61. 39. Freitas DM, Andriole GL, Jr., Castro-Santamaria R, Freedland SJ, Moreira DM. Extent of Baseline Prostate Atrophy Is Associated With Lower Incidence of Low- and High-grade Prostate Cancer on Repeat Biopsy. Urology. 2017; 103:161-6. 40. Tomas D, Kruslin B, Rogatsch H, Schafer G, Belicza M, Mikuz G. Different types of atrophy in the prostate with and without adenocarcinoma. Eur Urol. 2007; 51(1):98-103; discussion -4. 41. Billis A, Meirelles LR, Magna LA, Baracat J, Prando A, Ferreira U. Extent of prostatic atrophy in needle biopsies and serum PSA levels: is there an association? Urology. 2007; 69(5):927-30. 42. Guneyli S, Ward E, Thomas S, et al.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_63
+	  chars: 878, words: 135
+
+--- CHUNK 65 ---
+
+	tatic atrophy in needle biopsies and serum PSA levels: is there an association? Urology. 2007; 69(5):927-30. 42. Guneyli S, Ward E, Thomas S, et al.
+	
+	
+	
+	Magnetic resonance imaging of benign prostatic hyperplasia. Diagn Interv Radiol. 2016; 22(3):215-9. 43. Chatterjee A, Gallan AJ, He D, et al. Revisiting quantitative multi-parametric MRI of benign prostatic hyperplasia and its differentiation from transition zone cancer. Abdom Radiol. 2019; 44(6):2233-43. 44. Oto A, Kayhan A, Jiang Y, et al. Prostate cancer: differentiation of central gland cancer from benign prostatic hyperplasia by using diffusion-weighted and dynamic contrast-enhanced MR imaging. Radiology. 2010; 257(3):715-23. 45. McNeal JE, Redwine EA, Freiha FS, Stamey TA. Zonal distribution of prostatic adenocarcinoma. Correlation with histologic pattern and direction of spread. Am J Surg Pathol. 1988; 12(12):897-906. 46. King CR, Ferrari M, Brooks JD.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_64
+	  chars: 921, words: 131
+
+--- CHUNK 66 ---
+
+	Correlation with histologic pattern and direction of spread. Am J Surg Pathol. 1988; 12(12):897-906. 46. King CR, Ferrari M, Brooks JD.
+	
+	
+	
+	Prognostic significance of prostate cancer originating from the transition zone. Urol Oncol. 2009; 27(6):592-7. 47. Hoeks CM, Hambrock T, Yakar D, et al. Transition zone prostate cancer: detection and localization with 3-T multiparametric MR imaging. Radiology. 2013; 266(1):207-17. 48. Oyen RH, Van de Voorde WM, Van Poppel HP, et al. Benign hyperplastic nodules that originate in the peripheral zone of the prostate gland. Radiology. 1993; 189(3):707-11. 49. Liu X, Tang J, Yang JC, Zhang Y, Shi HY. [An autopsy specimen study of benign hyperplastic nodules in the peripheral zone of the prostate]. Zhonghua Nan Ke Xue. 2008; 14(4):307-10. 50. Tang J, Yang JC, Zhang Y, et al. Does benign prostatic hyperplasia originate from the peripheral zone of the prostate? A preliminary study. BJU Int.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_65
+	  chars: 933, words: 145
+
+--- CHUNK 67 ---
+
+	Does benign prostatic hyperplasia originate from the peripheral zone of the prostate? A preliminary study. BJU Int.
+	
+	
+	
+	2007; 100(5):1091-6. 51. Muglia VF, Saber G, Maggioni G, Jr., Monteiro AJ. MRI findings of prostate stromal tumour of uncertain malignant potential: a case report. Br J Radiol. 2011; 84(1006):e194-6.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_66
+	  chars: 318, words: 47
+
+--- CHUNK 68 ---
+
+	<!-- image -->
+	
+	52. Klimas R, Bennett B, Gardner WA, Jr. Prostatic calculi: a review. Prostate. 1985; 7(1):91-6.
+	53. Sfanos KS, Wilson BA, De Marzo AM, Isaacs WB. Acute inflammatory proteins constitute the organic matrix of prostatic corpora amylacea and calculi in men with prostate cancer. Proc Natl Acad Sci U S A. 2009; 106(9):3443-8.
+	54. Christian JD, Lamm TC, Morrow JF, Bostwick DG. Corpora amylacea in adenocarcinoma of the prostate: incidence and histology within needle core biopsies. Mod Pathol. 2005; 18(1):36-9.
+	55. Caglic I, Hansen NL, Slough RA, Patterson AJ, Barrett T. Evaluating the effect of rectal distension on prostate multiparametric MRI image quality.
+	
+	<!-- image -->
+	
+	Publisher's Note Springer Nature remains neutral with regard to jurisdictional claims in published maps and institutional affiliations.
+
+	[Metadata]
+	  chunk_id: s00261-019-02302-x_p1_text_67
+	  chars: 828, words: 125
+
