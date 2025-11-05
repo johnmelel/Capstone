@@ -66,13 +66,13 @@ class MilvusVectorStore:
     def _create_schema(self) -> CollectionSchema:
         """Create collection schema"""
         fields = [
-            FieldSchema(name="id", dtype=DataType.VARCHAR, is_primary=True, max_length=100),
-            FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR, dim=self.embedding_dim),
-            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=65535),
-            FieldSchema(name="file_name", dtype=DataType.VARCHAR, max_length=500),
-            FieldSchema(name="file_hash", dtype=DataType.VARCHAR, max_length=100),
-            FieldSchema(name="chunk_index", dtype=DataType.INT64),
-            FieldSchema(name="total_chunks", dtype=DataType.INT64),
+            FieldSchema(name="primary_key", dtype=DataType.INT64, is_primary=True, auto_id=True, description="The Primary Key"),
+            FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=self.embedding_dim),
+            FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=10000),
+            FieldSchema(name="file_name", dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="file_hash", dtype=DataType.VARCHAR, max_length=512),
+            FieldSchema(name="chunk_index", dtype=DataType.INT16),
+            FieldSchema(name="total_chunks", dtype=DataType.INT16),
         ]
         
         schema = CollectionSchema(
@@ -103,7 +103,7 @@ class MilvusVectorStore:
                     "params": {"nlist": 128}
                 }
                 collection.create_index(
-                    field_name="embedding",
+                    field_name="vector",
                     index_params=index_params
                 )
                 logger.info("Created index on embedding field")
@@ -139,9 +139,6 @@ class MilvusVectorStore:
             raise ValueError("embeddings, texts, and metadatas must have the same length")
         
         try:
-            # Generate IDs
-            ids = [str(uuid.uuid4()) for _ in range(len(embeddings))]
-            
             # Extract metadata fields
             file_names = [m.get('file_name', '') for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
@@ -153,7 +150,6 @@ class MilvusVectorStore:
             
             # Prepare data
             data = [
-                ids,
                 embeddings_np,
                 texts,
                 file_names,
@@ -167,8 +163,8 @@ class MilvusVectorStore:
             self.collection.insert(data)
             self.collection.flush()
             
-            logger.info(f"Successfully inserted {len(ids)} entities")
-            return ids
+            logger.info(f"Successfully inserted {len(embeddings)} entities")
+            return [] # Return empty list as IDs are auto-generated
             
         except Exception as e:
             logger.error(f"Error inserting data into Milvus: {e}")
@@ -202,7 +198,7 @@ class MilvusVectorStore:
             
             results = self.collection.search(
                 data=[query_embedding],
-                anns_field="embedding",
+                anns_field="vector",
                 param=search_params,
                 limit=top_k,
                 output_fields=output_fields
