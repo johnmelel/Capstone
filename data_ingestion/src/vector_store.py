@@ -142,8 +142,8 @@ class MilvusVectorStore:
             # Extract metadata fields
             file_names = [m.get('file_name', '') for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
-            chunk_indices = [m.get('chunk_index', 0) for m in metadatas]
-            total_chunks_list = [m.get('total_chunks', 0) for m in metadatas]
+            chunk_indices = [int(m.get('chunk_index', 0)) for m in metadatas]
+            total_chunks_list = [int(m.get('total_chunks', 0)) for m in metadatas]
 
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
