@@ -66,7 +66,7 @@ class MilvusVectorStore:
     def _create_schema(self) -> CollectionSchema:
         """Create collection schema"""
         fields = [
-            FieldSchema(name="primary_key", dtype=DataType.INT64, is_primary=True, auto_id=True, description="The Primary Key"),
+            FieldSchema(name="primary_key", dtype=DataType.INT64, is_primary=True, auto_id=False, description="The Primary Key"),
             FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=self.embedding_dim),
             FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=10000),
             FieldSchema(name="file_name", dtype=DataType.VARCHAR, max_length=512),
@@ -142,14 +142,40 @@ class MilvusVectorStore:
             # Extract metadata fields
             file_names = [m.get('file_name', '') for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
-            chunk_indices = [int(m.get('chunk_index', 0)) for m in metadatas]
-            total_chunks_list = [int(m.get('total_chunks', 0)) for m in metadatas]
+            # Convert to numpy int16 for Milvus INT16 fields
+            chunk_indices = np.array([m.get('chunk_index', 0) for m in metadatas], dtype=np.int16)
+            total_chunks_list = np.array([m.get('total_chunks', 0) for m in metadatas], dtype=np.int16)
 
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
             
+            # DEBUG: Print schema information
+            logger.info("=" * 80)
+            logger.info("DEBUG: Schema Information")
+            logger.info(f"Collection schema auto_id: {self.collection.schema.auto_id}")
+            logger.info("Schema fields:")
+            for field in self.collection.schema.fields:
+                logger.info(f"  - {field.name}: {field.dtype}, auto_id={field.auto_id}, is_primary={field.is_primary}")
+            
             # Check if primary key is auto_id
             is_auto_id = self.collection.schema.auto_id
+
+            # DEBUG: Print data types before insertion
+            logger.info("=" * 80)
+            logger.info("DEBUG: Data Being Inserted")
+            logger.info(f"Number of records: {len(embeddings)}")
+            logger.info(f"embeddings_np type: {type(embeddings_np)}, dtype: {embeddings_np.dtype}, shape: {embeddings_np.shape}")
+            logger.info(f"texts type: {type(texts)}, length: {len(texts)}")
+            logger.info(f"  - Sample text types: {[type(t) for t in texts[:min(3, len(texts))]]}")
+            logger.info(f"file_names type: {type(file_names)}, length: {len(file_names)}")
+            logger.info(f"  - Sample file_names types: {[type(f) for f in file_names[:min(3, len(file_names))]]}")
+            logger.info(f"file_hashes type: {type(file_hashes)}, length: {len(file_hashes)}")
+            logger.info(f"  - Sample file_hashes types: {[type(h) for h in file_hashes[:min(3, len(file_hashes))]]}")
+            logger.info(f"chunk_indices type: {type(chunk_indices)}, dtype: {chunk_indices.dtype}, length: {len(chunk_indices)}")
+            logger.info(f"  - Sample chunk_indices: {chunk_indices[:min(3, len(chunk_indices))]}")
+            logger.info(f"total_chunks_list type: {type(total_chunks_list)}, dtype: {total_chunks_list.dtype}, length: {len(total_chunks_list)}")
+            logger.info(f"  - Sample total_chunks: {total_chunks_list[:min(3, len(total_chunks_list))]}")
+
 
             # Prepare data
             data = [
@@ -162,9 +188,33 @@ class MilvusVectorStore:
             ]
 
             if not is_auto_id:
-                # Generate primary keys if auto_id is false
-                primary_keys = [uuid.uuid4().int >> 64 for _ in range(len(embeddings))]
+                # Generate primary keys if auto_id is false - must be numpy.int64
+                # Mask to ensure values fit in signed int64 range
+                primary_keys = np.array([uuid.uuid4().int & 0x7FFFFFFFFFFFFFFF for _ in range(len(embeddings))], dtype=np.int64)
+                logger.info(f"primary_keys type: {type(primary_keys)}, dtype: {primary_keys.dtype}, length: {len(primary_keys)}")
+                logger.info(f"  - Sample primary_keys: {primary_keys[:min(3, len(primary_keys))]}")
+                logger.info(f"  - Sample primary_keys types: {type(primary_keys[0]) if len(primary_keys) > 0 else 'N/A'}")
                 data.insert(0, primary_keys)
+            
+            logger.info("=" * 80)
+            logger.info(f"DEBUG: Final data list has {len(data)} fields")
+            logger.info(f"Expected field order based on auto_id={is_auto_id}:")
+            if not is_auto_id:
+                logger.info("  0: primary_key (INT64)")
+                logger.info("  1: vector (FLOAT_VECTOR)")
+                logger.info("  2: text (VARCHAR)")
+                logger.info("  3: file_name (VARCHAR)")
+                logger.info("  4: file_hash (VARCHAR)")
+                logger.info("  5: chunk_index (INT16)")
+                logger.info("  6: total_chunks (INT16)")
+            else:
+                logger.info("  0: vector (FLOAT_VECTOR)")
+                logger.info("  1: text (VARCHAR)")
+                logger.info("  2: file_name (VARCHAR)")
+                logger.info("  3: file_hash (VARCHAR)")
+                logger.info("  4: chunk_index (INT16)")
+                logger.info("  5: total_chunks (INT16)")
+            logger.info("=" * 80)
             
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")
