@@ -1,6 +1,7 @@
 """Milvus vector store module"""
 
 import logging
+import numpy as np
 from typing import List, Dict, Any, Optional
 import uuid
 
@@ -146,11 +147,14 @@ class MilvusVectorStore:
             file_hashes = [m.get('file_hash', '') for m in metadatas]
             chunk_indices = [m.get('chunk_index', 0) for m in metadatas]
             total_chunks_list = [m.get('total_chunks', 0) for m in metadatas]
+
+            # Convert embeddings to a NumPy array for Milvus
+            embeddings_np = np.array(embeddings, dtype=np.float32)
             
             # Prepare data
             data = [
                 ids,
-                embeddings,
+                embeddings_np,
                 texts,
                 file_names,
                 file_hashes,
