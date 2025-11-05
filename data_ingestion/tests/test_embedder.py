@@ -29,7 +29,7 @@ def mock_genai_client():
 @pytest.fixture
 def mock_tokenizer():
     """Mock tokenizer for the new SDK"""
-    with patch('src.embedder.genai.LocalTokenizer') as mock_tokenizer_class:
+    with patch('src.embedder.genai.LocalTokenizer', create=True) as mock_tokenizer_class:
         mock_tokenizer_instance = Mock()
         mock_token_result = Mock()
         mock_token_result.token_count = 10
