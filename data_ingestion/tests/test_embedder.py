@@ -123,11 +123,19 @@ class TestTextEmbedder:
     
     def test_text_truncation(self, mock_genai_client, mock_tokenizer):
         """Test text truncation when exceeding token limit"""
+        # Make the mock tokenizer return a token count based on text length for this test
+        def mock_compute_tokens(text):
+            mock_token_result = Mock()
+            # Simple estimation: 1 token per 4 chars
+            mock_token_result.token_count = len(text) // 4
+            return mock_token_result
+        
+        mock_tokenizer.return_value.compute_tokens.side_effect = mock_compute_tokens
+        
         embedder = TextEmbedder()
         embedder.max_tokens = 5  # Set a low limit for testing
         
         long_text = "This is a very long text that exceeds the token limit."
         truncated = embedder._truncate_text(long_text)
-        
         assert len(truncated) < len(long_text)
         assert embedder._count_tokens(truncated) <= embedder.max_tokens
