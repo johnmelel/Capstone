@@ -68,19 +68,19 @@ if __name__ == "__main__":
 
     print(f"Extracted {len(markdown):,} characters (raw)\n")
     
-    # # === USE CLEAN_AND_CHUNK ===
-    # print("Cleaning and chunking with post_processor...\n")
-    
-    # chunks = clean_and_chunk(
-    #     text=markdown, 
-    #     pdf_name=pdf_path.stem, 
-    #     page_num=1
-    # )
-    
-    # print(f"✓ Created {len(chunks)} clean chunks\n")
+    # === USE CLEAN_AND_CHUNK ===
+    print("Cleaning and chunking with post_processor...\n")
+
+    chunks_from_markdown = clean_and_chunk(
+        text=markdown, 
+        pdf_name=pdf_path.stem, 
+        page_num=1
+    )
+
+    print(f"✓ Created {len(chunks_from_markdown)} clean chunks\n")
     
     # Show how much was removed
-    total_cleaned_chars = sum(len(c['content']) for c in chunks)
+    total_cleaned_chars = sum(len(c['content']) for c in chunks_from_markdown)
     removed = len(markdown) - total_cleaned_chars
     pct = (removed / len(markdown) * 100) if len(markdown) > 0 else 0
     print(f"✓ Removed {removed:,} characters of noise ({pct:.1f}%)\n")
@@ -92,16 +92,14 @@ if __name__ == "__main__":
         print("FULL TEXT (CLEANED)")
         print(f"{'='*80}\n")
         
-        for chunk in chunks:
-            print(chunk['content'])
-            print()
+        print(markdown)
     else:
         # Show individual chunks
         print(f"\n{'='*80}")
-        print(f"CHUNKS (CLEANED) - Total: {len(chunks)}")
+        print(f"CHUNKS (CLEANED) - Total: {len(chunks_from_markdown)}")
         print(f"{'='*80}\n")
         
-        for i, chunk in enumerate(chunks, 1):
+        for i, chunk in enumerate(chunks_from_markdown, 1):
             print(f"--- CHUNK {i} ---\n")
             
             # Show content
