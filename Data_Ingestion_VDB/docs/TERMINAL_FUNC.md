@@ -3,6 +3,16 @@ When running the embedding code, ensure your directory is `Data_Ingestion_VDB`
 yourName@Mac Data_Ingestion_VDB %
 ```
 
+Create a virtual environment and run:
+```bash
+1. pip install --upgrade pip
+2. pip install -r requirements.txt
+3. mineru-models-download -m all (pick Huggingface)
+---
+Python Version: 3.10-3.13 (3.10.16 recommended)
+```
+
+
 # Runnables
 
 Workflow:
@@ -23,7 +33,7 @@ This file should parse and embed all data, according to the correct parsing stra
 If you do want to visualize the resulting chunks in order to assess the parsing and chunking strategy, run each `strategy_/.../_test.py` file separatedly with this directory path:
 
 ```bash
-yourName@Mac Data_Ingestion_VDB % python -m src.parsers.strategy_5_research_test
+yourName@Mac Data_Ingestion_VDB % python -m src.parsers.strategy_5_research.test
 ```
 
 # Other Additional Information
@@ -76,24 +86,6 @@ gcloud compute instances set-machine-type milvus-server \
 
 ```
 
-
-Small team (you):
-- e2-standard-2 (2 CPU, 8GB RAM)
-- 50GB pd-standard
-- Cost: ~$40/month
-
-Medium team:
-- e2-standard-4 (4 CPU, 16GB RAM)
-- 100GB pd-ssd
-- Cost: ~$120/month
-
-Large enterprise:
-- n2-standard-8 (8 CPU, 32GB RAM)
-- 500GB pd-ssd
-- + Kubernetes cluster for high availability
-- Cost: $500+/month
-
-SO, I created mivlus under these configurations. i can change later
 ```bash
 gcloud compute instances create milvus-server \
 --zone=us-central1-a \
