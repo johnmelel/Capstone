@@ -25,7 +25,7 @@ Observation: Do not run `strategy.py` (e.g., `strategy_5_research_test.py`) dire
 
 For main processing pipeline:
 ```bash
-yourName@Mac Data_Ingestion_VDB % python run_pipleine.py
+yourName@Mac Data_Ingestion_VDB % python run_pipeline.py
 ```
 
 This file should parse and embed all data, according to the correct parsing strategy. This one file calls for all other .py files, so you do not need to run them separatedly. 

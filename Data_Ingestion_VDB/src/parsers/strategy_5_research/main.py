@@ -5,9 +5,6 @@ Strategy 5 - main.py
 CHANGEABLE'S
     - self.images_root = Path("strategy_5_research/images")
     - self.save_images = True
-
-
-
 """
 
 from pathlib import Path
@@ -17,39 +14,25 @@ import re
 from ..base_parser import BaseParser
 
 
-# try:
-#     from docling.document_converter import DocumentConverter
-#     from docling.datamodel.base_models import InputFormat
-#     from docling.datamodel.pipeline_options import PdfPipelineOptions
-#     DOCLING_AVAILABLE = True
-# except ImportError:
-#     print("[Warning] Docling not installed.")
-#     print("[Info] Install with: pip install docling")
-#     DOCLING_AVAILABLE = False
-#     import fitz  # PyMuPDF fallback
-
-
 import subprocess
 import json
+import shutil
 
-
-pipeline_options = PdfPipelineOptions()
-pipeline_options.generate_picture_images = True  
+MINERU_AVAILABLE = True
 
 class ResearchParser(BaseParser):
     def __init__(self, config: Dict[str, Any], output_dir: Path):
         super().__init__(config, output_dir) # calls the parent class (BaseParser)
         self.strategy_name = "research_paper"
         
-        if DOCLING_AVAILABLE:
-            print(f"        [ResearchParser] Initialized with docling parser")
-            #self.converter = DocumentConverter(pipeline_options=pipeline_options)
-            self.converter = DocumentConverter()
-        else:
-            print(f"[ResearchParser] WARNING: Using fallback PyMuPDF parser")
-            print(f"[ResearchParser] Install docling for better results")
-            self.converter = None
-        
+        # MinerU output directories
+        self.mineru_temp_dir = Path("temp/mineru_output")
+        self.images_root = Path("strategy_5_research/images")
+        self.images_root.mkdir(parents=True, exist_ok=True)
+
+        print(f"[ResearchParser] Initialized with MinerU CLI parser")
+        print(f"[ResearchParser] Images will be saved to: {self.images_root}")
+
         # Section patterns for research papers
         self.section_keywords = {
             'abstract': ['abstract'],
@@ -60,450 +43,257 @@ class ResearchParser(BaseParser):
             'conclusion': ['conclusion', 'conclusions'],
             'references': ['references', 'bibliography']
         }
-
-        self.save_images = getattr(self, "save_images", True)
-        self.images_root = Path("strategy_5_research/images")
-    
-    # def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]: # returns list of dictionaries, each representing a chunk
-    #     print("-"*30,f"[ResearchParser] Starting extraction: {pdf_path.name}","-"*30)
-        
-    #     if DOCLING_AVAILABLE and self.converter:
-    #         return self._parse_with_docling(pdf_path, max_pages)
-    #     else:
-    #         return self._parse_with_pymupdf_fallback(pdf_path, max_pages)
-
-    def parse_pdf(pdf_path):
-        # Call MinerU via command line
-        output_dir = "temp_output"
-        
-        subprocess.run([
-            'mineru',
-            '-p', str(pdf_path),
-            '-o', output_dir
-        ])
-        
-        # Read MinerU's output (it creates JSON and markdown)
-        with open(f"{output_dir}/content_list.json") as f:
-            content = json.load(f)
-        
-        return content
-    
-    def _parse_with_docling(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
+   
+    def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
         """
-        Parse PDF using docling for high-quality extraction.
+        Main entry point - calls MinerU CLI and processes output.
         
-        docling Process:
-        1. Initialize reader/writer for disk I/O
-        2. Parse PDF with layout analysis
-        3. Extract structured content
-        4. Process each content type
-        5. Create chunks
+        MinerU Process:
+        1. Run mineru command on PDF
+        2. MinerU creates output folder with markdown + images
+        3. Read the markdown file
+        4. Copy images to our images folder
+        5. Process markdown into chunks
         
         Args:
-            pdf_path: Path to PDF
-            max_pages: Page limit
-            
+            pdf_path: Path to PDF file
+            max_pages: Not supported by MinerU CLI (processes all pages)
+        
         Returns:
             List of chunks
         """
-        print(f"[Docling] Parsing...")
+        print(f"\n{'='*70}")
+        print(f"[ResearchParser] Starting MinerU extraction: {pdf_path.name}")
+        print(f"{'='*70}")
         
+        if not pdf_path.exists():
+            print(f"[ERROR] PDF not found: {pdf_path}")
+            return []
+        
+        # Call MinerU and process output
+        return self._parse_with_mineru_cli(pdf_path, max_pages)
+    
+    def _parse_with_mineru_cli(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
+        """
+        Parse PDF using MinerU CLI command.
+        
+        Steps:
+        1. Create temp output directory
+        2. Run mineru command
+        3. Read generated markdown
+        4. Copy images to our folder
+        5. Process into chunks
+        """
         pdf_name = pdf_path.stem
-        all_chunks = []
+        
+        # Setup output directory
+        output_dir = self.mineru_temp_dir / pdf_name
+        output_dir.mkdir(parents=True, exist_ok=True)
         
         try:
-            # Convert PDF with docling
-            print(f"\n[Docling] Converting PDF...\n")
-            result = self.converter.convert(str(pdf_path))
-
-            # get document
-            doc = result.document
-
-            # Extract markdown
-            print(f"\n[Docling] Extractig text content...")
-            md_content = doc.export_to_markdown()
-
-            text_chunks = self._process_docling_text(
-                md_content,
-                pdf_name,
-                max_pages
+            # Step 1: Run MinerU command
+            print(f"\n[MinerU] Running CLI command...")
+            
+            cmd = [
+                'mineru',
+                '-p', str(pdf_path),  
+                '-o', str(output_dir) 
+            ]
+            
+            print(f"[MinerU DEBUG] Command: {' '.join(cmd)}")
+                        
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=300  # 5 minute timeout
             )
             
-            all_chunks.extend(text_chunks)
-            #print(f"[Docling] Extracted {len(text_chunks)} text chunks")
-
-            # Extract tables
-            print(f"\n[Docling] Extracting tables...")
-            table_chunks = self._process_docling_tables(
-                doc,
-                pdf_name,
-                max_pages
-            )
-            all_chunks.extend(table_chunks)
-            #print(f"[Docling] Extracted {len(table_chunks)} tables")
+            if result.returncode != 0:
+                print(f"[ERROR] MinerU command failed:")
+                print(f"  Return code: {result.returncode}")
+                print(f"  STDERR: {result.stderr}")
+                print(f"  STDOUT: {result.stdout}")
+                return []
             
-            # Extract images/figures
-            print(f"\n[Docling] Extracting images...")
-            image_chunks = self._process_docling_images(
-                doc,
-                pdf_name,
-                max_pages
-            )
-            all_chunks.extend(image_chunks)
-            #print(f"[Docling] Extracted {len(image_chunks)} images")
+            print(f"[MinerU] ✓ Extraction complete")
+            
+            # Step 2: Find the markdown file MinerU created
+            # MinerU creates: output_dir/{pdf_name}/auto/
+            auto_dir = output_dir / "auto"
+            if not auto_dir.exists():
+                # Try without auto subdirectory
+                auto_dir = output_dir
+        
 
+            md_files = list(output_dir.glob("**/*.md"))
+            if not md_files:
+                print(f"[ERROR] No markdown file found in {output_dir}")
+                return []
+            
+            md_file = md_files[0]  # MinerU creates one .md file per PDF
+            print(f"\n[MinerU] Reading markdown: {md_file.name}")
+            
+            # Step 3: Read markdown content
+            markdown = md_file.read_text(encoding='utf-8')
+            
+            # Step 4: Copy images to our folder
+            image_chunks = self._process_mineru_images(output_dir, pdf_name)
+            
+            # Step 5: Process markdown into text chunks
+            text_chunks = self._process_mineru_text(markdown, pdf_name)
+            
+            # Combine all chunks
+            all_chunks = text_chunks + image_chunks
+            
+            # Print summary
+            print(f"\n{'─' * 70}")
+            print(f"|  [Summary] Extraction complete for {pdf_name}")
+            print(f"{'─' * 70}")
+            print(f"|  Text chunks: {len(text_chunks)}")
+            print(f"|  Images:      {len(image_chunks)}")
+            print(f"|  Total:       {len(all_chunks)}")
+            print(f"{'─' * 70}")
+            
+            return all_chunks
+            
+        except subprocess.TimeoutExpired:
+            print(f"[ERROR] MinerU command timed out after 5 minutes")
+            return []
         except Exception as e:
-            print(f"[ERROR] Docling parsing failed: {e}")
-            print(f"[INFO] Falling back to PyMuPDF...")
+            print(f"[ERROR] MinerU parsing failed: {e}")
             import traceback
             traceback.print_exc()
-            return self._parse_with_pymupdf_fallback(pdf_path, max_pages)
-        
-        # Count chunks by type
-        text_count = len([c for c in all_chunks if c['type'] == 'text'])
-        image_count = len([c for c in all_chunks if c['type'] == 'image'])
-        table_count = len([c for c in all_chunks if c['type'] == 'table'])
+            return []
 
-        # Print clean summary
-        print(f"\n{'─' * 70}")
-        print(f"|  [Summary] Extraction complete for {pdf_name}")
-        print(f"{'─' * 70}")
-        print(f"|  Text chunks: {text_count}")
-        print(f"|  Images:      {image_count}")
-        print(f"|  Tables:      {table_count}")
-        print(f"|  Total:       {len(all_chunks)}")
-        print(f"{'─' * 70}")
-        
-        return all_chunks   
-
-    def _process_docling_text(self, md_content: str, pdf_name: str, 
-                         max_pages: int = None) -> List[Dict]:
+    def _process_mineru_images(self, output_dir: Path, pdf_name: str) -> List[Dict]:
         """
-        Process text content from Docling markdown output with cleaning.
+        Find images extracted by MinerU and copy to our images folder.
+        
+        MinerU saves images in: output_dir/images/*.png
+        We copy them to: self.images_root/{pdf_name}_*.png
+        """
+        image_chunks = []
+        
+        # MinerU puts images in an 'images' subfolder
+        mineru_images_dir = output_dir / "images"
+        
+        if not mineru_images_dir.exists():
+            print(f"[Images] No images folder found")
+            return []
+        
+        image_files = list(mineru_images_dir.glob("*.png")) + \
+                    list(mineru_images_dir.glob("*.jpg"))
+        
+        print(f"[Images] Found {len(image_files)} images")
+        
+        for idx, img_file in enumerate(image_files):
+            try:
+                # Copy to our images folder with better naming
+                new_name = f"{pdf_name}_fig{idx}.png"
+                dest_path = self.images_root / new_name
+                shutil.copy2(img_file, dest_path)
+                
+                # Create chunk
+                chunk_id = self.create_chunk_id(pdf_name, 1, 'image', idx)
+                
+                metadata = self.create_metadata(
+                    pdf_name=pdf_name,
+                    page_num=1,  # MinerU doesn't provide page numbers easily
+                    strategy_name=self.strategy_name
+                )
+                
+                image_chunks.append({
+                    'chunk_id': chunk_id,
+                    'type': 'image',
+                    'image_path': str(dest_path),
+                    'caption': '',  # Extract from markdown if needed
+                    'metadata': metadata
+                })
+                
+            except Exception as e:
+                print(f"[Images] Failed to process {img_file.name}: {e}")
+        
+        return image_chunks
+
+    def _process_mineru_text(self, markdown: str, pdf_name: str, max_pages: int = None) -> List[Dict]:
+        """
+        Process text content from MinerU markdown output with cleaning.
         
         NEW: Uses post_processor to clean and chunk text.
         
         Args:
-            md_content: Markdown text from Docling
+            markdown: Markdown text from MinerU
             pdf_name: PDF name
-            max_pages: Page limit
+            max_pages: Page limit (ignored)
             
         Returns:
             List of clean text chunks
         """
-        if not md_content or not md_content.strip():
+        if not markdown or not markdown.strip():
             return []
         
         # Import post_processor
         from .post_processor import clean_and_chunk
         
         # Clean and chunk the text (this does EVERYTHING)
-        chunks = clean_and_chunk(md_content, pdf_name, page_num=1)
+        chunks = clean_and_chunk(markdown, pdf_name, page_num=1)
         
         print(f"    [Text] Created {len(chunks)} clean chunks")
         
         return chunks
-
-    def _process_docling_tables(self, doc, pdf_name: str,
-                                max_pages: int = None) -> List[Dict]:
-        """
-        Process tables extracted by Docling.
+  
+    # Helper methods
+    def _get_overlap_text(self, text: str) -> str:
+        """Get overlap from end of chunk."""
+        if len(text) <= self.overlap:
+            return text
         
-        Args:
-            doc: Docling document object
-            pdf_name: PDF name
-            max_pages: Page limit
-            
-        Returns:
-            List of table chunks
-        """
-        table_chunks = []
+        overlap = text[-self.overlap:]
+        sentence_start = overlap.find('. ')
+        if sentence_start != -1 and sentence_start < self.overlap * 0.5:
+            overlap = overlap[sentence_start + 2:]
         
-        # Iterate through document elements
-        table_index = 0
-        for item in doc.tables:
-            try:
-                table_content = item.export_to_markdown()
-                    
-                # Try to get caption
-                caption = getattr(item, 'caption', '')
-                if not caption and hasattr(item, 'text'):
-                    caption = item.text[:200]  # Use first 200 chars as caption
-                    
-                # Get page number if available
-                if hasattr(item, 'prov') and len(item.prov) > 0 and hasattr(item.prov[0], 'page_no'):
-                    page_num = item.prov[0].page_no
-                else:
-                    page_num = 1
-                    
-                if max_pages and page_num > max_pages:
-                    continue
-                    
-                if table_content and table_content.strip():
-                    # Detect table ID
-                    table_id = self._detect_table_number(caption)
-                        
-                    # Create chunk
-                    chunk_id = self.create_chunk_id(pdf_name, page_num, 'table', table_index)
-                        
-                    metadata = self.create_metadata(
-                        pdf_name=pdf_name,
-                        page_num=page_num,
-                        strategy_name=self.strategy_name,
-                        table_id=table_id
-                    )
-                        
-                    table_chunks.append({
-                        'chunk_id': chunk_id,
-                        'type': 'table',
-                        'content': table_content,
-                        'caption': caption,
-                        'metadata': metadata
-                    })
-                        
-                    table_index += 1
-                
-            except Exception as e:
-                print(f"      [Error] Failed to process table {table_index}: {e}")
-        
-        return table_chunks
+        return overlap
     
-
-
-
-    def _as_image_bytes(img_obj) -> bytes:
-        """
-        Accepts bytes, PIL.Image, or numpy array and returns PNG bytes.
-        """
-        try:
-            # Case 1: already bytes
-            if isinstance(img_obj, (bytes, bytearray, memoryview)):
-                return bytes(img_obj)
-
-            # Case 2: PIL.Image
-            try:
-                from PIL import Image
-                if isinstance(img_obj, Image.Image):
-                    buf = io.BytesIO()
-                    img_obj.save(buf, format="PNG")
-                    return buf.getvalue()
-            except Exception:
-                pass
-
-            # Case 3: numpy array (HWC / HW)
-            try:
-                import numpy as np
-                from PIL import Image
-                if isinstance(img_obj, np.ndarray):
-                    if img_obj.dtype != np.uint8:
-                        arr = img_obj
-                        # Normalize to 0–255
-                        arr = (arr - arr.min()) / (arr.max() - arr.min() + 1e-8)
-                        img = Image.fromarray((arr * 255).astype('uint8'))
-                    else:
-                        img = Image.fromarray(img_obj)
-                    buf = io.BytesIO()
-                    img.save(buf, format="PNG")
-                    return buf.getvalue()
-            except Exception:
-                pass
-
-            # Case 4: common attribute fallbacks (Docling variants)
-            for attr in ("data", "bytes", "image_bytes", "content"):
-                if hasattr(img_obj, attr):
-                    maybe = getattr(img_obj, attr)
-                    if isinstance(maybe, (bytes, bytearray, memoryview)):
-                        return bytes(maybe)
-
-        except Exception:
-            pass
-
-        return b""
+    def _find_figure_references(self, text: str) -> List[str]:
+        """Find figure references in text."""
+        patterns = [
+            r'Figure\s+\d+[A-Z]?',
+            r'Fig\.\s*\d+[A-Z]?',
+            r'FIG\.\s*\d+[A-Z]?',
+        ]
         
-    def _safe_write_image(image_bytes: bytes, out_path: Path) -> Path: 
-        out_path.parent.mkdir(parents=True, exist_ok=True)
-        out_path.write_bytes(image_bytes)
-        return out_path
-
-
-
-
-
-
-    def _process_docling_images(self, doc, pdf_name: str, max_pages: int = None):
-        """
-        Find images in the Docling doc, convert them to bytes, (optionally) save to disk,
-        and build a list of 'image chunks' for your summary / downstream steps.
-        """
-        image_chunks = []
-
-        # 1) Figure out where images will be saved (if saving is enabled)
-        images_root = getattr(self, "images_root", Path("outputs/images"))
-        strategy = getattr(self, "strategy_name", "strategy")
-        save_images = getattr(self, "save_images", True)
-
-        # 2) Get picture items from the doc
-        pictures = []
-        if hasattr(doc, "pictures") and doc.pictures:
-            pictures = list(doc.pictures)
-            print(f"[DEBUG] doc.pictures has {len(pictures)} images")
-        elif hasattr(doc, "elements"):
-            # Fallback: some doc versions keep figures under elements with type "picture"/"figure"/"image"
-            pictures = [el for el in getattr(doc, "elements", [])
-                        if getattr(el, "type", "").lower() in {"picture", "figure", "image"}]
-            print(f"[DEBUG] doc.elements fallback found {len(pictures)} images")
-        else:
-            print("[DEBUG] No doc.pictures or elements with images found")
-
-        image_index = 0
-
-        # 3) Loop through each picture
-        for item in pictures:
-            try:
-                # Page number (if available)
-                page_num = getattr(item, "page_no", None) or getattr(item, "page", None) or 1
-                if max_pages and page_num and page_num > max_pages:
-                    # You *are* skipping pages if max_pages is set and exceeded
-                    # (Your old log text was confusing)
-                    print(f"[DEBUG] skipping page {page_num} due to max_pages={max_pages}")
-                    continue
-
-                # Caption (if available)
-                caption = getattr(item, "caption", "") or getattr(item, "text", "") or ""
-
-                # The raw image object (Docling may use different attribute names)
-                img_obj = getattr(item, "image", None) or getattr(item, "bitmap", None) or getattr(item, "content", None)
-
-                # Convert to bytes we can save or embed
-                image_bytes = _as_image_bytes(img_obj)
-                if not image_bytes:
-                    print(f"[DEBUG] skipping image {image_index}: could not get bytes")
-                    continue
-
-                print("[DEBUG] got image data!! uhul")
-
-                # Build a stable id and filename
-                figure_id = f"fig-{page_num}-{image_index}"
-                file_name = f"{pdf_name}__{strategy}__{figure_id}.png"
-
-                # 4) (Optional) Save to disk
-                if save_images:
-                    out_path = images_root / pdf_name / file_name
-                    _safe_write_image(image_bytes, out_path)
-                    image_path_str = str(out_path)
-                else:
-                    image_path_str = None  # not saved to disk
-
-                # 5) Build the metadata chunk (this is what your summary counts)
-                chunk_id = f"{pdf_name}__img__{image_index}"
-                metadata = {
-                    "pdf_name": pdf_name,
-                    "page_num": page_num,
-                    "caption": caption,
-                    "file_name": file_name,
-                    "image_relpath": str(Path(pdf_name) / file_name) if image_path_str else None,
-                    "strategy_name": strategy,
-                    "figure_id": figure_id,
-                    "type": "image"
-                }
-
-                image_chunks.append({
-                    "chunk_id": chunk_id,
-                    "type": "image",
-                    "image_path": image_path_str,  # full path or None
-                    "caption": caption,
-                    "metadata": metadata
-                })
-
-                image_index += 1
-
-            except Exception as e:
-                print(f"[Error] Failed to process image {image_index}: {e}")
-
-        return image_chunks
-
-
-
-    # def _process_docling_images(self, doc, pdf_name: str,
-    #                             max_pages: int = None) -> List[Dict]:
-    #     image_chunks = []
-
-    #     # DEBUG: Check if doc.pictures exists
-    #     if not hasattr(doc, 'pictures'):
-    #         print(f"[DEBUG]  ❌  doc has NO pictures attribute")
-    #         return image_chunks
-
-    #     # DEBUG: count pictures
-    #     pics_list = list(doc.pictures)
-    #     print(f"[DEBUG] doc.pictures has {len(pics_list)} images")
+        matches = []
+        for pattern in patterns:
+            found = re.findall(pattern, text, re.IGNORECASE)
+            matches.extend(found)
         
-    #     # Iterate through document elements
-    #     image_index = 0
-    #     for item in doc.pictures:
-    #         try:
-
-
-
-    #             caption = getattr(item, 'caption', '')
+        return list(set(matches))
     
-    #             if not caption and hasattr(item, 'text'):
-    #                 caption = item.text
-                    
-    #             # Get page number if available
-    #             page_num = getattr(item, 'page_no', 1)
-                    
-    #             if max_pages and page_num > max_pages:
-    #                 print(f"[DEBUG] skipping (page {page_num} > max {max_pages})")
-    #                 continue
-    #             print(f"[DEBUG] pages not skipped, continuing to save.")
-                    
-    #             # Try to get image data
-    #             image_data = None
-    #             if hasattr(item, 'image'):
-    #                 image_data = item.image
-    #                 print("[DEBUG] got image data!! uhul")
-    #             elif hasattr(item, 'data'):
-    #                 image_data = item.data
-    #                 print("[DEBUG] didn't get image data")
-                    
-    #             if image_data:
-    #                 # Save image
-    #                 image_path = self.save_image(
-    #                     image_data,
-    #                     pdf_name,
-    #                     page_num,
-    #                     image_index
-    #                 )
-
-                        
-    #                 # Detect figure ID
-    #                 figure_id = self._detect_figure_number(caption)
-                        
-    #                 # Create chunk
-    #                 chunk_id = self.create_chunk_id(pdf_name, page_num, 'image', image_index)
-                        
-    #                 metadata = self.create_metadata(
-    #                     pdf_name=pdf_name,
-    #                     page_num=page_num,
-    #                     strategy_name=self.strategy_name,
-    #                     figure_id=figure_id
-    #                 )
-                        
-    #                 image_chunks.append({
-    #                     'chunk_id': chunk_id,
-    #                     'type': 'image',
-    #                     'image_path': str(image_path),
-    #                     'caption': caption,
-    #                     'metadata': metadata
-    #                 })
-                        
-    #                 image_index += 1
-                
-    #         except Exception as e:
-    #             print(f"      [Error] Failed to process image {image_index}: {e}")
-        
-    #     return image_chunks
+    def _find_table_references(self, text: str) -> List[str]:
+        """Find table references in text."""
+        pattern = r'Table\s+\d+'
+        matches = re.findall(pattern, text, re.IGNORECASE)
+        return list(set(matches))
     
+    def _detect_figure_number(self, text: str) -> Optional[str]:
+        """Extract figure number from caption."""
+        if not text:
+            return None
+        
+        patterns = [
+            r'Fig(?:ure)?\s*(\d+[A-Z]?)',
+            r'FIG\s*(\d+[A-Z]?)',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, text, re.IGNORECASE)
+            if match:
+                return f"Figure_{match.group(1)}"
+        
+        return None
+
     def _detect_section(self, text: str) -> Optional[str]:
         """
         Detect if text is a section header.
@@ -567,125 +357,6 @@ class ResearchParser(BaseParser):
             'metadata': metadata
         }
 
-    def _parse_with_pymupdf_fallback(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
-        """
-        Fallback parser using PyMuPDF if Docling fails or unavailable.
-        
-        This is a simplified version that just extracts basic content.
-        For production, you should install Docling for better results.
-        
-        Args:
-            pdf_path: Path to PDF
-            max_pages: Page limit
-            
-        Returns:
-            List of chunks
-        """
-        print(f"[Fallback] Using basic PyMuPDF extraction...")
-        print(f"[Warning] Limited functionality without Docling")
-        
-        import fitz
-        
-        doc = fitz.open(pdf_path)
-        pdf_name = pdf_path.stem
-        total_pages = min(max_pages, doc.page_count) if max_pages else doc.page_count
-        
-        all_chunks = []
-        
-        for page_num in range(total_pages):
-            page = doc[page_num]
-            page_number = page_num + 1
-            
-            # Extract text
-            text = page.get_text("text", sort=True)
-            
-            if text.strip():
-                # Simple chunking
-                paragraphs = [p.strip() for p in text.split('\n\n') if p.strip()]
-                
-                chunk_index = 0
-                current_chunk = ""
-                
-                for para in paragraphs:
-                    if len(current_chunk) + len(para) > self.chunk_size:
-                        if current_chunk.strip():
-                            chunk_dict = self._create_text_chunk(
-                                current_chunk.strip(),
-                                pdf_name,
-                                page_number,
-                                chunk_index
-                            )
-                            all_chunks.append(chunk_dict)
-                            chunk_index += 1
-                        current_chunk = para + "\n\n"
-                    else:
-                        current_chunk += para + "\n\n"
-                
-                if current_chunk.strip():
-                    chunk_dict = self._create_text_chunk(
-                        current_chunk.strip(),
-                        pdf_name,
-                        page_number,
-                        chunk_index
-                    )
-                    all_chunks.append(chunk_dict)
-        
-        doc.close()
-        
-        print(f"\n[Fallback] Extracted {len(all_chunks)} chunks")
-        return all_chunks
-    
-    # Helper methods
-    def _get_overlap_text(self, text: str) -> str:
-        """Get overlap from end of chunk."""
-        if len(text) <= self.overlap:
-            return text
-        
-        overlap = text[-self.overlap:]
-        sentence_start = overlap.find('. ')
-        if sentence_start != -1 and sentence_start < self.overlap * 0.5:
-            overlap = overlap[sentence_start + 2:]
-        
-        return overlap
-    
-    def _find_figure_references(self, text: str) -> List[str]:
-        """Find figure references in text."""
-        patterns = [
-            r'Figure\s+\d+[A-Z]?',
-            r'Fig\.\s*\d+[A-Z]?',
-            r'FIG\.\s*\d+[A-Z]?',
-        ]
-        
-        matches = []
-        for pattern in patterns:
-            found = re.findall(pattern, text, re.IGNORECASE)
-            matches.extend(found)
-        
-        return list(set(matches))
-    
-    def _find_table_references(self, text: str) -> List[str]:
-        """Find table references in text."""
-        pattern = r'Table\s+\d+'
-        matches = re.findall(pattern, text, re.IGNORECASE)
-        return list(set(matches))
-    
-    def _detect_figure_number(self, text: str) -> Optional[str]:
-        """Extract figure number from caption."""
-        if not text:
-            return None
-        
-        patterns = [
-            r'Fig(?:ure)?\s*(\d+[A-Z]?)',
-            r'FIG\s*(\d+[A-Z]?)',
-        ]
-        
-        for pattern in patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                return f"Figure_{match.group(1)}"
-        
-        return None
-    
     def _detect_table_number(self, text: str) -> Optional[str]:
         """Extract table number from caption."""
         if not text:
