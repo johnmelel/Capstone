@@ -36,7 +36,9 @@ Data_Ingestion_VDB/test_dataset/
 Data_Ingestion_VDB/full_dataset/
 Data_Ingestion_VDB/tests/
 Data_Ingestion_VDB/docling/
+Data_Ingestion_VDB/detectron2/
 Data_Ingestion_VDB/venv/
+
 
 data_ingestion/.env
 data_ingestion/service_account.json

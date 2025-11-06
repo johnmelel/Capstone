@@ -21,6 +21,7 @@ yourName@Mac Data_Ingestion_VDB % python run_pipleine.py
 This file should parse and embed all data, according to the correct parsing strategy. This one file calls for all other .py files, so you do not need to run them separatedly. 
 
 If you do want to visualize the resulting chunks in order to assess the parsing and chunking strategy, run each `strategy_/.../_test.py` file separatedly with this directory path:
+
 ```bash
 yourName@Mac Data_Ingestion_VDB % python -m src.parsers.strategy_5_research_test
 ```
