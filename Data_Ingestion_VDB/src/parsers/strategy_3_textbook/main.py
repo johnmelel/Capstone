@@ -97,7 +97,7 @@ class TextbookParser(BaseParser):
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=500  # 5 minute timeout
+                timeout=None 
             )
             
             if result.returncode != 0:
