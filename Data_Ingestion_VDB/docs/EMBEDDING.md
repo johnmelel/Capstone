@@ -1,7 +1,7 @@
 # Model
-We are currently exploring the use of **Docling** or **MinerU** as parsers. Previously, other parsers such as PyMuPDF and PyMuPDF4LLM were used. However, they failed at appropriately processing tables. Doclingand MinerU should perform much better with the matter. However, one initial challenge faced by our team was the different page formatting and structure between each PDF, and within each file. 
+We are currently exploring the use of  **MinerU** as parser. Previously, other parsers such as PyMuPDF and PyMuPDF4LLM were used. However, they failed at appropriately processing tables. 
 
-Therefore, we remain using Docling/MinerU as parser, but including rule-base decisions to ensure parsing is correct and adjusted for each document. This results in a complex pipeliene with several adaptations for each document. 
+One initial challenge faced by our team was the different page formatting and structure between each PDF, and within each file. We remain using MinerU as a parser, but included rule-base decisions to ensure parsing is correct and adjusted for each document. This results in a complex pipeliene with several adaptations for each document. 
 
 
 # Folder breakdown

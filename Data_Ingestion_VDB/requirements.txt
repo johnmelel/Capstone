@@ -5,23 +5,26 @@ vertexai>=1.38.0
 # Milvus
 pymilvus>=2.3.0
 
-# Utilities
+# Configuration & Utilities
 python-dotenv>=1.0.0
 PyYAML>=6.0
-Pillow>=10.0.0
-numpy>=1.24.0, <2.0.0 
 tqdm>=4.65.0
 
+# Image processing
+Pillow>=10.0.0
+
+numpy>=1.21.6, <2.0.0 
+
+
+
 # PDF Processing - Advanced Parsers 
-#Uncomment the parsers you want to test:
-docling>=1.0.0                    # IBM Docling AI parser
-unstructured[pdf]>=0.10.0         # Unstructured.io parser
-pdfminer.six>=20221105            # Required for unstructured       
-magic-pdf                         # MinerU parser
-mineru-vl-utils[transformers]
-pytesseract
-paddlepaddle
-paddleocr
+#docling>=1.0.0
+mineru==2.6.4
+
+
+#torch==2.1.2
+#torchvision==0.16.2 
+#torchaudio==0.21.2
 
 # LangChain compatibility
 tiktoken>=0.5.2,<0.6.0

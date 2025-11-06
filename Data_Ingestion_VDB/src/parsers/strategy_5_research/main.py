@@ -17,19 +17,20 @@ import re
 from ..base_parser import BaseParser
 
 
-try:
-    from docling.document_converter import DocumentConverter
-    from docling.datamodel.base_models import InputFormat
-    from docling.datamodel.pipeline_options import PdfPipelineOptions
-    DOCLING_AVAILABLE = True
-except ImportError:
-    print("[Warning] Docling not installed.")
-    print("[Info] Install with: pip install docling")
-    DOCLING_AVAILABLE = False
-    import fitz  # PyMuPDF fallback
+# try:
+#     from docling.document_converter import DocumentConverter
+#     from docling.datamodel.base_models import InputFormat
+#     from docling.datamodel.pipeline_options import PdfPipelineOptions
+#     DOCLING_AVAILABLE = True
+# except ImportError:
+#     print("[Warning] Docling not installed.")
+#     print("[Info] Install with: pip install docling")
+#     DOCLING_AVAILABLE = False
+#     import fitz  # PyMuPDF fallback
 
 
-
+import subprocess
+import json
 
 
 pipeline_options = PdfPipelineOptions()
@@ -63,16 +64,29 @@ class ResearchParser(BaseParser):
         self.save_images = getattr(self, "save_images", True)
         self.images_root = Path("strategy_5_research/images")
     
-    def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]: # returns list of dictionaries, each representing a chunk
-        # print(f"\n{'='*70}")
-        # print(f"[ResearchParser] Starting extraction: {pdf_path.name}")
-        # print(f"{'='*70}")
-        print("-"*30,f"[ResearchParser] Starting extraction: {pdf_path.name}","-"*30)
+    # def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]: # returns list of dictionaries, each representing a chunk
+    #     print("-"*30,f"[ResearchParser] Starting extraction: {pdf_path.name}","-"*30)
         
-        if DOCLING_AVAILABLE and self.converter:
-            return self._parse_with_docling(pdf_path, max_pages)
-        else:
-            return self._parse_with_pymupdf_fallback(pdf_path, max_pages)
+    #     if DOCLING_AVAILABLE and self.converter:
+    #         return self._parse_with_docling(pdf_path, max_pages)
+    #     else:
+    #         return self._parse_with_pymupdf_fallback(pdf_path, max_pages)
+
+    def parse_pdf(pdf_path):
+        # Call MinerU via command line
+        output_dir = "temp_output"
+        
+        subprocess.run([
+            'mineru',
+            '-p', str(pdf_path),
+            '-o', output_dir
+        ])
+        
+        # Read MinerU's output (it creates JSON and markdown)
+        with open(f"{output_dir}/content_list.json") as f:
+            content = json.load(f)
+        
+        return content
     
     def _parse_with_docling(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
         """
