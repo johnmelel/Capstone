@@ -38,6 +38,10 @@ Data_Ingestion_VDB/tests/
 Data_Ingestion_VDB/docling/
 Data_Ingestion_VDB/detectron2/
 Data_Ingestion_VDB/venv/
+Data_Ingestion_VDB/temp/
+Data_Ingestion_VDB/strategy_3_textbook/
+Data_Ingestion_VDB/strategy_5_research/
+
 
 
 data_ingestion/.env
