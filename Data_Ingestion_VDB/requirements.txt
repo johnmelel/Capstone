@@ -1,15 +1,8 @@
-# # PDF Processing - Core
-# PyMuPDF>=1.23.0
-# pymupdf4llm>=0.0.9
-
-# Parsing
-magic-pdf>=0.7.0 # MinerU
-
 # Google Cloud for Vertex AI
 google-cloud-aiplatform>=1.38.0
 vertexai>=1.38.0
 
-# Vector Store - MILVUS instead of ChromaDB
+# Milvus
 pymilvus>=2.3.0
 
 # Utilities
@@ -23,7 +16,12 @@ tqdm>=4.65.0
 #Uncomment the parsers you want to test:
 docling>=1.0.0                    # IBM Docling AI parser
 unstructured[pdf]>=0.10.0         # Unstructured.io parser
-pdfminer.six>=20221105            # Required for unstructured
+pdfminer.six>=20221105            # Required for unstructured       
+magic-pdf                         # MinerU parser
+mineru-vl-utils[transformers]
+pytesseract
+paddlepaddle
+paddleocr
 
 # LangChain compatibility
 tiktoken>=0.5.2,<0.6.0
