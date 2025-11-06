@@ -45,23 +45,6 @@ class ResearchParser(BaseParser):
         }
    
     def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
-        """
-        Main entry point - calls MinerU CLI and processes output.
-        
-        MinerU Process:
-        1. Run mineru command on PDF
-        2. MinerU creates output folder with markdown + images
-        3. Read the markdown file
-        4. Copy images to our images folder
-        5. Process markdown into chunks
-        
-        Args:
-            pdf_path: Path to PDF file
-            max_pages: Not supported by MinerU CLI (processes all pages)
-        
-        Returns:
-            List of chunks
-        """
         print(f"\n{'='*70}")
         print(f"[ResearchParser] Starting MinerU extraction: {pdf_path.name}")
         print(f"{'='*70}")
