@@ -17,30 +17,26 @@ class Config:
     GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "service_account.json")
     GCS_RECURSIVE = os.getenv("GCS_RECURSIVE", "true").lower() in ("true", "1", "yes")
     
+    # Google Cloud Vertex AI Configuration (for multimodal embeddings)
+    GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
+    GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+    
     # Milvus Configuration
     MILVUS_URI = os.getenv("MILVUS_URI")
     MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
     
-    # Gemini Embedding Configuration (New SDK)
-    # The new google-genai SDK supports models like:
-    # - gemini-embedding-001 (768 dimensions)
-    # - text-embedding-004 (768 dimensions)
-    # - text-embedding-005 (768 dimensions)
-    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
-    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))  # Embedding model output dimension
-    MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
+    # Embedding Configuration
+    # Using Vertex AI multimodal embeddings (1408 dimensions, supports text + images)
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "1408"))
     
-    # Processing Configuration (TOKEN-BASED, not characters)
-    # CHUNK_SIZE: Target tokens per chunk (default 1792 leaves 256 token buffer)
-    # CHUNK_OVERLAP: Tokens to overlap between chunks (default 64 tokens ≈ 16 words)
-    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1792"))
-    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "64"))
+    # Processing Configuration
+    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "800"))  # Characters per chunk
+    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))  # Overlap between chunks
     BATCH_SIZE = int(os.getenv("BATCH_SIZE", "100"))
     
-    # Local Storage (removed - no longer needed for stream processing)
-    # DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", "./downloads"))
+    # Output directories
+    OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", "./extracted_content"))
     
     @classmethod
     def validate(cls):
@@ -49,7 +45,7 @@ class Config:
             ("GCS_BUCKET_NAME", cls.GCS_BUCKET_NAME),
             ("MILVUS_URI", cls.MILVUS_URI),
             ("MILVUS_API_KEY", cls.MILVUS_API_KEY),
-            ("GEMINI_API_KEY", cls.GEMINI_API_KEY),
+            ("GOOGLE_CLOUD_PROJECT", cls.GOOGLE_CLOUD_PROJECT),
         ]
         
         missing_fields = [field for field, value in required_fields if not value]

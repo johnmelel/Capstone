@@ -2,11 +2,12 @@
 google-cloud-storage==2.14.0
 google-auth==2.25.2
 
-# PDF Processing - Using pdfplumber (pure Python, no system dependencies)
-pdfplumber==0.10.3
+# Google Cloud Vertex AI for multimodal embeddings
+google-cloud-aiplatform>=1.38.0
+vertexai>=1.38.0
 
-# Embeddings - Gemini API (New SDK)
-google-genai>=1.0.0
+# PDF Processing - MinerU for advanced extraction
+mineru==2.6.4
 
 # Vector Store
 pymilvus==2.3.4
@@ -14,6 +15,13 @@ pymilvus==2.3.4
 # Utilities
 python-dotenv==1.0.0
 tqdm==4.66.1
+PyYAML>=6.0
+
+# Image processing (for MinerU)
+Pillow>=10.0.0
+
+# Numpy
+numpy>=1.21.6,<2.0.0
 
 # Testing
 pytest==7.4.3

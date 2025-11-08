@@ -8,9 +8,8 @@ from google.cloud import storage
 from google.oauth2 import service_account
 
 from .config import Config
-from .pdf_extractor import PDFExtractor
-from .chunker import TextChunker
-from .embedder import TextEmbedder
+from .mineru_parser import MinerUParser
+from .vertex_embedder import VertexAIEmbedder
 from .vector_store import MilvusVectorStore
 from .utils import setup_logging
 
@@ -31,12 +30,21 @@ class IngestionPipeline:
         
         # Initialize components
         logger.info("Initializing pipeline components...")
-        self.pdf_extractor = PDFExtractor()
-        self.chunker = TextChunker(
-            chunk_size=Config.CHUNK_SIZE,
-            chunk_overlap=Config.CHUNK_OVERLAP
+        
+        # MinerU parser for PDF extraction
+        parser_config = {
+            'chunk_size': Config.CHUNK_SIZE,
+            'overlap': Config.CHUNK_OVERLAP
+        }
+        self.parser = MinerUParser(parser_config, Config.OUTPUT_DIR)
+        
+        # Vertex AI embedder for multimodal embeddings
+        self.embedder = VertexAIEmbedder(
+            project_id=Config.GOOGLE_CLOUD_PROJECT,
+            location=Config.GOOGLE_CLOUD_LOCATION
         )
-        self.embedder = TextEmbedder(model_name=Config.EMBEDDING_MODEL)
+        
+        # Milvus vector store
         self.vector_store = MilvusVectorStore(
             uri=Config.MILVUS_URI,
             api_key=Config.MILVUS_API_KEY,
@@ -112,7 +120,7 @@ class IngestionPipeline:
     
     def process_pdf_blob(self, pdf_blob: storage.Blob) -> List[Dict[str, Any]]:
         """
-        Process a single PDF blob from GCS
+        Process a single PDF blob from GCS using MinerU
         
         Args:
             pdf_blob: GCS blob object
@@ -122,53 +130,38 @@ class IngestionPipeline:
         """
         logger.info(f"Processing: {pdf_blob.name}")
         
-        # Extract text
-        text = self.pdf_extractor.extract_text(pdf_blob)
-        if not text:
-            logger.warning(f"No text extracted from {pdf_blob.name}, skipping")
-            return []
+        # Download PDF to temp location
+        import tempfile
+        from pathlib import Path
         
-        # Create a mock file path object for chunker compatibility
-        class MockFilePath:
-            def __init__(self, name):
-                self.name = name
-                self.etag = getattr(pdf_blob, 'etag', None)
-                self.size = getattr(pdf_blob, 'size', None)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp_file:
+            temp_path = Path(tmp_file.name)
+            pdf_blob.download_to_filename(str(temp_path))
         
-        mock_file_path = MockFilePath(pdf_blob.name)
-        
-        # Chunk text
-        chunks_with_metadata = self.chunker.chunk_with_metadata(
-            text=text,
-            file_path=mock_file_path
-        )
-        
-        if not chunks_with_metadata:
-            logger.warning(f"No chunks created from {pdf_blob.name}, skipping")
-            return []
-        
-        logger.info(f"Created {len(chunks_with_metadata)} chunks from {pdf_blob.name}")
-        
-        # Process chunks in smaller batches to manage memory
-        chunk_batch_size = min(Config.BATCH_SIZE, 50)  # Limit embedding batch size
-        all_chunks_with_embeddings = []
-        
-        for i in range(0, len(chunks_with_metadata), chunk_batch_size):
-            batch_chunks = chunks_with_metadata[i:i + chunk_batch_size]
+        try:
+            # Parse PDF with MinerU (extracts text, images, tables)
+            chunks = self.parser.parse_pdf(temp_path)
             
-            # Extract texts for embedding
-            batch_texts = [chunk['text'] for chunk in batch_chunks]
+            if not chunks:
+                logger.warning(f"No chunks extracted from {pdf_blob.name}, skipping")
+                return []
             
-            # Generate embeddings for this batch
-            logger.debug(f"Generating embeddings for batch {i // chunk_batch_size + 1}")
-            batch_embeddings = self.embedder.embed_text(batch_texts)
+            logger.info(f"Extracted {len(chunks)} chunks from {pdf_blob.name}")
             
-            # Combine embeddings with chunks
-            for j, chunk_data in enumerate(batch_chunks):
-                chunk_data['embedding'] = batch_embeddings[j].tolist()
-                all_chunks_with_embeddings.append(chunk_data)
-        
-        return all_chunks_with_embeddings
+            # Generate embeddings for all chunks (text + images)
+            logger.info(f"Generating embeddings...")
+            embeddings = self.embedder.embed_batch(chunks)
+            
+            # Add embeddings to chunks
+            for chunk, embedding in zip(chunks, embeddings):
+                chunk['embedding'] = embedding.tolist()
+            
+            return chunks
+            
+        finally:
+            # Clean up temp file
+            if temp_path.exists():
+                temp_path.unlink()
     
     def ingest_chunks(self, chunks_with_embeddings: List[Dict[str, Any]]):
         """
@@ -181,7 +174,13 @@ class IngestionPipeline:
             return
         
         embeddings = [chunk['embedding'] for chunk in chunks_with_embeddings]
-        texts = [chunk['text'] for chunk in chunks_with_embeddings]
+        
+        # For text chunks, use content; for images, use caption or empty string
+        texts = [
+            chunk.get('content', chunk.get('caption', '')) 
+            for chunk in chunks_with_embeddings
+        ]
+        
         metadatas = [chunk['metadata'] for chunk in chunks_with_embeddings]
         
         # Insert in batches
@@ -223,15 +222,15 @@ class IngestionPipeline:
             for pdf_blob in tqdm(pdf_blobs, desc="Processing PDFs"):
                 try:
                     # Check if file has already been processed (basic deduplication)
-                    # This is a simple check - in production you'd want a more robust system
+                    # Check by file name in metadata
                     existing_count = self.vector_store.collection.query(
                         expr=f'file_name == "{pdf_blob.name}"',
-                        output_fields=["id"],
+                        output_fields=["primary_key"],
                         limit=1
                     )
                     
                     if existing_count:
-                        logger.info(f"Skipping {pdf_blob.name} - already processed ({len(existing_count)} chunks found)")
+                        logger.info(f"Skipping {pdf_blob.name} - already processed")
                         continue
                     
                     chunks_with_embeddings = self.process_pdf_blob(pdf_blob)
