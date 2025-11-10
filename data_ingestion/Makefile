@@ -21,9 +21,8 @@ install_requirements:
 	conda run -n $(ENV_NAME) pip install -r $(REQ_FILE)
 
 install_mineru:
-	if not exist MinerU (\
-		git clone https://github.com/opendatalab/MinerU.git\
-	) && cd MinerU && conda run -n $(ENV_NAME) pip install -e .[core]
+	@if [ ! -d "MinerU" ]; then git clone https://github.com/opendatalab/MinerU.git; fi
+	cd MinerU && conda run -n $(ENV_NAME) pip install -e .[core]
 
 run_pipeline:
 	conda run -n $(ENV_NAME) python $(PIPELINE)
