@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 # Configure Google Generative AI
 genai.configure(api_key=Config.GOOGLE_API_KEY)
 
-def google_llm_model_func(prompt: str, **kwargs):
-    """Custom LLM model function using Google's Generative AI.
+async def google_llm_model_func(prompt: str, **kwargs):
+    """Custom async LLM model function using Google's Generative AI.
     
     Note: Removes 'system_prompt' from kwargs if present, as it's not supported
     by the current version of Google Generative AI SDK.
@@ -27,11 +27,16 @@ def google_llm_model_func(prompt: str, **kwargs):
     kwargs.pop('system_instruction', None)
     
     model = genai.GenerativeModel(Config.LLM_MODEL)
-    response = model.generate_content(prompt, **kwargs)
+    # Run in executor to avoid blocking
+    loop = asyncio.get_event_loop()
+    response = await loop.run_in_executor(
+        None, 
+        lambda: model.generate_content(prompt, **kwargs)
+    )
     return response.text
 
-def google_embedding_func(texts: List[str]) -> List[List[float]]:
-    """Custom embedding function using Google's Generative AI.
+async def google_embedding_func(texts: List[str]) -> List[List[float]]:
+    """Custom async embedding function using Google's Generative AI.
     
     Args:
         texts: List of text strings to embed
@@ -61,10 +66,15 @@ def google_embedding_func(texts: List[str]) -> List[List[float]]:
     for i in range(0, len(texts), batch_size):
         batch = texts[i:i + batch_size]
         try:
-            response = genai.embed_content(
-                model=Config.EMBEDDING_MODEL,
-                content=batch,
-                task_type="retrieval_document"
+            # Run in executor to avoid blocking
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(
+                None,
+                lambda b=batch: genai.embed_content(
+                    model=Config.EMBEDDING_MODEL,
+                    content=b,
+                    task_type="retrieval_document"
+                )
             )
             # Response structure: {'embedding': [list of vectors]}
             if isinstance(response, dict) and 'embedding' in response:
@@ -232,7 +242,8 @@ class RAGProcessor:
                     if not embedding or len(embedding) == 0:
                         logger.info(f"Generating embedding for chunk {idx}...")
                         try:
-                            embedding = google_embedding_func([text])[0]
+                            embedding_result = await google_embedding_func([text])
+                            embedding = embedding_result[0]
                         except (ValueError, IndexError) as e:
                             logger.error(f"Failed to generate embedding for chunk {idx}: {e}")
                             continue
@@ -273,7 +284,7 @@ class RAGProcessor:
                     logger.info(f"Created {len(chunks)} chunks from direct extraction")
                     
                     # Generate embeddings for chunks
-                    embeddings = google_embedding_func(chunks)
+                    embeddings = await google_embedding_func(chunks)
                     
                     for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
                         data.append({
