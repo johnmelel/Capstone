@@ -6,5 +6,4 @@ pandas
 numpy
 google-auth
 google-generativeai
-reportlab
 python-dotenv
