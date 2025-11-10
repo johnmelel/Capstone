@@ -8,8 +8,8 @@ from typing import List, Optional
 from google.cloud import storage
 from google.oauth2 import service_account
 
-from .config import Config
-from .utils import sanitize_filename
+from config import Config
+from utils import sanitize_filename
 
 
 logger = logging.getLogger(__name__)
@@ -58,7 +58,7 @@ class GCSDownloader:
             if not bucket.exists():
                 raise ValueError(f"Bucket '{self.bucket_name}' does not exist or is not accessible")
 
-            logger.info(f"Successfully authenticated with Google Cloud Storage")
+            logger.info("Successfully authenticated with Google Cloud Storage")
             logger.info(f"Connected to bucket: {self.bucket_name}")
             return client, bucket
 

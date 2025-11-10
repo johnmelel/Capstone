@@ -4,7 +4,6 @@
 import logging
 import numpy as np
 from typing import List, Dict, Any, Optional
-import uuid
 import pandas as pd
 import hashlib
 
@@ -17,7 +16,7 @@ from pymilvus import (
     utility
 )
 
-from .config import Config
+from config import Config
 
 
 logger = logging.getLogger(__name__)
@@ -138,7 +137,7 @@ class MilvusVectorStore:
         embeddings: List[List[float]],
         texts: List[str],
         metadatas: List[Dict[str, Any]]
-    ) -> List[str]:
+    ) -> List[int]:
         """
         Insert embeddings with metadata into Milvus
 
@@ -148,7 +147,7 @@ class MilvusVectorStore:
             metadatas: List of metadata dictionaries
 
         Returns:
-            List of inserted IDs
+            List of inserted primary keys
         """
         if not (len(embeddings) == len(texts) == len(metadatas)):
             raise ValueError("embeddings, texts, and metadatas must have the same length")
@@ -164,24 +163,27 @@ class MilvusVectorStore:
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
 
-            # Prepare data
-            data = [
-                embeddings_np,
-                texts,
-                file_names,
-                file_hashes,
-                chunk_indices,
-                total_chunks_list,
-            ]
-
             # Generate deterministic primary keys
             primary_keys = []
             for i in range(len(texts)):
-                key_string = f"{file_hashes[i]}-{texts[i]}"
+                key_string = f"{file_hashes[i]}-{chunk_indices[i]}-{texts[i][:100]}"
                 hashed_key = hashlib.sha256(key_string.encode()).hexdigest()
+                # Convert first 16 hex chars to int64
                 primary_keys.append(int(hashed_key[:16], 16))
 
-            data.insert(0, np.array(primary_keys, dtype=np.int64))
+            primary_keys_np = np.array(primary_keys, dtype=np.int64)
+
+            # Prepare data in the EXACT order of schema fields:
+            # Schema order: primary_key, vector, text, file_name, file_hash, chunk_index, total_chunks
+            data = [
+                primary_keys_np,      # primary_key (INT64)
+                embeddings_np,        # vector (FLOAT_VECTOR)
+                texts,                # text (VARCHAR)
+                file_names,           # file_name (VARCHAR)
+                file_hashes,          # file_hash (VARCHAR)
+                chunk_indices,        # chunk_index (INT16)
+                total_chunks_list,    # total_chunks (INT16)
+            ]
 
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")
@@ -189,10 +191,10 @@ class MilvusVectorStore:
             self.collection.flush()
 
             logger.info(f"Successfully inserted {len(embeddings)} entities")
-            return [] # Return empty list as IDs are auto-generated
+            return primary_keys
 
         except Exception as e:
-            logger.error(f"Error inserting data into Milvus: {e}")
+            logger.error(f"Error inserting data into Milvus: {e}", exc_info=True)
             raise
 
     def search(
