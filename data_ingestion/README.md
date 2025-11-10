@@ -42,7 +42,7 @@ data_ingestion/
 │   └── test_vector_store.py   # Vector store tests
 ├── .env                        # Environment variables (create from .env.example)
 ├── .env.example               # Example environment variables
-├── requirements.txt           # Python dependencies (includes mineru==0.2.6)
+├── requirements.txt           # Python dependencies (includes mineru)
 ├── test_setup.py              # Setup validation script
 ├── test_mineru_pipeline.py    # Quick pipeline test
 ├── INTEGRATION_README.md      # Detailed integration documentation
@@ -70,7 +70,7 @@ pip install -r requirements.txt
 ```
 
 This will install all required packages including:
-- `mineru==0.2.6` - PDF extraction
+- `mineru` - PDF extraction
 - `google-genai` - Gemini API (embeddings + vision)
 - `pymilvus` - Vector database
 - `google-cloud-storage` - GCS integration

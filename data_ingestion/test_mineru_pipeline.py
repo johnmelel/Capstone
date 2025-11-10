@@ -49,7 +49,7 @@ def test_mineru_pipeline():
         else:
             print(f"⚠️  MinerU command found but returned error: {result.stderr}")
     except FileNotFoundError:
-        print("❌ MinerU not found! Install with: pip install mineru==0.2.6")
+        print("❌ MinerU not found! Install with: pip install mineru")
         print("   See: https://github.com/opendatalab/MinerU#installation")
         return False
     except Exception as e:

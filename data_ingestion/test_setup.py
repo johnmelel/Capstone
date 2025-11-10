@@ -205,7 +205,7 @@ def test_components():
                 print(f"⚠️  MinerU command found but returned: {result.stderr.strip()}")
         except FileNotFoundError:
             print("❌ MinerU NOT installed!")
-            print("   Install with: pip install mineru==0.2.6")
+            print("   Install with: pip install mineru")
             print("   See: https://github.com/opendatalab/MinerU#installation")
             pytest.fail("MinerU not installed")
         except Exception as e:

@@ -15,14 +15,22 @@ create_env:
 remove_env:
 	conda env remove -y -n $(ENV_NAME)
 
-recreate_env: remove_env create_env install_requirements install_mineru
+recreate_env:
+	conda env remove -y -n $(ENV_NAME)
+	conda create -y -n $(ENV_NAME) python=3.10
+	conda run -n $(ENV_NAME) pip install --upgrade pip
+	conda run -n $(ENV_NAME) pip install uv
+	conda run -n $(ENV_NAME) uv pip install -U "mineru[core]"
+	conda run -n $(ENV_NAME) pip install -r $(REQ_FILE)
 
 install_requirements:
 	conda run -n $(ENV_NAME) pip install -r $(REQ_FILE)
 
+
 install_mineru:
-	@if [ ! -d "MinerU" ]; then git clone https://github.com/opendatalab/MinerU.git; fi
-	cd MinerU && conda run -n $(ENV_NAME) pip install -e .[core]
+	pip install --upgrade pip
+	pip install uv
+	uv pip install -U "mineru[core]"
 
 run_pipeline:
 	conda run -n $(ENV_NAME) python $(PIPELINE)

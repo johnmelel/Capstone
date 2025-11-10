@@ -1,0 +1,9 @@
+raganything
+google-cloud-storage
+pymilvus
+pyarrow
+pandas
+numpy
+google-auth
+google-generativeai
+reportlab
