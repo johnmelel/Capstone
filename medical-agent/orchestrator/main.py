@@ -43,7 +43,10 @@ When responding:
 - Highlight key clinical insights
 - Note any important monitoring requirements or safety considerations
 - Keep responses focused and actionable
-- Format as JSON with 'answer', 'structured_source', and 'unstructured_source' fields
+- Count your reasoning steps as you work through the problem
+- Format as JSON with 'answer', 'structured_source', 'unstructured_source', and 'reasoning_steps' fields
+
+IMPORTANT: Please count and include the number of distinct reasoning steps you took to arrive at your answer. Include this as 'reasoning_steps' (integer) in your JSON response.
 """
         
     def _setup_gemini(self, service_account_path: str):

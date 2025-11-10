@@ -1,0 +1,92 @@
+[
+  {
+    "category": "1. Diagnostic Pattern Reasoning",
+    "query": "What are the possible diagnoses for a patient with elevated troponin levels and recent chest pain?",
+    "reasoning_steps": 5,
+    "answer_length": 1686,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "2. Mechanistic/Pathophysiologic Reasoning",
+    "query": "Explain how insulin resistance leads to the clinical findings we see in diabetic patients",
+    "reasoning_steps": 11,
+    "answer_length": 1156,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "3. Comparative/Evidence-Based Selection",
+    "query": "Compare the effectiveness of aspirin versus warfarin for stroke prevention in atrial fibrillation",
+    "reasoning_steps": 5,
+    "answer_length": 683,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "4. Temporal/Longitudinal Reasoning",
+    "query": "What trends should we monitor in patients taking amphetamine over the past 48 hours?",
+    "reasoning_steps": 7,
+    "answer_length": 742,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "5. Multi-Modal Correlation",
+    "query": "Correlate recent admissions with medication prescriptions and patient demographics",
+    "reasoning_steps": 10,
+    "answer_length": 1280,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "6. Clinical Biomarker Reasoning",
+    "query": "What do elevated insulin levels combined with recent hospital admission suggest about patient management?",
+    "reasoning_steps": 7,
+    "answer_length": 756,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "7. Report Summarization/Impression",
+    "query": "Summarize the clinical status of patients admitted in the last 24 hours with their medication profiles",
+    "reasoning_steps": 10,
+    "answer_length": 1075,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "8. Clinical Decision Support/Triage",
+    "query": "Which patients taking warfarin require immediate attention based on their recent prescriptions?",
+    "reasoning_steps": 7,
+    "answer_length": 966,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "9. Ambiguity Resolution",
+    "query": "How should we interpret conflicting medication timing data for patients with multiple prescriptions?",
+    "reasoning_steps": 7,
+    "answer_length": 797,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  },
+  {
+    "category": "10. Quantitative and Predictive Reasoning",
+    "query": "Based on prescription patterns, predict which patients are at highest risk for medication interactions",
+    "reasoning_steps": 9,
+    "answer_length": 961,
+    "used_structured": true,
+    "used_unstructured": true,
+    "success": true
+  }
+]

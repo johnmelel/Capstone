@@ -59,7 +59,6 @@ def run_single_query(query: str, query_num: int, verbose: bool = False) -> bool:
         print(f"\n{'=' * 80}")
         print(f"QUERY {query_num}: {query}")
         print(f"{'=' * 80}")
-        print("Running full orchestration with detailed output...")
     else:
         print(f"\nQuery {query_num}: {query}")
     
@@ -316,17 +315,8 @@ Examples:
             sys.exit(1)
     
     # Print header
-    print("A2A Clinical Retrieval System - Full Orchestration Testing")
+    print("Testing Prewritten prompts:")
     print("=" * 65)
-    
-    if args.verbose:
-        print("Testing complete end-to-end flow:")
-        print("1. Orchestrator task planning")
-        print("2. Structured worker (SQL generation)")
-        print("3. Unstructured worker (medical context)")  
-        print("4. Orchestrator Gemini reasoning")
-        print("5. Final JSON output")
-        print("=" * 65)
     
     # Start workers
     structured_proc, unstructured_proc = start_workers_background(args.verbose)
@@ -370,13 +360,6 @@ Examples:
         else:
             print(f"STATUS: {total_queries - successful_queries} tests failed")
             exit_code = 1
-        
-        if args.verbose:
-            print("\nComplete orchestration flow demonstrated for each query:")
-            print("- Task planning by orchestrator")
-            print("- Worker responses (structured + unstructured)")
-            print("- Orchestrator reasoning over both sources")
-            print("- Final JSON output")
         
     except KeyboardInterrupt:
         print("\nTesting cancelled by user")

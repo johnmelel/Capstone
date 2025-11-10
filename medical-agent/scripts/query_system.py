@@ -51,6 +51,10 @@ Note: Make sure the structured worker (port 8001) and unstructured worker (port 
     
     parser.add_argument('--debug-llm',
                        action='store_true',
+                       help='Enable debug logging for LLM interactions')
+    
+    args = parser.parse_args()
+    
     # Check if service account file exists
     if not Path(args.service_account).exists():
         print(f"Warning: Service account file '{args.service_account}' not found.")
@@ -89,10 +93,20 @@ Note: Make sure the structured worker (port 8001) and unstructured worker (port 
                 unstructured_sources = result.get('unstructured_source', [])
                 
                 if structured_sources:
-                    print(f"  Structured Data: {', '.join(structured_sources)}")
+                    if isinstance(structured_sources, list):
+                        print(f"  Structured Data: {', '.join(structured_sources)}")
+                    else:
+                        print(f"  Structured Data: {structured_sources}")
                     
                 if unstructured_sources:
-                    print(f"  Medical Knowledge: {', '.join(unstructured_sources)}")
+                    if isinstance(unstructured_sources, list):
+                        print(f"  Medical Knowledge: {', '.join(unstructured_sources)}")
+                    else:
+                        print(f"  Medical Knowledge: {unstructured_sources}")
+                
+                reasoning_steps = result.get('reasoning_steps')
+                if reasoning_steps is not None:
+                    print(f"\nREASONING STEPS: {reasoning_steps}")
                     
                 if 'error' in result:
                     print(f"\nERRORS: {result['error']}")
