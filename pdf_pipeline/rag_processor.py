@@ -78,10 +78,6 @@ class RAGProcessor:
         # Configure RAGAnything with proper settings
         self.config = RAGAnythingConfig(
             working_dir=str(working_dir),
-            # Use MinerU parser for better PDF extraction
-            parser="mineru",
-            # Enable multimodal features
-            enable_multimodal=True,
         )
         
         # Set up embedding function
@@ -91,14 +87,13 @@ class RAGProcessor:
         )
         
         # Initialize RAGAnything
-        logger.info("Initializing RAGAnything with MinerU parser...")
+        logger.info("Initializing RAGAnything...")
         self.rag = RAGAnything(
             config=self.config,
             llm_model_func=google_llm_model_func,
             embedding_func=self.embedding_func,
         )
         logger.info("RAGAnything initialized successfully")
-        logger.info(f"Parser: {self.config.parser}")
         logger.info(f"Working directory: {self.config.working_dir}")
 
     async def process_document(self, file_path: Path) -> Path:
