@@ -46,3 +46,6 @@ Data_Ingestion_VDB/strategy_5_research/
 
 data_ingestion/.env
 data_ingestion/service_account.json
+
+pdf_pipeline/.env
+pdf_pipeline/service_account.json
