@@ -6,7 +6,7 @@ google-auth==2.25.2
 google-genai>=1.0.0
 
 # PDF Processing - MinerU for advanced extraction
-mineru==0.2.6
+mineru==2.6.4
 
 # Vector Store
 pymilvus==2.3.4
