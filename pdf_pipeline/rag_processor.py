@@ -2,6 +2,7 @@ import asyncio
 import logging
 from pathlib import Path
 from typing import List
+import pandas as pd
 import google.generativeai as genai
 from raganything import RAGAnything, RAGAnythingConfig
 from lightrag.utils import EmbeddingFunc
@@ -16,7 +17,15 @@ logger = logging.getLogger(__name__)
 genai.configure(api_key=Config.GOOGLE_API_KEY)
 
 def google_llm_model_func(prompt: str, **kwargs):
-    """Custom LLM model function using Google's Generative AI."""
+    """Custom LLM model function using Google's Generative AI.
+    
+    Note: Removes 'system_prompt' from kwargs if present, as it's not supported
+    by the current version of Google Generative AI SDK.
+    """
+    # Remove unsupported parameters
+    kwargs.pop('system_prompt', None)
+    kwargs.pop('system_instruction', None)
+    
     model = genai.GenerativeModel(Config.LLM_MODEL)
     response = model.generate_content(prompt, **kwargs)
     return response.text
@@ -36,6 +45,13 @@ def google_embedding_func(texts: List[str]) -> List[List[float]]:
     # Handle single text string
     if isinstance(texts, str):
         texts = [texts]
+    
+    # Filter out empty strings before processing
+    texts = [text.strip() for text in texts if text and text.strip()]
+    
+    if not texts:
+        logger.warning("All texts were empty after filtering")
+        return []
     
     # Google's API can handle batch requests, but let's process them safely
     embeddings = []
@@ -151,7 +167,6 @@ class RAGProcessor:
                         chunk_files = list(working_dir.glob("**/chunks*.parquet"))
                         if chunk_files:
                             logger.info(f"Found chunk files: {chunk_files}")
-                            import pandas as pd
                             for chunk_file in chunk_files:
                                 df = pd.read_parquet(chunk_file)
                                 logger.info(f"Loaded {len(df)} chunks from {chunk_file.name}")
@@ -208,10 +223,19 @@ class RAGProcessor:
                         logger.warning(f"Unknown entity structure: {type(entity)}")
                         continue
                     
+                    # Skip empty text
+                    if not text or not text.strip():
+                        logger.warning(f"Skipping entity {idx} with empty text")
+                        continue
+                    
                     # Generate embedding if not present
                     if not embedding or len(embedding) == 0:
                         logger.info(f"Generating embedding for chunk {idx}...")
-                        embedding = google_embedding_func([text])[0]
+                        try:
+                            embedding = google_embedding_func([text])[0]
+                        except (ValueError, IndexError) as e:
+                            logger.error(f"Failed to generate embedding for chunk {idx}: {e}")
+                            continue
                     
                     data.append({
                         "vector": embedding,
