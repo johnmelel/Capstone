@@ -2,12 +2,11 @@
 google-cloud-storage==2.14.0
 google-auth==2.25.2
 
-# Google Cloud Vertex AI for multimodal embeddings
-google-cloud-aiplatform>=1.38.0
-vertexai>=1.38.0
+# Gemini API (for embeddings and vision)
+google-genai>=1.0.0
 
 # PDF Processing - MinerU for advanced extraction
-mineru==2.6.4
+mineru==0.2.6
 
 # Vector Store
 pymilvus==2.3.4
@@ -15,9 +14,8 @@ pymilvus==2.3.4
 # Utilities
 python-dotenv==1.0.0
 tqdm==4.66.1
-PyYAML>=6.0
 
-# Image processing (for MinerU)
+# Image processing
 Pillow>=10.0.0
 
 # Numpy

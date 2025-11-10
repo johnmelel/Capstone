@@ -17,26 +17,35 @@ class Config:
     GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "service_account.json")
     GCS_RECURSIVE = os.getenv("GCS_RECURSIVE", "true").lower() in ("true", "1", "yes")
     
-    # Google Cloud Vertex AI Configuration (for multimodal embeddings)
-    GOOGLE_CLOUD_PROJECT = os.getenv("GOOGLE_CLOUD_PROJECT")
-    GOOGLE_CLOUD_LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
-    
     # Milvus Configuration
     MILVUS_URI = os.getenv("MILVUS_URI")
     MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
     
-    # Embedding Configuration
-    # Using Vertex AI multimodal embeddings (1408 dimensions, supports text + images)
-    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "1408"))
+    # Gemini API Configuration
+    GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "gemini-embedding-001")
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))
+    MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
+    
+    # Gemini Vision Configuration
+    GEMINI_VISION_MODEL = os.getenv("GEMINI_VISION_MODEL", "gemini-2.0-flash-exp")
+    IMAGE_DESCRIPTION_PROMPT = os.getenv(
+        "IMAGE_DESCRIPTION_PROMPT",
+        "Describe this image in detail. Focus on medical/scientific content, "
+        "figures, charts, diagrams, or any text visible in the image. "
+        "Be concise but comprehensive."
+    )
     
     # Processing Configuration
-    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "800"))  # Characters per chunk
-    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "150"))  # Overlap between chunks
+    CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1792"))  # Characters per chunk
+    CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "64"))  # Overlap between chunks
     BATCH_SIZE = int(os.getenv("BATCH_SIZE", "100"))
     
     # Output directories
     OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", "./extracted_content"))
+    UPLOAD_OUTPUT_TO_GCS = os.getenv("UPLOAD_OUTPUT_TO_GCS", "true").lower() in ("true", "1", "yes")
+    GCS_OUTPUT_PREFIX = os.getenv("GCS_OUTPUT_PREFIX", "extracted_content")  # Folder in bucket for outputs
     
     @classmethod
     def validate(cls):
@@ -45,7 +54,7 @@ class Config:
             ("GCS_BUCKET_NAME", cls.GCS_BUCKET_NAME),
             ("MILVUS_URI", cls.MILVUS_URI),
             ("MILVUS_API_KEY", cls.MILVUS_API_KEY),
-            ("GOOGLE_CLOUD_PROJECT", cls.GOOGLE_CLOUD_PROJECT),
+            ("GEMINI_API_KEY", cls.GEMINI_API_KEY),
         ]
         
         missing_fields = [field for field, value in required_fields if not value]

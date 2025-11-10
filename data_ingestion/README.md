@@ -1,17 +1,24 @@
-# Data Ingestion App
+# Data Ingestion Pipeline
 
-A Python application for processing PDFs from Google Cloud Storage, extracting text, generating embeddings, and storing them in Milvus vector database.
+A Python application for processing PDFs from Google Cloud Storage using **MinerU** for advanced extraction, **Gemini Vision** for image descriptions, and **Gemini embeddings** for vector storage in Milvus.
 
-## Features
+## Pipeline Architecture
 
-- ☁️ **Direct GCS Processing** - Process PDFs directly from Google Cloud Storage without local downloads
-- 📁 **Recursive folder support** - Process from all subfolders/prefixes automatically
-- 📄 Extract text from PDFs using PyMuPDF (fast and accurate)
-- ✂️ Split text into token-aware chunks (max 2048 tokens for Gemini)
-- 🧠 Generate embeddings using Google Gemini text-embedding-005 API
-- 🗄️ Store embeddings in Milvus vector database
-- 🐳 Docker support for easy deployment
-- ✅ Comprehensive test suite
+```
+GCS Bucket → MinerU PDF Extraction → Gemini Vision (images→text) → Text Chunking → Gemini Embeddings → Milvus Vector Store
+```
+
+## Key Features
+
+- 🚀 **Advanced PDF Processing** - MinerU extracts text, tables, and images with high accuracy
+- 👁️ **Intelligent Image Handling** - Gemini Vision converts images to detailed text descriptions
+- ☁️ **Direct GCS Processing** - Stream PDFs from Google Cloud Storage without local storage
+- 📁 **Recursive folder support** - Process all PDFs from bucket subfolders automatically
+- ✂️ **Smart Text Chunking** - Token-aware chunking optimized for Gemini (max 2048 tokens)
+- 🧠 **High-Quality Embeddings** - Gemini text embeddings (768 dimensions)
+- 🗄️ **Vector Storage** - Milvus/Zilliz for efficient similarity search
+- � **Output to GCS** - Save extracted content (images, metadata) back to bucket
+- ✅ **Comprehensive Testing** - Full test suite for all components
 
 ## Project Structure
 
@@ -19,51 +26,115 @@ A Python application for processing PDFs from Google Cloud Storage, extracting t
 data_ingestion/
 ├── src/
 │   ├── __init__.py
-│   ├── config.py              # Configuration management
-│   ├── gcs_downloader.py      # Google Cloud Storage client (for listing blobs)
-│   ├── pdf_extractor.py       # PDF text extraction
-│   ├── chunker.py             # Text chunking
-│   ├── embedder.py            # Text embedding generation
+│   ├── config.py              # Configuration from environment variables
+│   ├── mineru_parser.py       # MinerU PDF extraction + Gemini Vision
+│   ├── gcs_downloader.py      # Google Cloud Storage client
+│   ├── chunker.py             # Text chunking with token awareness
+│   ├── embedder.py            # Gemini text embedding generation
 │   ├── vector_store.py        # Milvus vector store interface
-│   ├── ingest.py              # Main ingestion pipeline
+│   ├── ingest.py              # Main ingestion pipeline orchestrator
 │   └── utils.py               # Utility functions
 ├── tests/                      # Test suite
+│   ├── test_mineru_parser.py  # MinerU parser tests
+│   ├── test_chunker.py        # Text chunking tests
+│   ├── test_embedder.py       # Embedding generation tests
+│   ├── test_gcs_downloader.py # GCS client tests
+│   └── test_vector_store.py   # Vector store tests
 ├── .env                        # Environment variables (create from .env.example)
 ├── .env.example               # Example environment variables
-├── requirements.txt           # Python dependencies
-├── Dockerfile                 # Docker configuration
+├── requirements.txt           # Python dependencies (includes mineru==0.2.6)
+├── test_setup.py              # Setup validation script
+├── test_mineru_pipeline.py    # Quick pipeline test
+├── INTEGRATION_README.md      # Detailed integration documentation
+├── TESTING_GUIDE.md           # Testing instructions
 └── README.md                  # This file
 ```
 
 ## Prerequisites
 
 - Python 3.11+
+- **MinerU** - Advanced PDF extraction library
 - Google Cloud service account with Storage access
-- Milvus instance (cloud or self-hosted)
-- Docker (optional, for containerized deployment)
+- Gemini API key (for embeddings and vision)
+- Milvus/Zilliz instance (cloud or self-hosted)
 
 ## Setup
 
-### 1. Clone and Navigate
+### 1. Install Dependencies
 
 ```bash
 cd data_ingestion
-```
-
-### 2. Create Virtual Environment
-
-```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Dependencies
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 4. Google Cloud Storage Setup
+This will install all required packages including:
+- `mineru==0.2.6` - PDF extraction
+- `google-genai` - Gemini API (embeddings + vision)
+- `pymilvus` - Vector database
+- `google-cloud-storage` - GCS integration
+
+### 2. Install MinerU
+
+MinerU may require additional system dependencies. If the pip install doesn't work fully:
+
+```bash
+# See MinerU installation guide
+https://github.com/opendatalab/MinerU#installation
+```
+
+Verify installation:
+```bash
+magic-pdf --version
+```
+
+### 3. Configure Environment Variables
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your credentials:
+
+```env
+# Google Cloud Storage Configuration
+GCS_BUCKET_NAME=your-bucket-name
+GCS_BUCKET_PREFIX=Data/  # Optional: folder path in bucket
+GOOGLE_SERVICE_ACCOUNT_JSON=path/to/service_account.json
+GCS_RECURSIVE=true  # Process all subfolders
+
+# Milvus/Zilliz Configuration
+MILVUS_URI=your-milvus-uri
+MILVUS_API_KEY=your-api-key
+MILVUS_COLLECTION_NAME=your_collection_name
+
+# Gemini API Configuration
+GEMINI_API_KEY=your-gemini-api-key
+EMBEDDING_MODEL=gemini-embedding-001
+EMBEDDING_DIMENSION=768
+
+# Gemini Vision Configuration (for image descriptions)
+GEMINI_VISION_MODEL=gemini-2.0-flash-exp
+IMAGE_DESCRIPTION_PROMPT=Describe this image in detail. Focus on medical/scientific content, figures, charts, diagrams, or any text visible in the image. Be concise but comprehensive.
+
+# Output Configuration
+OUTPUT_DIR=./extracted_content
+UPLOAD_OUTPUT_TO_GCS=true
+GCS_OUTPUT_PREFIX=extracted_content
+
+# Processing Configuration
+CHUNK_SIZE=1792
+CHUNK_OVERLAP=64
+BATCH_SIZE=100
+MAX_TOKENS_PER_CHUNK=2048
+```
+
+**Get API Keys:**
+- Gemini API: https://makersuite.google.com/app/apikey
+- Milvus/Zilliz: https://cloud.zilliz.com/
 
 #### Create a Service Account:
 
@@ -150,22 +221,84 @@ BATCH_SIZE=100
 
 **Important**: See [GEMINI_SETUP.md](GEMINI_SETUP.md) for detailed Gemini API configuration.
 
-## Usage
+## Testing
 
-### Run Locally
+### Quick Setup Validation
+
+Run the setup test to verify all components:
 
 ```bash
-python src/ingest.py
+python test_setup.py
+```
+
+This validates:
+- ✅ Environment variables and configuration
+- ✅ Gemini API connection (embeddings + vision)
+- ✅ Google Cloud Storage access
+- ✅ Milvus/Zilliz database connection
+- ✅ MinerU installation
+- ✅ All pipeline components
+
+### Test Single PDF
+
+Test with one PDF before running the full pipeline:
+
+```bash
+python test_mineru_pipeline.py
+```
+
+This will:
+1. Download one PDF from your bucket
+2. Extract text and images with MinerU
+3. Generate image descriptions with Gemini Vision
+4. Create embeddings with Gemini
+5. Store in Milvus
+6. Upload extracted content to GCS (if enabled)
+
+### Run Full Test Suite
+
+```bash
+# Run all unit tests
+pytest
+
+# Run with coverage
+pytest --cov=src --cov-report=html
+
+# Run specific test
+pytest tests/test_mineru_parser.py -v
+
+# Run with verbose output
+pytest -v
+```
+
+Test coverage:
+- ✅ MinerU parser with Gemini Vision integration
+- ✅ Text chunking with token awareness
+- ✅ Gemini embedding generation
+- ✅ GCS bucket operations
+- ✅ Milvus vector store operations
+
+## Usage
+
+### Run the Pipeline
+
+Once tests pass, run the full ingestion pipeline:
+
+```bash
+python -m src.ingest
 ```
 
 The pipeline will:
-1. Connect directly to Google Cloud Storage bucket
-2. List all PDFs from the specified bucket (and all subfolders/prefixes if recursive mode is enabled)
-3. Process each PDF in memory without local storage
-4. Extract text from each PDF
-5. Split text into chunks
-6. Generate embeddings for each chunk
-7. Store embeddings in Milvus with file path metadata
+1. ☁️ Connect to your GCS bucket
+2. 📋 List all PDFs (recursively if enabled)
+3. 📄 For each PDF:
+   - Extract with MinerU (text, tables, images)
+   - Convert images to text using Gemini Vision
+   - Chunk all text content
+   - Generate Gemini embeddings (768-dim)
+   - Store in Milvus with metadata
+   - Upload extracted content to GCS (optional)
+4. ⏭️ Skip already-processed PDFs (deduplication)
 
 ### Run with Docker
 

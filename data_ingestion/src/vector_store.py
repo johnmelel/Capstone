@@ -4,7 +4,6 @@ import logging
 import numpy as np
 from typing import List, Dict, Any, Optional
 import uuid
-import json
 
 from pymilvus import (
     connections,
@@ -65,7 +64,7 @@ class MilvusVectorStore:
             raise
     
     def _create_schema(self) -> CollectionSchema:
-        """Create collection schema with support for multimodal data"""
+        """Create collection schema"""
         fields = [
             FieldSchema(name="primary_key", dtype=DataType.INT64, is_primary=True, auto_id=False, description="The Primary Key"),
             FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=self.embedding_dim),
@@ -74,14 +73,11 @@ class MilvusVectorStore:
             FieldSchema(name="file_hash", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="chunk_index", dtype=DataType.INT16),
             FieldSchema(name="total_chunks", dtype=DataType.INT16),
-            # New fields for multimodal support
-            FieldSchema(name="content_type", dtype=DataType.VARCHAR, max_length=50),  # text, image, table
-            FieldSchema(name="metadata_json", dtype=DataType.VARCHAR, max_length=5000),  # JSON metadata
         ]
         
         schema = CollectionSchema(
             fields=fields,
-            description="PDF document embeddings with multimodal support"
+            description="PDF document embeddings"
         )
         
         return schema
@@ -133,7 +129,7 @@ class MilvusVectorStore:
         
         Args:
             embeddings: List of embedding vectors
-            texts: List of text chunks (or descriptions for images)
+            texts: List of text chunks
             metadatas: List of metadata dictionaries
             
         Returns:
@@ -143,17 +139,11 @@ class MilvusVectorStore:
             raise ValueError("embeddings, texts, and metadatas must have the same length")
         
         try:
-            import json
-            
             # Extract metadata fields
             file_names = [m.get('file_name', m.get('pdf_name', '')) for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
             chunk_indices = np.array([m.get('chunk_index', 0) for m in metadatas], dtype=np.int16)
             total_chunks_list = np.array([m.get('total_chunks', 0) for m in metadatas], dtype=np.int16)
-            
-            # NEW: Extract content type and JSON metadata
-            content_types = [m.get('content_type', 'text') for m in metadatas]
-            metadata_jsons = [json.dumps(m) for m in metadatas]
 
             # Convert embeddings to NumPy array
             embeddings_np = np.array(embeddings, dtype=np.float32)
@@ -169,8 +159,6 @@ class MilvusVectorStore:
                 file_hashes,
                 chunk_indices,
                 total_chunks_list,
-                content_types,
-                metadata_jsons,
             ]
 
             if not is_auto_id:
@@ -209,8 +197,7 @@ class MilvusVectorStore:
         """
         try:
             if output_fields is None:
-                output_fields = ["text", "file_name", "chunk_index", "total_chunks", 
-                               "content_type", "metadata_json"]
+                output_fields = ["text", "file_name", "chunk_index", "total_chunks"]
             
             search_params = {
                 "metric_type": "L2",

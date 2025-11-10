@@ -9,7 +9,7 @@ from google.oauth2 import service_account
 
 from .config import Config
 from .mineru_parser import MinerUParser
-from .vertex_embedder import VertexAIEmbedder
+from .embedder import TextEmbedder
 from .vector_store import MilvusVectorStore
 from .utils import setup_logging
 
@@ -31,17 +31,24 @@ class IngestionPipeline:
         # Initialize components
         logger.info("Initializing pipeline components...")
         
-        # MinerU parser for PDF extraction
+        # MinerU parser for PDF extraction (with Gemini Vision for images)
         parser_config = {
             'chunk_size': Config.CHUNK_SIZE,
             'overlap': Config.CHUNK_OVERLAP
         }
-        self.parser = MinerUParser(parser_config, Config.OUTPUT_DIR)
+        self.parser = MinerUParser(
+            parser_config, 
+            Config.OUTPUT_DIR,
+            gemini_api_key=Config.GEMINI_API_KEY,
+            vision_model=Config.GEMINI_VISION_MODEL,
+            image_prompt=Config.IMAGE_DESCRIPTION_PROMPT
+        )
         
-        # Vertex AI embedder for multimodal embeddings
-        self.embedder = VertexAIEmbedder(
-            project_id=Config.GOOGLE_CLOUD_PROJECT,
-            location=Config.GOOGLE_CLOUD_LOCATION
+        # Gemini embedder for text embeddings
+        self.embedder = TextEmbedder(
+            model_name=Config.EMBEDDING_MODEL,
+            api_key=Config.GEMINI_API_KEY,
+            embedding_dimension=Config.EMBEDDING_DIMENSION
         )
         
         # Milvus vector store
@@ -62,6 +69,44 @@ class IngestionPipeline:
                 pass
         except Exception as e:
             logger.warning(f"Error closing GCS client: {e}")
+    
+    def _upload_extracted_content_to_gcs(self):
+        """Upload extracted content (images, metadata) back to GCS bucket"""
+        if not Config.UPLOAD_OUTPUT_TO_GCS:
+            logger.info("Skipping GCS upload (UPLOAD_OUTPUT_TO_GCS=false)")
+            return
+        
+        try:
+            from pathlib import Path
+            
+            output_dir = Path(Config.OUTPUT_DIR)
+            if not output_dir.exists():
+                logger.warning(f"Output directory does not exist: {output_dir}")
+                return
+            
+            logger.info("Uploading extracted content to GCS...")
+            uploaded_count = 0
+            
+            # Upload all files in output directory (except temp)
+            for local_file in output_dir.rglob('*'):
+                if local_file.is_file() and 'temp' not in local_file.parts:
+                    # Create relative path for GCS
+                    relative_path = local_file.relative_to(output_dir)
+                    gcs_path = f"{Config.GCS_OUTPUT_PREFIX}/{relative_path}".replace('\\', '/')
+                    
+                    # Upload to GCS
+                    blob = self.bucket.blob(gcs_path)
+                    blob.upload_from_filename(str(local_file))
+                    uploaded_count += 1
+                    
+                    if uploaded_count % 10 == 0:
+                        logger.debug(f"Uploaded {uploaded_count} files...")
+            
+            logger.info(f"Successfully uploaded {uploaded_count} files to gs://{Config.GCS_BUCKET_NAME}/{Config.GCS_OUTPUT_PREFIX}/")
+            
+        except Exception as e:
+            logger.error(f"Error uploading to GCS: {e}")
+            # Don't fail the pipeline, just log the error
     
     def _init_gcs_client(self):
         """Initialize Google Cloud Storage client"""
@@ -120,7 +165,7 @@ class IngestionPipeline:
     
     def process_pdf_blob(self, pdf_blob: storage.Blob) -> List[Dict[str, Any]]:
         """
-        Process a single PDF blob from GCS using MinerU
+        Process a single PDF blob from GCS using MinerU + Gemini Vision
         
         Args:
             pdf_blob: GCS blob object
@@ -139,7 +184,7 @@ class IngestionPipeline:
             pdf_blob.download_to_filename(str(temp_path))
         
         try:
-            # Parse PDF with MinerU (extracts text, images, tables)
+            # Parse PDF with MinerU (extracts text + images converted to text descriptions)
             chunks = self.parser.parse_pdf(temp_path)
             
             if not chunks:
@@ -148,13 +193,18 @@ class IngestionPipeline:
             
             logger.info(f"Extracted {len(chunks)} chunks from {pdf_blob.name}")
             
-            # Generate embeddings for all chunks (text + images)
-            logger.info(f"Generating embeddings...")
-            embeddings = self.embedder.embed_batch(chunks)
+            # All chunks are now text (including image descriptions)
+            # Extract text for embedding
+            texts = [chunk['content'] for chunk in chunks]
+            
+            # Generate embeddings using Gemini
+            logger.info("Generating Gemini embeddings...")
+            embeddings = self.embedder.embed_text(texts)
             
             # Add embeddings to chunks
             for chunk, embedding in zip(chunks, embeddings):
                 chunk['embedding'] = embedding.tolist()
+                chunk['text'] = chunk['content']  # Add 'text' field for compatibility
             
             return chunks
             
@@ -174,13 +224,7 @@ class IngestionPipeline:
             return
         
         embeddings = [chunk['embedding'] for chunk in chunks_with_embeddings]
-        
-        # For text chunks, use content; for images, use caption or empty string
-        texts = [
-            chunk.get('content', chunk.get('caption', '')) 
-            for chunk in chunks_with_embeddings
-        ]
-        
+        texts = [chunk['text'] for chunk in chunks_with_embeddings]
         metadatas = [chunk['metadata'] for chunk in chunks_with_embeddings]
         
         # Insert in batches
@@ -265,6 +309,9 @@ class IngestionPipeline:
             stats = self.vector_store.get_stats()
             logger.info(f"Collection stats: {stats}")
             logger.info("=" * 60)
+            
+            # Upload extracted content to GCS
+            self._upload_extracted_content_to_gcs()
             
         except Exception as e:
             logger.error(f"Error in ingestion pipeline: {e}", exc_info=True)

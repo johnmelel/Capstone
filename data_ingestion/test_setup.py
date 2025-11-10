@@ -1,6 +1,6 @@
 """
 Test script to verify all components are working before running the full pipeline
-Updated for the new google-genai SDK
+Tests the MinerU-based pipeline with Gemini Vision integration
 """
 
 import os
@@ -29,6 +29,9 @@ def test_env_variables():
         ('MILVUS_COLLECTION_NAME', Config.MILVUS_COLLECTION_NAME),
         ('GEMINI_API_KEY', Config.GEMINI_API_KEY),
         ('EMBEDDING_MODEL', Config.EMBEDDING_MODEL),
+        ('GEMINI_VISION_MODEL', Config.GEMINI_VISION_MODEL),
+        ('IMAGE_DESCRIPTION_PROMPT', Config.IMAGE_DESCRIPTION_PROMPT),
+        ('OUTPUT_DIR', Config.OUTPUT_DIR),
         ('MAX_TOKENS_PER_CHUNK', Config.MAX_TOKENS_PER_CHUNK),
         ('CHUNK_SIZE', Config.CHUNK_SIZE),
         ('CHUNK_OVERLAP', Config.CHUNK_OVERLAP),
@@ -180,9 +183,9 @@ def test_milvus_connection():
 
 
 def test_components():
-    """Test individual pipeline components with new SDK"""
+    """Test individual pipeline components including MinerU"""
     print("\n" + "="*60)
-    print("TEST 5: Pipeline Components (New SDK)")
+    print("TEST 5: Pipeline Components (MinerU + Gemini)")
     print("="*60)
     
     try:
@@ -190,20 +193,37 @@ def test_components():
         Config.validate()
         print("✓ Configuration validated")
         
+        # Test MinerU installation
+        print("\nChecking MinerU installation...")
+        try:
+            import subprocess
+            result = subprocess.run(['magic-pdf', '--version'], 
+                                  capture_output=True, text=True, timeout=10)
+            if result.returncode == 0:
+                print(f"✓ MinerU installed: {result.stdout.strip()}")
+            else:
+                print(f"⚠️  MinerU command found but returned: {result.stderr.strip()}")
+        except FileNotFoundError:
+            print("❌ MinerU NOT installed!")
+            print("   Install with: pip install mineru==0.2.6")
+            print("   See: https://github.com/opendatalab/MinerU#installation")
+            pytest.fail("MinerU not installed")
+        except Exception as e:
+            print(f"⚠️  Could not verify MinerU: {e}")
+        
         # Test chunker using Config values
+        print("\nTesting text chunker...")
         from src.chunker import TextChunker
         import time
         chunker = TextChunker()
         test_text = "This is a test sentence. " * 100
-        print(f"Testing chunker with input size: {len(test_text)} characters")
-        print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars, Max tokens: {Config.MAX_TOKENS_PER_CHUNK}")
+        print(f"  Input size: {len(test_text)} characters")
+        print(f"  Chunk size: {Config.CHUNK_SIZE} chars, Overlap: {Config.CHUNK_OVERLAP} chars")
         start_time = time.time()
-        print("Calling chunker.chunk_text()...")
         try:
             chunks = chunker.chunk_text(test_text)
-            print("chunker.chunk_text() returned!")
         except Exception as e:
-            print(f"Exception during chunking: {e}")
+            print(f"❌ Chunking failed: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -215,27 +235,20 @@ def test_components():
         else:
             print(f"  First chunk: '{chunks[0][:50]}...' ({len(chunks[0])} chars)")
             print(f"  Last chunk: '{chunks[-1][:50]}...' ({len(chunks[-1])} chars)")
-            if chunks:
-                print("  Token counts for first 3 chunks (estimated):")
-                for i, chunk in enumerate(chunks[:3]):
-                    try:
-                        tokens = chunker._estimate_tokens(chunk)
-                    except Exception as e:
-                        tokens = f"Error: {e}"
-                    print(f"    Chunk {i+1}: ~{tokens} tokens, {len(chunk)} chars")
-        if elapsed > 5:
-            print(f"⚠️ Chunking took longer than expected: {elapsed:.2f} seconds")
 
-        # Test embedder using new SDK
+        # Test embedder using Gemini SDK
+        print("\nTesting Gemini embedder...")
         from src.embedder import TextEmbedder
         embedder = TextEmbedder()
-        print(f"Testing embedder with new SDK (model: {Config.EMBEDDING_MODEL})...")
+        print(f"  Model: {Config.EMBEDDING_MODEL}")
         embeddings = embedder.embed_text(["Test sentence 1", "Test sentence 2"])
         print(f"✓ Embedder working: Generated embeddings with shape {embeddings.shape}")
-        print(f"  Using model: {Config.EMBEDDING_MODEL}")
         print(f"  Embedding dimension: {embedder.get_embedding_dimension()}")
 
-        print("\n✓ All components are working with new SDK!")
+        print("\n✓ All components are working!")
+        print("  - MinerU: Installed ✓")
+        print("  - Gemini Embeddings: Working ✓")
+        print("  - Text Chunking: Working ✓")
         
     except Exception as e:
         print(f"❌ Component test failed: {e}")
@@ -295,17 +308,17 @@ def test_single_pdf():
 def main():
     """Run all tests"""
     print("="*60)
-    print("DATA INGESTION PIPELINE - SETUP TEST (NEW SDK)")
+    print("DATA INGESTION PIPELINE - SETUP TEST")
     print("="*60)
-    print("Now using google-genai SDK (new unified SDK)")
+    print("MinerU-based pipeline with Gemini Vision & Embeddings")
     print("="*60)
     
     tests = [
         ("Environment Variables", test_env_variables),
-        ("Gemini API (New SDK)", test_gemini_api),
+        ("Gemini API", test_gemini_api),
         ("Google Cloud Storage", test_gcs_connection),
         ("Milvus Database", test_milvus_connection),
-        ("Pipeline Components", test_components),
+        ("Pipeline Components (MinerU)", test_components),
         ("Single PDF Processing", test_single_pdf),
     ]
     

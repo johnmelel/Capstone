@@ -1,6 +1,6 @@
 """
 Simplified MinerU parser for PDF extraction.
-Extracts text, images, and tables using MinerU CLI.
+Extracts text and images using MinerU CLI, then converts images to text descriptions using Gemini Vision API.
 """
 
 from pathlib import Path
@@ -8,22 +8,37 @@ from typing import List, Dict, Any
 import subprocess
 import shutil
 import re
-import yaml
+import base64
+from google import genai
+from google.genai import types
 
 
 class MinerUParser:
-    """Parser using MinerU for advanced PDF extraction."""
+    """Parser using MinerU for advanced PDF extraction with Gemini Vision for image descriptions."""
     
-    def __init__(self, config: Dict[str, Any], output_dir: Path):
+    def __init__(self, config: Dict[str, Any], output_dir: Path, gemini_api_key: str, vision_model: str = None, image_prompt: str = None):
         """
         Initialize MinerU parser.
         
         Args:
             config: Configuration dictionary
             output_dir: Directory for extracted content
+            gemini_api_key: Gemini API key for image descriptions
+            vision_model: Gemini model to use for image descriptions (optional)
+            image_prompt: Custom prompt for image descriptions (optional)
         """
         self.config = config
         self.output_dir = Path(output_dir)
+        self.gemini_api_key = gemini_api_key
+        self.vision_model = vision_model or "gemini-2.0-flash-exp"
+        self.image_prompt = image_prompt or (
+            "Describe this image in detail. Focus on medical/scientific content, "
+            "figures, charts, diagrams, or any text visible in the image. "
+            "Be concise but comprehensive."
+        )
+        
+        # Initialize Gemini client for image descriptions
+        self.gemini_client = genai.Client(api_key=gemini_api_key)
         
         # Create output subdirectories
         self.images_dir = self.output_dir / "images"
@@ -36,9 +51,10 @@ class MinerUParser:
         self.chunk_size = config.get('chunk_size', 800)
         self.overlap = config.get('overlap', 150)
         
-        print(f"[MinerUParser] Initialized")
+        print("[MinerUParser] Initialized")
         print(f"  Output: {self.output_dir}")
         print(f"  Chunk size: {self.chunk_size}")
+        print("  Image-to-text: Gemini Vision API")
     
     def parse_pdf(self, pdf_path: Path, max_pages: int = None) -> List[Dict]:
         """
@@ -141,7 +157,7 @@ class MinerUParser:
         return md_file.read_text(encoding='utf-8')
     
     def _process_images(self, output_dir: Path, pdf_name: str) -> List[Dict]:
-        """Extract and copy images from MinerU output."""
+        """Extract images and convert to text descriptions using Gemini Vision."""
         image_chunks = []
         
         # MinerU saves images in 'images' subfolder
@@ -153,6 +169,8 @@ class MinerUParser:
         image_files = list(mineru_images_dir.glob("*.png")) + \
                      list(mineru_images_dir.glob("*.jpg"))
         
+        print(f"    Found {len(image_files)} images, generating descriptions...")
+        
         for idx, img_file in enumerate(image_files):
             try:
                 # Copy to our images folder
@@ -160,25 +178,75 @@ class MinerUParser:
                 dest_path = self.images_dir / new_name
                 shutil.copy2(img_file, dest_path)
                 
-                # Create chunk
+                # Generate text description using Gemini Vision
+                description = self._describe_image_with_gemini(img_file)
+                
+                if not description:
+                    description = f"[Image {idx} from {pdf_name}]"
+                
+                # Create text chunk with image description
                 chunk_id = f"{pdf_name}_image_{idx}"
                 
                 image_chunks.append({
                     'chunk_id': chunk_id,
-                    'type': 'image',
-                    'image_path': str(dest_path),
-                    'caption': '',
+                    'type': 'text',  # Now it's text!
+                    'content': f"[IMAGE DESCRIPTION]: {description}",
                     'metadata': {
                         'pdf_name': pdf_name,
                         'chunk_index': idx,
-                        'content_type': 'image'
+                        'content_type': 'image_description',
+                        'original_image_path': str(dest_path)
                     }
                 })
+                
+                if (idx + 1) % 5 == 0:
+                    print(f"      Processed {idx + 1}/{len(image_files)} images")
                 
             except Exception as e:
                 print(f"    [WARNING] Failed to process image {img_file.name}: {e}")
         
         return image_chunks
+    
+    def _describe_image_with_gemini(self, image_path: Path) -> str:
+        """
+        Use Gemini Vision API to generate a text description of an image.
+        
+        Args:
+            image_path: Path to image file
+            
+        Returns:
+            Text description of the image
+        """
+        try:
+            # Upload the image
+            uploaded_file = self.gemini_client.files.upload(path=str(image_path))
+            
+            # Generate description using Gemini
+            response = self.gemini_client.models.generate_content(
+                model=self.vision_model,
+                contents=[
+                    types.Content(
+                        role="user",
+                        parts=[
+                            types.Part.from_uri(
+                                file_uri=uploaded_file.uri,
+                                mime_type=uploaded_file.mime_type
+                            ),
+                            types.Part.from_text(self.image_prompt)
+                        ]
+                    )
+                ]
+            )
+            
+            # Extract text from response
+            if response.text:
+                return response.text.strip()
+            
+            return ""
+            
+        except Exception as e:
+            print(f"      [WARNING] Failed to describe image: {e}")
+            return ""
     
     def _process_text(self, markdown: str, pdf_name: str) -> List[Dict]:
         """Process markdown text into chunks."""
