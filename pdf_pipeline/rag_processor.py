@@ -82,6 +82,18 @@ async def google_embedding_func(texts: List[str]) -> List[List[float]]:
                 # If single text, wrap in list
                 if not isinstance(batch_embeddings[0], list):
                     batch_embeddings = [batch_embeddings]
+                
+                # Validate embedding dimensions
+                for idx, emb in enumerate(batch_embeddings):
+                    if len(emb) != Config.EMBEDDING_DIM:
+                        logger.error(
+                            f"Dimension mismatch! Expected {Config.EMBEDDING_DIM}, got {len(emb)} "
+                            f"for text: '{batch[idx][:100]}...'"
+                        )
+                        raise ValueError(
+                            f"Embedding dimension mismatch: expected {Config.EMBEDDING_DIM}, got {len(emb)}"
+                        )
+                
                 embeddings.extend(batch_embeddings)
             else:
                 logger.error(f"Unexpected response structure from Google embedding API: {response}")
@@ -108,7 +120,7 @@ class RAGProcessor:
         
         # Set up embedding function
         self.embedding_func = EmbeddingFunc(
-            embedding_dim=768,  # Dimension for Google's embedding-001 model
+            embedding_dim=Config.EMBEDDING_DIM,  # Use config value
             func=google_embedding_func,
         )
         
@@ -248,6 +260,14 @@ class RAGProcessor:
                             logger.error(f"Failed to generate embedding for chunk {idx}: {e}")
                             continue
                     
+                    # Validate embedding dimension before adding to data
+                    if len(embedding) != Config.EMBEDDING_DIM:
+                        logger.error(
+                            f"Dimension mismatch in entity {idx}! Expected {Config.EMBEDDING_DIM}, "
+                            f"got {len(embedding)}. Skipping this entity."
+                        )
+                        continue
+                    
                     data.append({
                         "vector": embedding,
                         "text": text,
@@ -286,7 +306,15 @@ class RAGProcessor:
                     # Generate embeddings for chunks
                     embeddings = await google_embedding_func(chunks)
                     
+                    # Validate all embeddings have correct dimension
                     for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+                        if len(embedding) != Config.EMBEDDING_DIM:
+                            logger.error(
+                                f"Dimension mismatch in fallback chunk {idx}! Expected {Config.EMBEDDING_DIM}, "
+                                f"got {len(embedding)}. Skipping this chunk."
+                            )
+                            continue
+                        
                         data.append({
                             "vector": embedding,
                             "text": chunk,

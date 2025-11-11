@@ -30,7 +30,7 @@ class MilvusVectorStore:
         uri: str = None,
         api_key: str = None,
         collection_name: str = None,
-        embedding_dim: int = 768  # Default for Google's embedding-001
+        embedding_dim: int = None  # Will use Config.EMBEDDING_DIM if not provided
     ):
         """
         Initialize Milvus vector store
@@ -39,12 +39,12 @@ class MilvusVectorStore:
             uri: Milvus server URI
             api_key: Milvus API key
             collection_name: Name of the collection
-            embedding_dim: Dimension of embeddings
+            embedding_dim: Dimension of embeddings (defaults to Config.EMBEDDING_DIM)
         """
         self.uri = uri or Config.MILVUS_URI
         self.api_key = api_key or Config.MILVUS_API_KEY
         self.collection_name = collection_name or Config.MILVUS_COLLECTION_NAME
-        self.embedding_dim = embedding_dim
+        self.embedding_dim = embedding_dim or Config.EMBEDDING_DIM
 
         # Connect to Milvus
         self._connect()
@@ -151,6 +151,19 @@ class MilvusVectorStore:
         """
         if not (len(embeddings) == len(texts) == len(metadatas)):
             raise ValueError("embeddings, texts, and metadatas must have the same length")
+        
+        # Validate embedding dimensions
+        for idx, emb in enumerate(embeddings):
+            if len(emb) != self.embedding_dim:
+                logger.error(
+                    f"Embedding dimension mismatch at index {idx}! "
+                    f"Expected {self.embedding_dim}, got {len(emb)}. "
+                    f"Text: '{texts[idx][:100]}...'"
+                )
+                raise ValueError(
+                    f"Embedding dimension mismatch: expected {self.embedding_dim}, "
+                    f"got {len(emb)} at index {idx}"
+                )
 
         try:
             # Extract metadata fields

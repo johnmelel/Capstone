@@ -34,6 +34,12 @@ class Config:
     GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY", "your-google-api-key")
     EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "models/embedding-001")
     LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-1.5-pro")
+    
+    # Embedding dimension (must match the model)
+    # models/embedding-001 = 768 dimensions
+    # text-embedding-004 = 768 dimensions  
+    # If you change EMBEDDING_MODEL, update this accordingly
+    EMBEDDING_DIM = int(os.environ.get("EMBEDDING_DIM", "768"))
 
     # RAG-Anything
     MINERU_DEVICE = os.environ.get("MINERU_DEVICE", "cuda") # or "cpu"
