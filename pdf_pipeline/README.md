@@ -156,6 +156,6 @@ pdf_pipeline/
 ## Notes
 
 - The pipeline skips files that have already been downloaded (based on filename)
-- Embeddings use Google's `embedding-001` model (768 dimensions)
+- Embeddings use Google's `embedding-001` model (3072 dimensions)
 - Milvus collection is created automatically on first run
 - Primary keys are generated deterministically based on file hash and chunk index
