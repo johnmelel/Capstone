@@ -19,12 +19,13 @@ genai.configure(api_key=Config.GOOGLE_API_KEY)
 async def google_llm_model_func(prompt: str, **kwargs):
     """Custom async LLM model function using Google's Generative AI.
     
-    Note: Removes 'system_prompt' from kwargs if present, as it's not supported
-    by the current version of Google Generative AI SDK.
+    Note: Removes unsupported parameters that LightRAG may pass but Google's API doesn't accept.
     """
-    # Remove unsupported parameters
+    # Remove unsupported parameters that LightRAG/RAGAnything may pass
     kwargs.pop('system_prompt', None)
     kwargs.pop('system_instruction', None)
+    kwargs.pop('hashing_kv', None)  # LightRAG internal parameter
+    kwargs.pop('response_format', None)  # Not supported by older Google SDK versions
     
     model = genai.GenerativeModel(Config.LLM_MODEL)
     # Run in executor to avoid blocking

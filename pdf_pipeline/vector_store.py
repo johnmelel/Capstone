@@ -181,8 +181,8 @@ class MilvusVectorStore:
             for i in range(len(texts)):
                 key_string = f"{file_hashes[i]}-{chunk_indices[i]}-{texts[i][:100]}"
                 hashed_key = hashlib.sha256(key_string.encode()).hexdigest()
-                # Convert first 16 hex chars to int64
-                primary_keys.append(int(hashed_key[:16], 16))
+                # Convert first 15 hex chars to int64 (15 hex chars = 60 bits, safely fits in 63-bit signed int64)
+                primary_keys.append(int(hashed_key[:15], 16))
 
             primary_keys_np = np.array(primary_keys, dtype=np.int64)
 
