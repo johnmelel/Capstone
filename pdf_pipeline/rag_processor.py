@@ -19,20 +19,32 @@ genai.configure(api_key=Config.GOOGLE_API_KEY)
 async def google_llm_model_func(prompt: str, **kwargs):
     """Custom async LLM model function using Google's Generative AI.
     
-    Note: Removes unsupported parameters that LightRAG may pass but Google's API doesn't accept.
+    Note: Only passes parameters that Google's API actually supports to avoid errors.
     """
-    # Remove unsupported parameters that LightRAG/RAGAnything may pass
-    kwargs.pop('system_prompt', None)
-    kwargs.pop('system_instruction', None)
-    kwargs.pop('hashing_kv', None)  # LightRAG internal parameter
-    kwargs.pop('response_format', None)  # Not supported by older Google SDK versions
+    # List of parameters that Google's GenerativeModel.generate_content() actually supports
+    supported_params = {
+        'generation_config',  # GenerationConfig object or dict
+        'safety_settings',    # List of SafetySetting objects
+        'stream',            # Boolean for streaming
+        'tools',             # List of Tool objects
+        'tool_config',       # ToolConfig object
+        'request_options',   # RequestOptions object
+    }
+    
+    # Filter kwargs to only include supported parameters
+    filtered_kwargs = {k: v for k, v in kwargs.items() if k in supported_params}
+    
+    # Log if we're filtering out parameters (for debugging)
+    filtered_out = set(kwargs.keys()) - supported_params
+    if filtered_out:
+        logger.debug(f"Filtered out unsupported parameters: {filtered_out}")
     
     model = genai.GenerativeModel(Config.LLM_MODEL)
     # Run in executor to avoid blocking
     loop = asyncio.get_event_loop()
     response = await loop.run_in_executor(
         None, 
-        lambda: model.generate_content(prompt, **kwargs)
+        lambda: model.generate_content(prompt, **filtered_kwargs)
     )
     return response.text
 
