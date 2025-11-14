@@ -1,6 +1,0 @@
-VECTOR_DB_URI = "milvus://localhost:19530"
-VECTOR_DB_COLLECTION_TEXT = "healthcare_text"
-VECTOR_DB_COLLECTION_IMAGE = "healthcare_images"
-EMBEDDING_MODEL_TEXT = "BioClinicalBERT"
-EMBEDDING_MODEL_IMAGE = "clip-vit-base-patch32"
-RL_AGENT_ALGO = "PPO"
