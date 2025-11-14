@@ -43,6 +43,7 @@ class Config:
 
     # RAG-Anything
     MINERU_DEVICE = os.environ.get("MINERU_DEVICE", "cuda") # or "cpu"
+    RAG_CLEAR_CACHE = os.environ.get("RAG_CLEAR_CACHE", "True").lower() in ("true", "1", "t")
 
     # Logging
     LOG_FILE = os.environ.get("LOG_FILE", "pipeline.log")
@@ -84,6 +85,12 @@ class Config:
         if cls.MINERU_DEVICE not in ["cuda", "cpu", "mps"]:
             errors.append(f"MINERU_DEVICE must be 'cuda', 'cpu', or 'mps', got: {cls.MINERU_DEVICE}")
         
+        # Check if MinerU (magic-pdf) is installed
+        try:
+            import magic_pdf
+        except ImportError:
+            errors.append("MinerU (magic-pdf) is not installed. Install with: pip install magic-pdf")
+        
         # Check log level
         valid_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
         if cls.LOG_LEVEL.upper() not in valid_log_levels:
@@ -108,7 +115,8 @@ class Config:
         print(f"  Milvus Collection: {cls.MILVUS_COLLECTION_NAME}")
         print(f"  Embedding Model: {cls.EMBEDDING_MODEL}")
         print(f"  LLM Model: {cls.LLM_MODEL}")
-        print(f"  Device: {cls.MINERU_DEVICE}")
+        print(f"  MinerU Device: {cls.MINERU_DEVICE}")
+        print(f"  Clear RAG Cache: {cls.RAG_CLEAR_CACHE}")
         print(f"  Log Level: {cls.LOG_LEVEL}")
         print(f"  Log File: {cls.LOG_FILE}")
         

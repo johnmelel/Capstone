@@ -118,18 +118,41 @@ async def google_embedding_func(texts: List[str]) -> List[List[float]]:
     return embeddings
 
 class RAGProcessor:
-    def __init__(self):
+    def __init__(self, clear_cache: bool = None):
+        """Initialize RAGProcessor
+        
+        Args:
+            clear_cache: If True, clears the working directory cache on initialization.
+                        If None, uses Config.RAG_CLEAR_CACHE value.
+        """
         # Ensure working directory exists
         working_dir = Path("./rag_storage")
         working_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Determine if cache should be cleared
+        if clear_cache is None:
+            clear_cache = Config.RAG_CLEAR_CACHE
+        
+        # Clear cache if requested
+        if clear_cache:
+            logger.info("Clearing RAGAnything cache to ensure fresh processing...")
+            self._clear_cache(working_dir)
+        else:
+            logger.info("Cache clearing disabled - using existing cache if available")
         
         # Ensure processed data directory exists
         Config.PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
         
         # Configure RAGAnything with proper settings
+        # RAGAnything should use MinerU for high-quality PDF parsing
         self.config = RAGAnythingConfig(
             working_dir=str(working_dir),
+            # Add MinerU-specific configuration if supported
+            # The exact parameter name may vary - check RAGAnything docs
         )
+        
+        # Validate MinerU availability
+        self._validate_mineru()
         
         # Set up embedding function
         self.embedding_func = EmbeddingFunc(
@@ -146,6 +169,89 @@ class RAGProcessor:
         )
         logger.info("RAGAnything initialized successfully")
         logger.info(f"Working directory: {self.config.working_dir}")
+    
+    def _clear_cache(self, working_dir: Path):
+        """Clear cache files from working directory
+        
+        Args:
+            working_dir: Path to the working directory to clean
+        """
+        try:
+            import shutil
+            
+            cache_patterns = [
+                "kv_store_*.json",      # Key-value store cache files
+                "vdb_*.json",           # Vector database cache files
+                "*_cache.json",         # General cache files
+            ]
+            
+            cleared_count = 0
+            for pattern in cache_patterns:
+                for cache_file in working_dir.glob(f"**/{pattern}"):
+                    try:
+                        cache_file.unlink()
+                        logger.debug(f"Deleted cache file: {cache_file.name}")
+                        cleared_count += 1
+                    except Exception as e:
+                        logger.warning(f"Could not delete {cache_file}: {e}")
+            
+            if cleared_count > 0:
+                logger.info(f"✓ Cleared {cleared_count} cache files from {working_dir}")
+            else:
+                logger.info(f"No cache files found in {working_dir}")
+                
+        except Exception as e:
+            logger.warning(f"Error during cache cleanup: {e}")
+    
+    def _validate_mineru(self):
+        """Validate MinerU is available and properly configured"""
+        try:
+            # Try to import MinerU (magic-pdf)
+            try:
+                import magic_pdf
+                logger.info(f"✓ MinerU (magic-pdf) is installed: version {getattr(magic_pdf, '__version__', 'unknown')}")
+            except ImportError:
+                logger.error("✗ MinerU (magic-pdf) is not installed!")
+                logger.error("Install with: pip install magic-pdf")
+                raise ImportError("MinerU (magic-pdf) is required but not installed")
+            
+            # Validate device configuration
+            device = Config.MINERU_DEVICE.lower()
+            logger.info(f"MinerU device configuration: {device}")
+            
+            if device == "cuda":
+                # Check if CUDA is available
+                try:
+                    import torch
+                    if torch.cuda.is_available():
+                        logger.info(f"✓ CUDA is available: {torch.cuda.get_device_name(0)}")
+                    else:
+                        logger.warning("⚠ CUDA device requested but not available. Will fall back to CPU.")
+                        logger.warning("This may result in slower processing.")
+                except ImportError:
+                    logger.warning("⚠ PyTorch not installed, cannot verify CUDA availability")
+            elif device == "mps":
+                # Check if MPS (Apple Silicon) is available
+                try:
+                    import torch
+                    if torch.backends.mps.is_available():
+                        logger.info("✓ MPS (Apple Silicon) is available")
+                    else:
+                        logger.warning("⚠ MPS device requested but not available. Will fall back to CPU.")
+                except ImportError:
+                    logger.warning("⚠ PyTorch not installed, cannot verify MPS availability")
+            elif device == "cpu":
+                logger.info("✓ Using CPU device (this may be slower)")
+            else:
+                logger.warning(f"⚠ Unknown device type: {device}. Defaulting to CPU.")
+            
+            logger.info("✓ MinerU validation completed")
+            
+        except ImportError as e:
+            logger.error(f"MinerU validation failed: {e}")
+            raise
+        except Exception as e:
+            logger.warning(f"MinerU validation warning: {e}")
 
     async def process_document(self, file_path: Path) -> Path:
         """Processes a single document and saves the output.
@@ -158,77 +264,82 @@ class RAGProcessor:
         """
         logger.info(f"Processing document: {file_path}")
         try:
-            # Process the document using RAGAnything's correct API
-            logger.info("Using process_document_complete method")
+            # Process the document using RAGAnything
+            logger.info("Processing document with RAGAnything...")
             await self.rag.process_document_complete(str(file_path))
+            logger.info("Document processing completed")
             
-            logger.info("Document processed, extracting data from LightRAG storage...")
-            
-            # Extract processed data from LightRAG's knowledge graph storage
-            # RAGAnything uses LightRAG internally which stores data in its graph
+            # Extract chunks using RAGAnything's query/search functionality
+            # RAGAnything uses LightRAG internally and should provide a way to retrieve chunks
             entities = []
+            
             try:
-                # Access LightRAG's internal storage
-                if hasattr(self.rag, 'lightrag'):
-                    lightrag = self.rag.lightrag
-                    logger.info(f"LightRAG type: {type(lightrag)}")
+                # Method 1: Try to query all content from the document
+                # This is typically how you'd retrieve processed chunks
+                logger.info("Attempting to extract chunks via query method...")
+                
+                if hasattr(self.rag, 'query'):
+                    # Query for document content - this should return processed chunks
+                    query_result = await self.rag.query(
+                        query=f"What is in {file_path.name}?",
+                        param={"mode": "local", "only_need_context": True}
+                    )
+                    logger.info(f"Query result type: {type(query_result)}")
                     
-                    # Try to access the chunk storage
-                    if hasattr(lightrag, 'chunk_entity_relation_graph'):
-                        logger.info("Accessing chunk_entity_relation_graph...")
-                        graph = lightrag.chunk_entity_relation_graph
+                    if isinstance(query_result, dict) and 'context' in query_result:
+                        # Extract chunks from context
+                        context = query_result['context']
+                        if isinstance(context, list):
+                            entities = context
+                            logger.info(f"Extracted {len(entities)} chunks from query context")
+                    elif isinstance(query_result, str):
+                        # Single result string - need to split into chunks
+                        logger.warning("Query returned single string, cannot extract individual chunks")
+                
+                # Method 2: Try to access internal storage directly
+                if not entities and hasattr(self.rag, 'lightrag'):
+                    logger.info("Attempting to access LightRAG internal storage...")
+                    lightrag = self.rag.lightrag
+                    
+                    # Try accessing chunk storage via key-value store
+                    if hasattr(lightrag, 'key_string_value_json_storage_cls'):
+                        logger.info("Attempting to read from key-value storage...")
+                        # The storage should have chunks indexed by document
                         
-                        # Try different methods to get chunks
-                        if hasattr(graph, 'get_all_chunks'):
-                            entities = await graph.get_all_chunks()
-                        elif hasattr(graph, 'get_node_by_key'):
-                            # If we need to iterate through keys
-                            logger.info("Graph uses key-based access")
-                        elif hasattr(graph, '_graph'):
-                            # Direct graph access
-                            logger.info("Direct graph access available")
-                            
-                    # Alternative: check for document storage
-                    if not entities and hasattr(lightrag, 'doc_chunks'):
-                        logger.info("Accessing doc_chunks...")
-                        entities = lightrag.doc_chunks
-                        
-                    # Alternative: check working directory for stored data
-                    if not entities:
-                        logger.info("Checking working directory for stored chunks...")
-                        working_dir = Path(self.rag.config.working_dir)
-                        
-                        # Look for parquet files with chunks
-                        chunk_files = list(working_dir.glob("**/chunks*.parquet"))
-                        if chunk_files:
-                            logger.info(f"Found chunk files: {chunk_files}")
-                            for chunk_file in chunk_files:
-                                df = pd.read_parquet(chunk_file)
-                                logger.info(f"Loaded {len(df)} chunks from {chunk_file.name}")
-                                # Convert dataframe to entity format
+                    # Try to get chunks from full_docs storage
+                    if hasattr(lightrag, 'chunks_vdb'):
+                        logger.info("Found chunks_vdb attribute")
+                        # This is the vector database storing chunks
+                        # May need to query it to get all chunks
+                
+                # Method 3: Read from working directory parquet files (last resort, but valid)
+                if not entities:
+                    logger.info("Attempting to read chunks from working directory...")
+                    working_dir = Path(self.rag.config.working_dir)
+                    
+                    # Look specifically for chunk data files (not cache files)
+                    chunk_files = list(working_dir.glob("**/chunks*.parquet"))
+                    if chunk_files:
+                        logger.info(f"Found chunk parquet files: {chunk_files}")
+                        for chunk_file in chunk_files:
+                            df = pd.read_parquet(chunk_file)
+                            logger.info(f"Loaded {len(df)} rows from {chunk_file.name}")
+                            # Verify this is actually chunk data
+                            if 'content' in df.columns or 'text' in df.columns or 'chunk' in df.columns:
                                 for _, row in df.iterrows():
                                     entities.append(row.to_dict())
-                        
-                        # Look for JSON files
-                        json_files = list(working_dir.glob("**/*.json"))
-                        if json_files and not entities:
-                            logger.info(f"Found JSON files: {json_files}")
-                            import json
-                            for json_file in json_files:
-                                try:
-                                    with open(json_file, 'r') as f:
-                                        data = json.load(f)
-                                        if isinstance(data, list):
-                                            entities.extend(data)
-                                        elif isinstance(data, dict):
-                                            entities.append(data)
-                                except Exception as e:
-                                    logger.debug(f"Could not load {json_file}: {e}")
-                else:
-                    logger.error("RAGAnything does not have lightrag attribute")
+                                logger.info(f"Extracted {len(df)} chunks from {chunk_file.name}")
+                            else:
+                                logger.warning(f"File {chunk_file.name} doesn't contain expected chunk columns")
+                
+                if not entities:
+                    logger.error("Failed to extract entities using any method")
+                    logger.error("This indicates RAGAnything did not properly process the document")
+                    raise ValueError("RAGAnything processing produced no extractable chunks")
                     
             except Exception as e:
                 logger.error(f"Error extracting entities from RAGAnything: {e}", exc_info=True)
+                raise ValueError(f"Failed to extract data from RAGAnything: {e}")
 
             # Convert the entities to a pandas DataFrame
             data = []
@@ -242,6 +353,10 @@ class RAGProcessor:
                 logger.info(f"Processing {len(entities)} extracted entities...")
                 for idx, entity in enumerate(entities):
                     # Handle different entity structures from RAGAnything/LightRAG
+                    embedding = None
+                    text = None
+                    metadata = {}
+                    
                     if hasattr(entity, 'embedding') or (isinstance(entity, dict) and 'embedding' in entity):
                         # Entity with embedding attribute
                         embedding = entity.embedding if hasattr(entity, 'embedding') else entity.get('embedding', entity.get('vector', []))
@@ -255,12 +370,24 @@ class RAGProcessor:
                         text = entity.get('text', entity.get('content', entity.get('chunk', '')))
                         metadata = entity.get('metadata', {})
                     else:
-                        logger.warning(f"Unknown entity structure: {type(entity)}")
+                        logger.warning(f"Unknown entity structure at index {idx}: {type(entity)}")
                         continue
                     
-                    # Skip empty text
+                    # Validate text content
                     if not text or not text.strip():
-                        logger.warning(f"Skipping entity {idx} with empty text")
+                        logger.warning(f"Skipping entity {idx}: empty text content")
+                        continue
+                    
+                    # Validate text is actual content, not JSON/metadata
+                    text_lower = text.strip().lower()
+                    if (text_lower.startswith('{') and text_lower.endswith('}')) or \
+                       (text_lower.startswith('[') and text_lower.endswith(']')):
+                        logger.warning(f"Skipping entity {idx}: appears to be JSON data, not document content")
+                        continue
+                    
+                    # Ensure text is substantial (minimum 20 characters)
+                    if len(text.strip()) < 20:
+                        logger.warning(f"Skipping entity {idx}: text too short ({len(text)} chars)")
                         continue
                     
                     # Generate embedding if not present
@@ -289,56 +416,22 @@ class RAGProcessor:
                         "chunk_index": metadata.get("chunk_index", idx),
                         "total_chunks": metadata.get("total_chunks", len(entities)),
                     })
-            
-            # If no entities extracted, fall back to direct processing
-            if not data:
-                logger.warning(f"No entities extracted from RAGAnything for {file_path}")
-                logger.info("Using fallback: direct text extraction and chunking...")
                 
-                # Use PyMuPDF as fallback for text extraction
-                try:
-                    import fitz
-                    doc = fitz.open(str(file_path))
-                    text = ""
-                    for page in doc:
-                        text += page.get_text()
-                    doc.close()
-                except ImportError:
-                    # If PyMuPDF not available, read raw bytes
-                    logger.warning("PyMuPDF not available, using basic extraction")
-                    with open(file_path, 'rb') as f:
-                        text = f.read(10000).decode('utf-8', errors='ignore')
-                
-                if text.strip():
-                    # Simple chunking
-                    chunk_size = 1000
-                    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size) if text[i:i+chunk_size].strip()]
-                    
-                    logger.info(f"Created {len(chunks)} chunks from direct extraction")
-                    
-                    # Generate embeddings for chunks
-                    embeddings = await google_embedding_func(chunks)
-                    
-                    # Validate all embeddings have correct dimension
-                    for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
-                        if len(embedding) != Config.EMBEDDING_DIM:
-                            logger.error(
-                                f"Dimension mismatch in fallback chunk {idx}! Expected {Config.EMBEDDING_DIM}, "
-                                f"got {len(embedding)}. Skipping this chunk."
-                            )
-                            continue
-                        
-                        data.append({
-                            "vector": embedding,
-                            "text": chunk,
-                            "file_name": file_path.name,
-                            "file_hash": file_hash,
-                            "chunk_index": idx,
-                            "total_chunks": len(chunks),
-                        })
+                logger.info(f"Successfully validated and processed {len(data)} chunks out of {len(entities)} entities")
             
+            # No fallback methods - if RAGAnything fails, the pipeline should fail
             if not data:
-                raise ValueError(f"Could not extract any data from {file_path}")
+                error_msg = (
+                    f"Failed to extract any valid data from {file_path}. "
+                    f"RAGAnything processing did not produce usable chunks. "
+                    f"This could be due to: "
+                    f"1) RAGAnything not properly processing the document, "
+                    f"2) Incorrect entity extraction logic, "
+                    f"3) Document format issues. "
+                    f"Check logs above for details."
+                )
+                logger.error(error_msg)
+                raise ValueError(error_msg)
             
             df = pd.DataFrame(data)
 
