@@ -218,11 +218,17 @@ class MilvusVectorStore:
             
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")
-            self.collection.insert(data)
+            insert_result = self.collection.insert(data)
             self.collection.flush()
             
             logger.info(f"Successfully inserted {len(embeddings)} entities")
-            return [] # Return empty list as IDs are auto-generated
+            
+            # Return the primary keys from the insert result
+            if hasattr(insert_result, 'primary_keys'):
+                return [str(pk) for pk in insert_result.primary_keys]
+            else:
+                # Fallback for older versions or if primary_keys not available
+                return []
             
         except Exception as e:
             logger.error(f"Error inserting data into Milvus: {e}")

@@ -22,10 +22,15 @@ def mock_milvus():
         mock_field.is_primary = True
         mock_schema.fields = [mock_field]
         
+        # Mock insert result
+        mock_insert_result = MagicMock()
+        mock_insert_result.primary_keys = ['id1', 'id2']  # Mock IDs
+        
         # Mock collection
         mock_collection = MagicMock()
         mock_collection.num_entities = 100
         mock_collection.schema = mock_schema
+        mock_collection.insert.return_value = mock_insert_result
         mock_coll.return_value = mock_collection
         
         # Mock utility
