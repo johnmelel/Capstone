@@ -206,14 +206,16 @@ class RAGProcessor:
     def _validate_mineru(self):
         """Validate MinerU is available and properly configured"""
         try:
-            # Try to import MinerU (magic-pdf)
+            # Try to import MinerU
             try:
-                import magic_pdf
-                logger.info(f"✓ MinerU (magic-pdf) is installed: version {getattr(magic_pdf, '__version__', 'unknown')}")
+                import mineru
+                logger.info(f"✓ MinerU is installed: version {getattr(mineru, '__version__', 'unknown')}")
             except ImportError:
-                logger.error("✗ MinerU (magic-pdf) is not installed!")
-                logger.error("Install with: pip install magic-pdf")
-                raise ImportError("MinerU (magic-pdf) is required but not installed")
+                logger.error("✗ MinerU is not installed!")
+                logger.error("Install all dependencies with:")
+                logger.error("  pip install uv")
+                logger.error("  uv pip install -r requirements.txt")
+                raise ImportError("MinerU is required but not installed")
             
             # Validate device configuration
             device = Config.MINERU_DEVICE.lower()

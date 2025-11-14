@@ -85,11 +85,15 @@ class Config:
         if cls.MINERU_DEVICE not in ["cuda", "cpu", "mps"]:
             errors.append(f"MINERU_DEVICE must be 'cuda', 'cpu', or 'mps', got: {cls.MINERU_DEVICE}")
         
-        # Check if MinerU (magic-pdf) is installed
+        # Check if MinerU is installed
         try:
-            import magic_pdf
+            import mineru
         except ImportError:
-            errors.append("MinerU (magic-pdf) is not installed. Install with: pip install magic-pdf")
+            errors.append(
+                "MinerU is not installed. Install all dependencies with:\n"
+                "  pip install uv\n"
+                "  uv pip install -r requirements.txt"
+            )
         
         # Check log level
         valid_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

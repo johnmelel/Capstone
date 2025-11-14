@@ -1,6 +1,14 @@
+# PDF Pipeline Dependencies
+# 
+# Installation:
+#   pip install uv
+#   uv pip install -r requirements.txt
+#
+# This will install all required packages including MinerU for high-quality PDF parsing.
+
 # RAG Processing
-raganything
-magic-pdf  # MinerU for high-quality PDF parsing
+raganything  # Core RAG library
+mineru[core]  # MinerU for high-quality PDF parsing (part of RAGAnything ecosystem)
 
 # Cloud Storage
 google-cloud-storage
