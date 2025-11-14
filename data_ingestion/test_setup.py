@@ -247,13 +247,8 @@ def test_components():
 def test_single_pdf():
     """Test processing a single PDF"""
     print("\n" + "="*60)
-    print("TEST 6: Single PDF Processing (Optional)")
+    print("TEST 6: Single PDF Processing")
     print("="*60)
-    
-    response = input("Do you want to test processing one PDF? (y/n): ").lower()
-    if response != 'y':
-        print("Skipped")
-        pytest.skip("User skipped PDF processing test")
     
     try:
         from src.ingest import IngestionPipeline

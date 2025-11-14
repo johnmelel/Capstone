@@ -12,10 +12,20 @@ def mock_milvus():
          patch('src.vector_store.Collection') as mock_coll, \
          patch('src.vector_store.utility') as mock_util:
         
+        # Mock schema with proper structure
+        mock_schema = MagicMock()
+        mock_schema.auto_id = True
+        mock_field = MagicMock()
+        mock_field.name = "id"
+        mock_field.dtype = "INT64"
+        mock_field.auto_id = True
+        mock_field.is_primary = True
+        mock_schema.fields = [mock_field]
+        
         # Mock collection
         mock_collection = MagicMock()
         mock_collection.num_entities = 100
-        mock_collection.schema = "test_schema"
+        mock_collection.schema = mock_schema
         mock_coll.return_value = mock_collection
         
         # Mock utility
