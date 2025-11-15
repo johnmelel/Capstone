@@ -93,7 +93,7 @@ def main():
                 print(f"  Distance: {distance:.4f}")
                 print(f"  File Name: {file_name}")
                 print(f"  Chunk Index: {chunk_index}")
-                print(f"  Text: \n"{text}"\n")
+                print(f"  Text: \n\"{text}\"\n")
             
             print("="*80)
 
