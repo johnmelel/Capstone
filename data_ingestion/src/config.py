@@ -41,6 +41,10 @@ class Config:
     
     # Local Storage (removed - no longer needed for stream processing)
     # DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", "./downloads"))
+
+    # Retrieval Test Configuration
+    DEFAULT_RETRIEVAL_PROMPT = os.getenv("DEFAULT_RETRIEVAL_PROMPT", "What is the future of AI?")
+    TOP_K_RESULTS = int(os.getenv("TOP_K_RESULTS", "5"))
     
     @classmethod
     def validate(cls):
