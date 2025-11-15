@@ -238,7 +238,8 @@ class MilvusVectorStore:
         self,
         query_embedding: List[float],
         top_k: int = 5,
-        output_fields: Optional[List[str]] = None
+        output_fields: Optional[List[str]] = None,
+        search_params: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """
         Search for similar vectors
@@ -247,6 +248,7 @@ class MilvusVectorStore:
             query_embedding: Query embedding vector
             top_k: Number of results to return
             output_fields: Fields to return in results
+            search_params: Optional dictionary of search parameters
             
         Returns:
             List of search results with metadata
@@ -255,10 +257,11 @@ class MilvusVectorStore:
             if output_fields is None:
                 output_fields = ["text", "file_name", "chunk_index", "total_chunks"]
             
-            search_params = {
-                "metric_type": "COSINE",
-                "params": {"nprobe": 10}
-            }
+            if search_params is None:
+                search_params = {
+                    "metric_type": "COSINE",
+                    "params": {"nprobe": 10}
+                }
             
             results = self.collection.search(
                 data=[query_embedding],
