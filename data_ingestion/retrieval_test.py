@@ -68,9 +68,15 @@ def main():
         top_k = Config.TOP_K_RESULTS
         logger.info(f"Performing similarity search to retrieve top {top_k} results...")
         
+        search_params = {
+            "metric_type": "COSINE",
+            "params": {"nprobe": 10}
+        }
+        
         search_results = vector_store.search(
             query_embedding=query_vector,
-            top_k=top_k
+            top_k=top_k,
+            search_params=search_params
         )
         
         # --- 5. Display Results ---
