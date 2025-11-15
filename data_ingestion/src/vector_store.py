@@ -275,10 +275,19 @@ class MilvusVectorStore:
             formatted_results = []
             for hits in results:
                 for hit in hits:
+                    # Extract entity fields manually to ensure they're included
+                    entity_dict = {}
+                    for field in output_fields:
+                        try:
+                            entity_dict[field] = hit.entity.get(field)
+                        except:
+                            # Fallback: try accessing as attribute
+                            entity_dict[field] = getattr(hit.entity, field, None)
+                    
                     result = {
                         "id": hit.id,
                         "distance": hit.distance,
-                        "entity": hit.entity.to_dict()
+                        "entity": entity_dict
                     }
                     formatted_results.append(result)
             
