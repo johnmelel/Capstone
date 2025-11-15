@@ -76,7 +76,8 @@ def main():
         search_results = vector_store.search(
             query_embedding=query_vector,
             top_k=top_k,
-            search_params=search_params
+            search_params=search_params,
+            output_fields=["text", "file_name", "chunk_index"]
         )
         
         # --- 5. Display Results ---
