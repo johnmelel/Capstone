@@ -98,7 +98,7 @@ class MilvusVectorStore:
                 
                 # Create index for vector field
                 index_params = {
-                    "metric_type": "L2",
+                    "metric_type": "COSINE",
                     "index_type": "IVF_FLAT",
                     "params": {"nlist": 128}
                 }
@@ -256,7 +256,7 @@ class MilvusVectorStore:
                 output_fields = ["text", "file_name", "chunk_index", "total_chunks"]
             
             search_params = {
-                "metric_type": "L2",
+                "metric_type": "COSINE",
                 "params": {"nprobe": 10}
             }
             
