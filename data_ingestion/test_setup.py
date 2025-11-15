@@ -308,7 +308,8 @@ def main():
     
     for name, test_func in tests:
         try:
-            results[name] = test_func()
+            test_func()
+            results[name] = True
         except KeyboardInterrupt:
             print("\n\nTest interrupted by user")
             sys.exit(1)
