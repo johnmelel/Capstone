@@ -11,7 +11,7 @@ from src.embedder import TextEmbedder
 from src.vector_store import MilvusVectorStore
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 def main():
@@ -90,17 +90,28 @@ def main():
             print("="*80 + "\n")
             
             for i, result in enumerate(search_results):
+                # Debug: print the raw result structure
+                logger.debug(f"Raw result {i+1}: {result}")
+                
                 entity = result.get('entity', {})
+                logger.debug(f"Entity dict: {entity}")
+                
                 text = entity.get('text', 'N/A')
                 file_name = entity.get('file_name', 'N/A')
                 chunk_index = entity.get('chunk_index', 'N/A')
+                total_chunks = entity.get('total_chunks', 'N/A')
                 distance = result.get('distance', 'N/A')
                 
                 print(f"--- Result {i+1} ---")
-                print(f"  Distance: {distance:.4f}")
+                print(f"  Distance: {distance:.4f}" if isinstance(distance, float) else f"  Distance: {distance}")
                 print(f"  File Name: {file_name}")
-                print(f"  Chunk Index: {chunk_index}")
-                print(f"  Text: \n\"{text}\"\n")
+                print(f"  Chunk Index: {chunk_index}/{total_chunks}")
+                print(f"  Text Preview (first 500 chars):")
+                text_preview = text[:500] if isinstance(text, str) and len(text) > 500 else text
+                print(f"    {text_preview}")
+                if isinstance(text, str) and len(text) > 500:
+                    print(f"    ... ({len(text)} total characters)")
+                print()
             
             print("="*80)
 
