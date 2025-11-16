@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from pathlib import Path
 
 from .config import Config
+from .constants import CHARS_PER_TOKEN_ESTIMATE
 from .utils import create_metadata, get_file_hash
 
 

@@ -21,6 +21,9 @@ except ImportError:
 
 from .utils import clean_text
 from .config import Config
+from .exceptions import PDFExtractionError
+from .constants import MAX_PDF_SIZE_BYTES
+from .types import PDFExtractionResult, PDFMetadata
 
 
 logger = logging.getLogger(__name__)
@@ -82,8 +85,11 @@ class PDFExtractor:
             # Phase 2 could parse markdown for structured content
             return markdown_content.strip() if markdown_content else None
             
-        except Exception as e:
-            logger.error(f"Error reading markdown file {md_file_path}: {e}")
+        except (IOError, OSError) as e:
+            logger.error(f"File I/O error reading markdown {md_file_path}: {e}")
+            return None
+        except UnicodeDecodeError as e:
+            logger.error(f"Encoding error reading markdown {md_file_path}: {e}")
             return None
     
     def _process_pdf_with_mineru(self, pdf_path: Path, output_dir: Path) -> Optional[str]:
@@ -136,8 +142,14 @@ class PDFExtractor:
             # Extract text from markdown
             return md_content.strip() if md_content else None
             
+        except (IOError, OSError, FileNotFoundError) as e:
+            logger.error(f"File I/O error processing PDF with MinerU: {e}")
+            return None
+        except ImportError as e:
+            logger.error(f"Missing MinerU dependency: {e}")
+            raise PDFExtractionError("MinerU dependencies not properly installed") from e
         except Exception as e:
-            logger.error(f"Error processing PDF with MinerU: {e}")
+            logger.error(f"Unexpected error processing PDF with MinerU: {e}")
             return None
     
     def extract_text(self, pdf_source: Union[Path, Any]) -> Optional[str]:
@@ -177,8 +189,8 @@ class PDFExtractor:
                 source_name = getattr(pdf_source, 'name', 'unknown.pdf')
                 
                 # Check file size before downloading (avoid memory issues)
-                if hasattr(pdf_source, 'size') and pdf_source.size > 100 * 1024 * 1024:  # 100MB limit
-                    logger.warning(f"Skipping large file {source_name} ({pdf_source.size} bytes) - too large")
+                if hasattr(pdf_source, 'size') and pdf_source.size > MAX_PDF_SIZE_BYTES:
+                    logger.warning(f"Skipping large file {source_name} ({pdf_source.size} bytes) - exceeds {MAX_PDF_SIZE_BYTES} byte limit")
                     return None
                 
                 logger.info(f"Extracting text from GCS: {source_name}")
@@ -197,8 +209,14 @@ class PDFExtractor:
                     # Create temp output directory
                     temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
                     
+                except (IOError, OSError) as e:
+                    logger.error(f"I/O error downloading GCS blob {source_name}: {e}")
+                    temp_pdf_file.close()
+                    if temp_pdf_path and temp_pdf_path.exists():
+                        temp_pdf_path.unlink()
+                    return None
                 except Exception as e:
-                    logger.error(f"Error downloading GCS blob {source_name}: {e}")
+                    logger.error(f"Unexpected error downloading GCS blob {source_name}: {e}")
                     temp_pdf_file.close()
                     if temp_pdf_path and temp_pdf_path.exists():
                         temp_pdf_path.unlink()
@@ -225,10 +243,20 @@ class PDFExtractor:
             
             return cleaned_text
             
+        except (IOError, OSError, FileNotFoundError) as e:
+            processing_time = time.time() - start_time
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"File I/O error extracting text from {source_name} after {processing_time:.2f}s: {e}")
+            return None
+        except TimeoutError as e:
+            processing_time = time.time() - start_time
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"Timeout extracting text from {source_name} after {processing_time:.2f}s: {e}")
+            return None
         except Exception as e:
             processing_time = time.time() - start_time
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
-            logger.error(f"Error extracting text from {source_name} after {processing_time:.2f}s: {e}")
+            logger.error(f"Unexpected error extracting text from {source_name} after {processing_time:.2f}s: {e}")
             return None
             
         finally:
@@ -239,7 +267,7 @@ class PDFExtractor:
                     try:
                         temp_pdf_path.unlink()
                         logger.debug(f"Deleted temp PDF: {temp_pdf_path}")
-                    except Exception as e:
+                    except (OSError, PermissionError) as e:
                         logger.warning(f"Failed to delete temp PDF {temp_pdf_path}: {e}")
                 
                 # Delete temp output directory
@@ -247,7 +275,7 @@ class PDFExtractor:
                     try:
                         shutil.rmtree(temp_output_dir)
                         logger.debug(f"Deleted temp output dir: {temp_output_dir}")
-                    except Exception as e:
+                    except (OSError, PermissionError) as e:
                         logger.warning(f"Failed to delete temp output dir {temp_output_dir}: {e}")
             else:
                 # Debug mode - keep files
@@ -321,9 +349,13 @@ class PDFExtractor:
                 'metadata': metadata
             }
             
+        except (IOError, OSError, FileNotFoundError) as e:
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"File I/O error extracting from {source_name}: {e}")
+            return None
         except Exception as e:
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
-            logger.error(f"Error extracting from {source_name}: {e}")
+            logger.error(f"Unexpected error extracting from {source_name}: {e}")
             return None
             
         finally:
@@ -332,13 +364,13 @@ class PDFExtractor:
                 if temp_pdf_path and temp_pdf_path.exists():
                     try:
                         temp_pdf_path.unlink()
-                    except Exception as e:
+                    except (OSError, PermissionError) as e:
                         logger.warning(f"Failed to delete temp PDF: {e}")
                 
                 if temp_output_dir and temp_output_dir.exists():
                     try:
                         shutil.rmtree(temp_output_dir)
-                    except Exception as e:
+                    except (OSError, PermissionError) as e:
                         logger.warning(f"Failed to delete temp output dir: {e}")
     
     def get_page_count(self, pdf_source: Union[Path, Any]) -> int:

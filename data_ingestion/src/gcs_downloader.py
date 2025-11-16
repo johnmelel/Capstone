@@ -5,9 +5,11 @@ from pathlib import Path
 from typing import List, Optional
 
 from google.cloud import storage
+from google.cloud.exceptions import GoogleCloudError, NotFound
 from google.oauth2 import service_account
 
 from .config import Config
+from .exceptions import GCSError
 from .utils import sanitize_filename
 
 
@@ -61,9 +63,12 @@ class GCSDownloader:
             logger.info(f"Connected to bucket: {self.bucket_name}")
             return client, bucket
             
-        except Exception as e:
-            logger.error(f"Failed to authenticate with Google Cloud Storage: {e}")
-            raise
+        except (FileNotFoundError, ValueError) as e:
+            logger.error(f"Invalid service account file or bucket configuration: {e}")
+            raise GCSError(f"Failed to authenticate with GCS: {e}") from e
+        except GoogleCloudError as e:
+            logger.error(f"Google Cloud Storage error: {e}")
+            raise GCSError(f"Failed to connect to GCS bucket {self.bucket_name}") from e
     
     def list_pdf_blobs(self) -> List[storage.Blob]:
         """
@@ -97,9 +102,9 @@ class GCSDownloader:
             
             return pdf_blobs
             
-        except Exception as error:
-            logger.error(f"An error occurred while listing blobs: {error}")
-            raise
+        except GoogleCloudError as error:
+            logger.error(f"GCS error listing blobs: {error}")
+            raise GCSError(f"Failed to list PDFs from bucket {self.bucket_name}") from error
     
     def download_blob(self, blob: storage.Blob) -> Optional[Path]:
         """
@@ -143,8 +148,11 @@ class GCSDownloader:
             logger.info(f"Successfully downloaded: {safe_relative_path}")
             return file_path
             
-        except Exception as e:
-            logger.error(f"Error downloading {blob.name}: {e}")
+        except (IOError, OSError) as e:
+            logger.error(f"File system error downloading {blob.name}: {e}")
+            return None
+        except GoogleCloudError as e:
+            logger.error(f"GCS download error for {blob.name}: {e}")
             return None
     
     def download_all_pdfs(self) -> List[Path]:
@@ -183,16 +191,22 @@ def download_pdfs_from_gcs(
         service_account_file: Path to service account JSON (defaults to Config)
         bucket_name: GCS bucket name (defaults to Config)
         bucket_prefix: Bucket prefix/folder (defaults to Config)
-        download_dir: Download directory (defaults to Config)
+        download_dir: Download directory (required - no default in Config)
         recursive: Whether to download from subfolders recursively (defaults to Config)
         
     Returns:
         List of paths to downloaded files
+        
+    Raises:
+        ValueError: If download_dir is not provided
     """
     service_account_file = service_account_file or Config.GOOGLE_SERVICE_ACCOUNT_JSON
     bucket_name = bucket_name or Config.GCS_BUCKET_NAME
     bucket_prefix = bucket_prefix or getattr(Config, 'GCS_BUCKET_PREFIX', '')
-    download_dir = download_dir or Config.DOWNLOAD_DIR
+    
+    # download_dir is required since Config.DOWNLOAD_DIR was removed for stream processing
+    if download_dir is None:
+        raise ValueError("download_dir must be provided (Config.DOWNLOAD_DIR has been removed)")
     
     # Default to True if not specified
     if recursive is None:

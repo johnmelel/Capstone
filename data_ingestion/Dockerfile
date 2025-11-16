@@ -28,9 +28,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY src/ ./src/
 
-# Copy environment file and service account JSON
-COPY .env .env
-COPY service_account.json service_account.json
+# NOTE: DO NOT copy .env or service_account.json into the image!
+# Mount these as volumes at runtime:
+# docker run -v $(pwd)/.env:/app/.env \
+#           -v $(pwd)/service_account.json:/app/service_account.json \
+#           data-ingestion-app
 
 # Create directories
 RUN mkdir -p ./downloads

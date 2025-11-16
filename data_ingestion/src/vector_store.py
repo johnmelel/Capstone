@@ -14,8 +14,11 @@ from pymilvus import (
     DataType,
     utility
 )
+from pymilvus.exceptions import MilvusException, ConnectionNotExistException
 
 from .config import Config
+from .exceptions import VectorStoreError
+from .constants import MD5_HASH_PATTERN
 
 
 logger = logging.getLogger(__name__)
@@ -69,9 +72,12 @@ class MilvusVectorStore:
                 token=self.api_key
             )
             logger.info(f"Connected to Milvus at {self.uri}")
-        except Exception as e:
-            logger.error(f"Failed to connect to Milvus: {e}")
-            raise
+        except MilvusException as e:
+            logger.error(f"Milvus connection error: {e}")
+            raise VectorStoreError(f"Failed to connect to Milvus at {self.uri}") from e
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid Milvus configuration: {e}")
+            raise VectorStoreError(f"Invalid Milvus configuration") from e
     
     def _drop_collection(self):
         """Drop the collection if it exists"""
@@ -82,9 +88,9 @@ class MilvusVectorStore:
                 logger.info(f"Collection '{self.collection_name}' dropped successfully")
             else:
                 logger.info(f"Collection '{self.collection_name}' does not exist, nothing to drop")
-        except Exception as e:
-            logger.error(f"Error dropping collection: {e}")
-            raise
+        except MilvusException as e:
+            logger.error(f"Milvus error dropping collection: {e}")
+            raise VectorStoreError(f"Failed to drop collection {self.collection_name}") from e
     
     def _create_schema(self) -> CollectionSchema:
         """Create collection schema"""
@@ -140,9 +146,12 @@ class MilvusVectorStore:
             
             return collection
             
-        except Exception as e:
-            logger.error(f"Error getting/creating collection: {e}")
-            raise
+        except MilvusException as e:
+            logger.error(f"Milvus error getting/creating collection: {e}")
+            raise VectorStoreError(f"Failed to get or create collection {self.collection_name}") from e
+        except (ValueError, KeyError) as e:
+            logger.error(f"Configuration error: {e}")
+            raise VectorStoreError(f"Invalid collection configuration") from e
 
     def _extract_vector_dim(self, schema: CollectionSchema) -> Optional[int]:
         """Extract vector dimension from collection schema"""
@@ -253,33 +262,10 @@ class MilvusVectorStore:
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
             
-            # DEBUG: Print schema information
-            logger.info("=" * 80)
-            logger.info("DEBUG: Schema Information")
-            logger.info(f"Collection schema auto_id: {self.collection.schema.auto_id}")
-            logger.info("Schema fields:")
-            for field in self.collection.schema.fields:
-                logger.info(f"  - {field.name}: {field.dtype}, auto_id={field.auto_id}, is_primary={field.is_primary}")
-            
             # Check if primary key is auto_id
             is_auto_id = self.collection.schema.auto_id
-
-            # DEBUG: Print data types before insertion
-            logger.info("=" * 80)
-            logger.info("DEBUG: Data Being Inserted")
-            logger.info(f"Number of records: {len(embeddings)}")
-            logger.info(f"embeddings_np type: {type(embeddings_np)}, dtype: {embeddings_np.dtype}, shape: {embeddings_np.shape}")
-            logger.info(f"texts type: {type(texts)}, length: {len(texts)}")
-            logger.info(f"  - Sample text types: {[type(t) for t in texts[:min(3, len(texts))]]}")
-            logger.info(f"file_names type: {type(file_names)}, length: {len(file_names)}")
-            logger.info(f"  - Sample file_names types: {[type(f) for f in file_names[:min(3, len(file_names))]]}")
-            logger.info(f"file_hashes type: {type(file_hashes)}, length: {len(file_hashes)}")
-            logger.info(f"  - Sample file_hashes types: {[type(h) for h in file_hashes[:min(3, len(file_hashes))]]}")
-            logger.info(f"chunk_indices type: {type(chunk_indices)}, dtype: {chunk_indices.dtype}, length: {len(chunk_indices)}")
-            logger.info(f"  - Sample chunk_indices: {chunk_indices[:min(3, len(chunk_indices))]}")
-            logger.info(f"total_chunks_list type: {type(total_chunks_list)}, dtype: {total_chunks_list.dtype}, length: {len(total_chunks_list)}")
-            logger.info(f"  - Sample total_chunks: {total_chunks_list[:min(3, len(total_chunks_list))]}")
-
+            
+            logger.debug(f"Inserting {len(embeddings)} entities (auto_id={is_auto_id})")
 
             # Prepare data
             data = [
@@ -295,30 +281,8 @@ class MilvusVectorStore:
                 # Generate primary keys if auto_id is false - must be numpy.int64
                 # Mask to ensure values fit in signed int64 range
                 primary_keys = np.array([uuid.uuid4().int & 0x7FFFFFFFFFFFFFFF for _ in range(len(embeddings))], dtype=np.int64)
-                logger.info(f"primary_keys type: {type(primary_keys)}, dtype: {primary_keys.dtype}, length: {len(primary_keys)}")
-                logger.info(f"  - Sample primary_keys: {primary_keys[:min(3, len(primary_keys))]}")
-                logger.info(f"  - Sample primary_keys types: {type(primary_keys[0]) if len(primary_keys) > 0 else 'N/A'}")
+                logger.debug(f"Generated {len(primary_keys)} primary keys")
                 data.insert(0, primary_keys)
-            
-            logger.info("=" * 80)
-            logger.info(f"DEBUG: Final data list has {len(data)} fields")
-            logger.info(f"Expected field order based on auto_id={is_auto_id}:")
-            if not is_auto_id:
-                logger.info("  0: primary_key (INT64)")
-                logger.info("  1: vector (FLOAT_VECTOR)")
-                logger.info("  2: text (VARCHAR)")
-                logger.info("  3: file_name (VARCHAR)")
-                logger.info("  4: file_hash (VARCHAR)")
-                logger.info("  5: chunk_index (INT16)")
-                logger.info("  6: total_chunks (INT16)")
-            else:
-                logger.info("  0: vector (FLOAT_VECTOR)")
-                logger.info("  1: text (VARCHAR)")
-                logger.info("  2: file_name (VARCHAR)")
-                logger.info("  3: file_hash (VARCHAR)")
-                logger.info("  4: chunk_index (INT16)")
-                logger.info("  5: total_chunks (INT16)")
-            logger.info("=" * 80)
             
             # Insert
             logger.info(f"Inserting {len(embeddings)} entities into Milvus")
@@ -334,9 +298,12 @@ class MilvusVectorStore:
                 # Fallback for older versions or if primary_keys not available
                 return []
             
-        except Exception as e:
-            logger.error(f"Error inserting data into Milvus: {e}")
-            raise
+        except MilvusException as e:
+            logger.error(f"Milvus insertion error: {e}")
+            raise VectorStoreError(f"Failed to insert {len(embeddings)} entities into Milvus") from e
+        except (ValueError, TypeError) as e:
+            logger.error(f"Data validation error during insertion: {e}")
+            raise VectorStoreError(f"Invalid data format for Milvus insertion") from e
     
     def search(
         self,
@@ -388,7 +355,7 @@ class MilvusVectorStore:
                     for field in output_fields:
                         try:
                             entity_dict[field] = hit.entity.get(field)
-                        except Exception:
+                        except (AttributeError, KeyError):
                             # Fallback: try accessing as attribute
                             entity_dict[field] = getattr(hit.entity, field, None)
                     
@@ -401,20 +368,33 @@ class MilvusVectorStore:
             
             return formatted_results
             
-        except Exception as e:
-            logger.error(f"Error searching Milvus: {e}")
-            raise
+        except MilvusException as e:
+            logger.error(f"Milvus search error: {e}")
+            raise VectorStoreError(f"Failed to search Milvus collection") from e
+        except (AttributeError, KeyError) as e:
+            logger.error(f"Error accessing search result fields: {e}")
+            raise VectorStoreError(f"Invalid search result format") from e
     
     def delete_by_file_hash(self, file_hash: str) -> int:
         """
         Delete all chunks from a specific file
         
         Args:
-            file_hash: Hash of the file to delete
+            file_hash: Hash of the file to delete (must be valid MD5 hex string)
             
         Returns:
             Number of deleted entities
+            
+        Raises:
+            ValueError: If file_hash is not a valid MD5 hash format
         """
+        import re
+        from pymilvus.exceptions import MilvusException
+        
+        # Validate file_hash is alphanumeric only (MD5 hash format)
+        if not re.match(MD5_HASH_PATTERN, file_hash):
+            raise ValueError(f"Invalid file hash format: {file_hash}. Must be a valid MD5 hash.")
+        
         try:
             expr = f'file_hash == "{file_hash}"'
             result = self.collection.delete(expr)
@@ -423,8 +403,11 @@ class MilvusVectorStore:
             logger.info(f"Deleted entities for file_hash: {file_hash}")
             return result.delete_count
             
+        except MilvusException as e:
+            logger.error(f"Milvus error deleting file_hash {file_hash}: {e}")
+            raise
         except Exception as e:
-            logger.error(f"Error deleting from Milvus: {e}")
+            logger.error(f"Unexpected error deleting from Milvus: {e}")
             raise
     
     def get_stats(self) -> Dict[str, Any]:
@@ -436,14 +419,17 @@ class MilvusVectorStore:
                 "schema": str(self.collection.schema),
             }
             return stats
-        except Exception as e:
-            logger.error(f"Error getting stats: {e}")
-            return {}
+        except MilvusException as e:
+            logger.error(f"Milvus error getting stats: {e}")
+            return {"error": str(e)}
+        except AttributeError as e:
+            logger.error(f"Collection not initialized: {e}")
+            return {"error": "Collection not available"}
     
     def close(self):
         """Close connection to Milvus"""
         try:
             connections.disconnect("default")
             logger.info("Disconnected from Milvus")
-        except Exception as e:
-            logger.warning(f"Error disconnecting from Milvus: {e}")
+        except (MilvusException, ConnectionNotExistException) as e:
+            logger.warning(f"Error disconnecting from Milvus (may already be disconnected): {e}")

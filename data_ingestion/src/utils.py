@@ -5,9 +5,20 @@ import logging
 from pathlib import Path
 from typing import List, Dict, Any
 
+from .constants import MAX_FILENAME_LENGTH
 
-def setup_logging(level=logging.INFO):
-    """Setup logging configuration"""
+
+def setup_logging(level: int = logging.INFO) -> logging.Logger:
+    """
+    Setup logging configuration with standardized format.
+    
+    Args:
+        level: Logging level (e.g., logging.INFO, logging.DEBUG).
+               Defaults to INFO level.
+    
+    Returns:
+        Logger instance configured with the specified level.
+    """
     logging.basicConfig(
         level=level,
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -60,8 +71,31 @@ def batch_list(items: List[Any], batch_size: int) -> List[List[Any]]:
 
 
 def sanitize_filename(filename: str) -> str:
-    """Sanitize filename by removing invalid characters"""
+    """Sanitize filename and prevent directory traversal attacks
+    
+    Args:
+        filename: Input filename to sanitize
+        
+    Returns:
+        Safe filename with invalid characters replaced and path separators removed
+    """
+    import os
+    
+    # Remove path separators to prevent directory traversal
+    filename = os.path.basename(filename)
+    
+    # Remove invalid characters
     invalid_chars = '<>:"/\\|?*'
     for char in invalid_chars:
         filename = filename.replace(char, '_')
+    
+    # Prevent hidden files and special names
+    if filename.startswith('.'):
+        filename = '_' + filename[1:]
+    
+    # Limit length to filesystem maximum
+    if len(filename) > MAX_FILENAME_LENGTH:
+        name, ext = os.path.splitext(filename)
+        filename = name[:MAX_FILENAME_LENGTH - len(ext)] + ext
+    
     return filename

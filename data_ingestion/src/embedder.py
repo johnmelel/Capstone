@@ -9,6 +9,12 @@ from google import genai
 from google.genai import types
 
 from .config import Config
+from .exceptions import EmbeddingError
+from .constants import (
+    CHARS_PER_TOKEN_ESTIMATE,
+    EMBEDDING_RATE_LIMIT_DELAY_SECONDS,
+    EMBEDDING_BATCH_DELAY_SECONDS
+)
 
 
 logger = logging.getLogger(__name__)
@@ -43,7 +49,7 @@ class TextEmbedder:
         # Initialize tokenizer for token counting
         try:
             self.tokenizer = genai.LocalTokenizer(model_name='gemini-2.0-flash-exp')
-        except Exception as e:
+        except (ImportError, RuntimeError, ValueError) as e:
             logger.warning(f"Could not initialize tokenizer: {e}. Will use estimation.")
             self.tokenizer = None
     
@@ -61,11 +67,11 @@ class TextEmbedder:
             if self.tokenizer:
                 result = self.tokenizer.compute_tokens(text)
                 return result.token_count
-        except Exception as e:
+        except (AttributeError, RuntimeError) as e:
             logger.warning(f"Could not count tokens via tokenizer: {e}. Using estimation.")
         
-        # Rough estimation: 1 token ≈ 4 characters for English text
-        return len(text) // 4
+        # Rough estimation using constant
+        return len(text) // CHARS_PER_TOKEN_ESTIMATE
     
     def _validate_text_length(self, text: str) -> bool:
         """
@@ -168,10 +174,14 @@ class TextEmbedder:
                     
                     # Rate limiting - be nice to the API
                     if i < len(processed_texts) - 1:
-                        time.sleep(0.1)  # 100ms between requests
+                        time.sleep(EMBEDDING_RATE_LIMIT_DELAY_SECONDS)
                         
+                except (ValueError, KeyError, AttributeError) as e:
+                    logger.error(f"API response error for text chunk {i}: {e}")
+                    # Return zero vector on error
+                    embeddings.append([0.0] * self.embedding_dim)
                 except Exception as e:
-                    logger.error(f"Error embedding text chunk {i}: {e}")
+                    logger.error(f"Unexpected error embedding text chunk {i}: {e}")
                     # Return zero vector on error
                     embeddings.append([0.0] * self.embedding_dim)
             
@@ -179,9 +189,12 @@ class TextEmbedder:
             logger.debug(f"Generated embeddings for {len(text)} text chunks")
             return embeddings_array
             
+        except (ValueError, TypeError) as e:
+            logger.error(f"Invalid input for embedding generation: {e}")
+            raise EmbeddingError(f"Failed to generate embeddings: invalid input") from e
         except Exception as e:
-            logger.error(f"Error generating embeddings: {e}")
-            raise
+            logger.error(f"Unexpected error generating embeddings: {e}")
+            raise EmbeddingError(f"Failed to generate embeddings") from e
     
     def embed_batch(self, texts: List[str], batch_size: int = None) -> List[np.ndarray]:
         """
@@ -208,7 +221,7 @@ class TextEmbedder:
             
             # Add delay between batches to respect rate limits
             if i + batch_size < len(texts):
-                time.sleep(1)  # 1 second between batches
+                time.sleep(EMBEDDING_BATCH_DELAY_SECONDS)
         
         return all_embeddings
     
