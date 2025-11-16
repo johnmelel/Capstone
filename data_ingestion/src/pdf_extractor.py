@@ -3,8 +3,6 @@
 import logging
 from pathlib import Path
 from typing import Optional, Dict, Any, Union
-import io
-import os
 import tempfile
 import time
 import shutil
@@ -16,9 +14,7 @@ except ImportError:
     TORCH_AVAILABLE = False
     
 try:
-    from magic_pdf.pipe.UNIPipe import UNIPipe
-    from magic_pdf.rw.DiskReaderWriter import DiskReaderWriter
-    import magic_pdf.model as model_config
+    from mineru.cli.common import do_parse, read_fn
     MINERU_AVAILABLE = True
 except ImportError:
     MINERU_AVAILABLE = False
@@ -41,8 +37,8 @@ class PDFExtractor:
         
         # Check MinerU availability
         if not MINERU_AVAILABLE:
-            logger.error("MinerU (magic-pdf) is not installed. Please install with: pip install magic-pdf[full]")
-            raise ImportError("MinerU (magic-pdf) not available")
+            logger.error("MinerU is not installed. Please install with: pip install mineru[core]")
+            raise ImportError("MinerU not available")
         
         # Detect GPU availability
         self.use_gpu = TORCH_AVAILABLE and torch.cuda.is_available()
@@ -92,7 +88,7 @@ class PDFExtractor:
     
     def _process_pdf_with_mineru(self, pdf_path: Path, output_dir: Path) -> Optional[str]:
         """
-        Process PDF using MinerU
+        Process PDF using MinerU official API
         
         Args:
             pdf_path: Path to PDF file
@@ -102,51 +98,38 @@ class PDFExtractor:
             Extracted text or None
         """
         try:
-            # Read PDF bytes
-            with open(pdf_path, 'rb') as f:
-                pdf_bytes = f.read()
+            # Read PDF bytes using official read_fn
+            pdf_bytes = read_fn(pdf_path)
             
-            # Initialize DiskReaderWriter for output
-            image_writer = DiskReaderWriter(str(output_dir))
-            
-            # Configure parse method based on config
-            jso_useful_key = {"_pdf_type": "", "model_list": []}
-            
-            # Create UNIPipe instance
-            pipe = UNIPipe(
-                pdf_bytes=pdf_bytes,
-                jso_useful_key=jso_useful_key,
-                image_writer=image_writer
-            )
-            
-            # Execute parsing pipeline
-            pipe.pipe_classify()
-            
-            # Parse based on document type
-            if pipe.jso_useful_key.get("_pdf_type") == "text":
-                pipe.pipe_parse()
-            else:
-                pipe.pipe_parse()  # MinerU handles OCR automatically
-            
-            # Get content list (structured output)
-            content_list = pipe.pipe_mk_uni_format(
-                str(output_dir),
-                drop_mode="none"
-            )
-            
-            # Generate markdown
-            md_content = pipe.pipe_mk_markdown(
-                str(output_dir),
-                drop_mode="none",
-                md_make_mode="mm_md"
-            )
-            
-            # Save markdown to file
+            # Use official do_parse function
             pdf_name = pdf_path.stem
-            md_file_path = output_dir / f"{pdf_name}.md"
+            do_parse(
+                output_dir=str(output_dir),
+                pdf_file_names=[pdf_name],
+                pdf_bytes_list=[pdf_bytes],
+                p_lang_list=[self.lang],
+                backend=self.backend,
+                parse_method='auto',
+                formula_enable=self.enable_formulas,
+                table_enable=self.enable_tables,
+                f_dump_md=True,
+                f_dump_middle_json=False,
+                f_dump_model_output=False,
+                f_dump_orig_pdf=False,
+                f_dump_content_list=False,
+                f_draw_layout_bbox=False,
+                f_draw_span_bbox=False
+            )
             
-            with open(md_file_path, 'w', encoding='utf-8') as f:
-                f.write(md_content)
+            # Read the generated markdown file
+            md_file_path = output_dir / pdf_name / 'auto' / f"{pdf_name}.md"
+            
+            if not md_file_path.exists():
+                logger.error(f"Markdown file not found at expected path: {md_file_path}")
+                return None
+            
+            with open(md_file_path, 'r', encoding='utf-8') as f:
+                md_content = f.read()
             
             logger.info(f"MinerU processing complete: {md_file_path}")
             
