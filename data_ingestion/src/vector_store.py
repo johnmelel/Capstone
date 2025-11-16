@@ -31,6 +31,7 @@ class MilvusVectorStore:
         collection_name: str = None,
         embedding_dim: int = 384,  # Default for all-MiniLM-L6-v2
         metric_type: Optional[str] = None,
+        recreate_collection: bool = False,
     ):
         """
         Initialize Milvus vector store
@@ -40,6 +41,8 @@ class MilvusVectorStore:
             api_key: Milvus API key
             collection_name: Name of the collection
             embedding_dim: Dimension of embeddings
+            metric_type: Distance metric type (COSINE, L2, IP)
+            recreate_collection: If True, drop and recreate the collection
         """
         self.uri = uri or Config.MILVUS_URI
         self.api_key = api_key or Config.MILVUS_API_KEY
@@ -49,6 +52,10 @@ class MilvusVectorStore:
         
         # Connect to Milvus
         self._connect()
+        
+        # Drop collection if requested
+        if recreate_collection:
+            self._drop_collection()
         
         # Create or load collection
         self.collection = self._get_or_create_collection()
@@ -64,6 +71,19 @@ class MilvusVectorStore:
             logger.info(f"Connected to Milvus at {self.uri}")
         except Exception as e:
             logger.error(f"Failed to connect to Milvus: {e}")
+            raise
+    
+    def _drop_collection(self):
+        """Drop the collection if it exists"""
+        try:
+            if utility.has_collection(self.collection_name):
+                logger.warning(f"Dropping existing collection: {self.collection_name}")
+                utility.drop_collection(self.collection_name)
+                logger.info(f"Collection '{self.collection_name}' dropped successfully")
+            else:
+                logger.info(f"Collection '{self.collection_name}' does not exist, nothing to drop")
+        except Exception as e:
+            logger.error(f"Error dropping collection: {e}")
             raise
     
     def _create_schema(self) -> CollectionSchema:
@@ -385,7 +405,7 @@ class MilvusVectorStore:
             logger.error(f"Error searching Milvus: {e}")
             raise
     
-    def delete_by_file(self, file_hash: str) -> int:
+    def delete_by_file_hash(self, file_hash: str) -> int:
         """
         Delete all chunks from a specific file
         

@@ -21,8 +21,12 @@ logger = setup_logging()
 class IngestionPipeline:
     """Main pipeline for ingesting PDFs into Milvus"""
     
-    def __init__(self):
-        """Initialize the ingestion pipeline"""
+    def __init__(self, recreate_collection: bool = False):
+        """Initialize the ingestion pipeline
+        
+        Args:
+            recreate_collection: If True, drop and recreate the Milvus collection
+        """
         # Validate configuration
         Config.validate()
         
@@ -41,7 +45,8 @@ class IngestionPipeline:
             uri=Config.MILVUS_URI,
             api_key=Config.MILVUS_API_KEY,
             collection_name=Config.MILVUS_COLLECTION_NAME,
-            embedding_dim=self.embedder.get_embedding_dimension()
+            embedding_dim=self.embedder.get_embedding_dimension(),
+            recreate_collection=recreate_collection
         )
         
         logger.info("Pipeline initialized successfully")
@@ -198,9 +203,12 @@ class IngestionPipeline:
                 metadatas=batch_metadatas
             )
     
-    def run(self):
+    def run(self, force: bool = False):
         """
         Run the complete ingestion pipeline
+        
+        Args:
+            force: If True, re-process files that have already been ingested
         """
         try:
             # List PDF blobs from GCS
@@ -223,16 +231,29 @@ class IngestionPipeline:
             for pdf_blob in tqdm(pdf_blobs, desc="Processing PDFs"):
                 try:
                     # Check if file has already been processed (basic deduplication)
-                    # This is a simple check - in production you'd want a more robust system
-                    existing_count = self.vector_store.collection.query(
-                        expr=f'file_name == "{pdf_blob.name}"',
-                        output_fields=["primary_key"],
-                        limit=1
-                    )
-                    
-                    if existing_count:
-                        logger.info(f"Skipping {pdf_blob.name} - already processed ({len(existing_count)} chunks found)")
-                        continue
+                    if not force:
+                        existing_count = self.vector_store.collection.query(
+                            expr=f'file_name == "{pdf_blob.name}"',
+                            output_fields=["primary_key"],
+                            limit=1
+                        )
+                        
+                        if existing_count:
+                            logger.info(f"Skipping {pdf_blob.name} - already processed ({len(existing_count)} chunks found)")
+                            continue
+                    else:
+                        # In force mode, delete existing entries for this file
+                        existing_count = self.vector_store.collection.query(
+                            expr=f'file_name == "{pdf_blob.name}"',
+                            output_fields=["file_hash"],
+                            limit=1
+                        )
+                        if existing_count:
+                            # Get file_hash and delete all chunks for this file
+                            file_hash = existing_count[0].get('file_hash')
+                            if file_hash:
+                                deleted = self.vector_store.delete_by_file_hash(file_hash)
+                                logger.info(f"Deleted {deleted} existing chunks for {pdf_blob.name}")
                     
                     chunks_with_embeddings = self.process_pdf_blob(pdf_blob)
                     
@@ -279,11 +300,30 @@ class IngestionPipeline:
 
 def main():
     """Main entry point"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Ingest PDF files from GCS into Milvus")
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force re-processing of files that have already been ingested"
+    )
+    parser.add_argument(
+        "--recreate-collection",
+        action="store_true",
+        help="Drop and recreate the Milvus collection (WARNING: deletes all existing data)"
+    )
+    args = parser.parse_args()
+    
     logger.info("Starting data ingestion pipeline")
+    if args.force:
+        logger.info("Force mode enabled: Will re-process already ingested files")
+    if args.recreate_collection:
+        logger.warning("Recreate collection mode enabled: Will drop and recreate the collection")
     
     try:
-        pipeline = IngestionPipeline()
-        pipeline.run()
+        pipeline = IngestionPipeline(recreate_collection=args.recreate_collection)
+        pipeline.run(force=args.force)
         logger.info("Pipeline completed successfully")
         
     except Exception as e:
