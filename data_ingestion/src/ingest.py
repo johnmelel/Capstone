@@ -226,7 +226,7 @@ class IngestionPipeline:
                     # This is a simple check - in production you'd want a more robust system
                     existing_count = self.vector_store.collection.query(
                         expr=f'file_name == "{pdf_blob.name}"',
-                        output_fields=["id"],
+                        output_fields=["primary_key"],
                         limit=1
                     )
                     
