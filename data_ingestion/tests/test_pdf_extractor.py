@@ -18,10 +18,13 @@ def sample_pdf_path(tmp_path):
 
 @pytest.fixture
 def mock_mineru_available():
-    """Mock MinerU availability"""
+    """Mock MinerU availability and ensure classes are available for patching"""
     with patch('src.pdf_extractor.MINERU_AVAILABLE', True):
         with patch('src.pdf_extractor.TORCH_AVAILABLE', True):
-            yield
+            # Mock the classes at module level so they can be patched
+            with patch('src.pdf_extractor.UNIPipe', create=True):
+                with patch('src.pdf_extractor.DiskReaderWriter', create=True):
+                    yield
 
 
 class TestPDFExtractor:

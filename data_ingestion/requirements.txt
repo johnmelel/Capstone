@@ -2,8 +2,8 @@
 google-cloud-storage==2.14.0
 google-auth==2.25.2
 
-# PDF Processing - MinerU for advanced PDF parsing
-magic-pdf[full]>=0.7.0
+# PDF Processing - MinerU for advanced PDF parsing (v2.6.4+)
+mineru[core]>=2.6.0
 torch>=2.0.0
 torchvision>=0.15.0
 
