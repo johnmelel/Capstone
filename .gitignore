@@ -46,3 +46,4 @@ Data_Ingestion_VDB/strategy_5_research/
 
 data_ingestion/.env
 data_ingestion/service_account.json
+data_ingestion/mineru-implementation-guide.md
