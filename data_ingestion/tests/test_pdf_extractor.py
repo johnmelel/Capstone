@@ -18,13 +18,10 @@ def sample_pdf_path(tmp_path):
 
 @pytest.fixture
 def mock_mineru_available():
-    """Mock MinerU availability and ensure classes are available for patching"""
+    """Mock MinerU availability"""
     with patch('src.pdf_extractor.MINERU_AVAILABLE', True):
         with patch('src.pdf_extractor.TORCH_AVAILABLE', True):
-            # Mock the classes at module level so they can be patched
-            with patch('src.pdf_extractor.UNIPipe', create=True):
-                with patch('src.pdf_extractor.DiskReaderWriter', create=True):
-                    yield
+            yield
 
 
 class TestPDFExtractor:
@@ -68,13 +65,12 @@ class TestPDFExtractor:
         assert extractor.model_source == 'huggingface'
         assert extractor.timeout == 900
     
-    @patch('src.pdf_extractor.UNIPipe')
-    @patch('src.pdf_extractor.DiskReaderWriter')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
-    def test_extract_text_success(self, mock_mkdtemp, mock_file_open, mock_cuda, 
-                                  mock_disk_writer, mock_unipipe, sample_pdf_path, mock_mineru_available):
+    def test_extract_text_success(self, mock_mkdtemp, mock_cuda, 
+                                  mock_do_parse, mock_read_fn, sample_pdf_path, mock_mineru_available):
         """Test successful text extraction using MinerU"""
         mock_cuda.return_value = False
         
@@ -82,19 +78,26 @@ class TestPDFExtractor:
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
         
-        # Mock UNIPipe
-        mock_pipe_instance = MagicMock()
-        mock_pipe_instance.jso_useful_key = {"_pdf_type": "text"}
-        mock_pipe_instance.pipe_mk_markdown.return_value = "# Test Document\n\nThis is test content."
-        mock_unipipe.return_value = mock_pipe_instance
+        # Mock read_fn to return PDF bytes
+        mock_read_fn.return_value = b'PDF_BYTES'
         
-        # Mock markdown file write
-        with patch('builtins.open', mock_open()) as mock_md_file:
-            extractor = PDFExtractor()
-            text = extractor.extract_text(sample_pdf_path)
+        # Mock the markdown file that do_parse creates
+        md_content = "# Test Document\n\nThis is test content."
+        md_file_path = temp_dir / sample_pdf_path.stem / 'auto' / f"{sample_pdf_path.stem}.md"
+        
+        def create_md_file(*args, **kwargs):
+            md_file_path.parent.mkdir(parents=True, exist_ok=True)
+            md_file_path.write_text(md_content, encoding='utf-8')
+        
+        mock_do_parse.side_effect = create_md_file
+        
+        extractor = PDFExtractor()
+        text = extractor.extract_text(sample_pdf_path)
         
         assert text is not None
         assert "Test Document" in text or "test content" in text.lower()
+        assert mock_read_fn.called
+        assert mock_do_parse.called
     
     @patch('src.pdf_extractor.torch.cuda.is_available')
     def test_extract_text_file_not_found(self, mock_cuda, mock_mineru_available):
@@ -119,13 +122,12 @@ class TestPDFExtractor:
         
         assert text is None
     
-    @patch('src.pdf_extractor.UNIPipe')
-    @patch('src.pdf_extractor.DiskReaderWriter')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
-    def test_extract_with_metadata(self, mock_mkdtemp, mock_file_open, mock_cuda,
-                                   mock_disk_writer, mock_unipipe, sample_pdf_path, mock_mineru_available):
+    def test_extract_with_metadata(self, mock_mkdtemp, mock_cuda,
+                                   mock_do_parse, mock_read_fn, sample_pdf_path, mock_mineru_available):
         """Test extraction with metadata"""
         mock_cuda.return_value = False
         
@@ -133,15 +135,21 @@ class TestPDFExtractor:
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
         
-        # Mock UNIPipe
-        mock_pipe_instance = MagicMock()
-        mock_pipe_instance.jso_useful_key = {"_pdf_type": "text"}
-        mock_pipe_instance.pipe_mk_markdown.return_value = "Test content"
-        mock_unipipe.return_value = mock_pipe_instance
+        # Mock read_fn
+        mock_read_fn.return_value = b'PDF_BYTES'
         
-        with patch('builtins.open', mock_open()):
-            extractor = PDFExtractor()
-            result = extractor.extract_with_metadata(sample_pdf_path)
+        # Mock the markdown file that do_parse creates
+        md_content = "Test content"
+        md_file_path = temp_dir / sample_pdf_path.stem / 'auto' / f"{sample_pdf_path.stem}.md"
+        
+        def create_md_file(*args, **kwargs):
+            md_file_path.parent.mkdir(parents=True, exist_ok=True)
+            md_file_path.write_text(md_content, encoding='utf-8')
+        
+        mock_do_parse.side_effect = create_md_file
+        
+        extractor = PDFExtractor()
+        result = extractor.extract_with_metadata(sample_pdf_path)
         
         assert result is not None
         assert 'text' in result
@@ -160,15 +168,16 @@ class TestPDFExtractor:
         # Phase 1: page count not implemented
         assert count == 0
     
-    @patch('src.pdf_extractor.UNIPipe')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
-    def test_extract_text_error_handling(self, mock_mkdtemp, mock_file_open, mock_cuda,
-                                        mock_unipipe, sample_pdf_path, mock_mineru_available):
+    def test_extract_text_error_handling(self, mock_mkdtemp, mock_cuda,
+                                        mock_do_parse, mock_read_fn, sample_pdf_path, mock_mineru_available):
         """Test error handling during extraction"""
         mock_cuda.return_value = False
-        mock_unipipe.side_effect = Exception("Processing failed")
+        mock_read_fn.return_value = b'PDF_BYTES'
+        mock_do_parse.side_effect = Exception("Processing failed")
         
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
@@ -178,42 +187,46 @@ class TestPDFExtractor:
         
         assert text is None
     
-    @patch('src.pdf_extractor.UNIPipe')
-    @patch('src.pdf_extractor.DiskReaderWriter')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
     @patch('src.pdf_extractor.shutil.rmtree')
-    def test_temp_file_cleanup(self, mock_rmtree, mock_mkdtemp, mock_file_open, mock_cuda,
-                               mock_disk_writer, mock_unipipe, sample_pdf_path, mock_mineru_available):
+    def test_temp_file_cleanup(self, mock_rmtree, mock_mkdtemp, mock_cuda,
+                               mock_do_parse, mock_read_fn, sample_pdf_path, mock_mineru_available):
         """Test temporary file cleanup"""
         mock_cuda.return_value = False
         
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
         
-        # Mock UNIPipe
-        mock_pipe_instance = MagicMock()
-        mock_pipe_instance.jso_useful_key = {"_pdf_type": "text"}
-        mock_pipe_instance.pipe_mk_markdown.return_value = "Test content"
-        mock_unipipe.return_value = mock_pipe_instance
+        # Mock read_fn
+        mock_read_fn.return_value = b'PDF_BYTES'
         
-        with patch('builtins.open', mock_open()):
-            extractor = PDFExtractor()
-            extractor.extract_text(sample_pdf_path)
+        # Mock the markdown file that do_parse creates
+        md_content = "Test content"
+        md_file_path = temp_dir / sample_pdf_path.stem / 'auto' / f"{sample_pdf_path.stem}.md"
+        
+        def create_md_file(*args, **kwargs):
+            md_file_path.parent.mkdir(parents=True, exist_ok=True)
+            md_file_path.write_text(md_content, encoding='utf-8')
+        
+        mock_do_parse.side_effect = create_md_file
+        
+        extractor = PDFExtractor()
+        extractor.extract_text(sample_pdf_path)
         
         # Verify cleanup was called (debug mode is False by default)
         assert mock_rmtree.called
     
     @patch('src.pdf_extractor.Config')
-    @patch('src.pdf_extractor.UNIPipe')
-    @patch('src.pdf_extractor.DiskReaderWriter')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
     @patch('src.pdf_extractor.shutil.rmtree')
-    def test_debug_mode_no_cleanup(self, mock_rmtree, mock_mkdtemp, mock_file_open, mock_cuda,
-                                   mock_disk_writer, mock_unipipe, mock_config, 
+    def test_debug_mode_no_cleanup(self, mock_rmtree, mock_mkdtemp, mock_cuda,
+                                   mock_do_parse, mock_read_fn, mock_config, 
                                    sample_pdf_path, mock_mineru_available):
         """Test that debug mode preserves temporary files"""
         mock_cuda.return_value = False
@@ -228,41 +241,52 @@ class TestPDFExtractor:
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
         
-        # Mock UNIPipe
-        mock_pipe_instance = MagicMock()
-        mock_pipe_instance.jso_useful_key = {"_pdf_type": "text"}
-        mock_pipe_instance.pipe_mk_markdown.return_value = "Test content"
-        mock_unipipe.return_value = mock_pipe_instance
+        # Mock read_fn
+        mock_read_fn.return_value = b'PDF_BYTES'
         
-        with patch('builtins.open', mock_open()):
-            extractor = PDFExtractor()
-            extractor.debug_mode = True  # Override for test
-            extractor.extract_text(sample_pdf_path)
+        # Mock the markdown file that do_parse creates
+        md_content = "Test content"
+        md_file_path = temp_dir / sample_pdf_path.stem / 'auto' / f"{sample_pdf_path.stem}.md"
+        
+        def create_md_file(*args, **kwargs):
+            md_file_path.parent.mkdir(parents=True, exist_ok=True)
+            md_file_path.write_text(md_content, encoding='utf-8')
+        
+        mock_do_parse.side_effect = create_md_file
+        
+        extractor = PDFExtractor()
+        extractor.debug_mode = True  # Override for test
+        extractor.extract_text(sample_pdf_path)
         
         # Verify cleanup was NOT called in debug mode
         assert not mock_rmtree.called
     
-    @patch('src.pdf_extractor.UNIPipe')
-    @patch('src.pdf_extractor.DiskReaderWriter')
+    @patch('src.pdf_extractor.read_fn')
+    @patch('src.pdf_extractor.do_parse')
     @patch('src.pdf_extractor.torch.cuda.is_available')
-    @patch('builtins.open', new_callable=mock_open, read_data=b'PDF_BYTES')
     @patch('src.pdf_extractor.tempfile.mkdtemp')
-    def test_convenience_function(self, mock_mkdtemp, mock_file_open, mock_cuda,
-                                  mock_disk_writer, mock_unipipe, sample_pdf_path, mock_mineru_available):
+    def test_convenience_function(self, mock_mkdtemp, mock_cuda,
+                                  mock_do_parse, mock_read_fn, sample_pdf_path, mock_mineru_available):
         """Test convenience function"""
         mock_cuda.return_value = False
         
         temp_dir = Path(tempfile.gettempdir()) / "mineru_output_test"
         mock_mkdtemp.return_value = str(temp_dir)
         
-        # Mock UNIPipe
-        mock_pipe_instance = MagicMock()
-        mock_pipe_instance.jso_useful_key = {"_pdf_type": "text"}
-        mock_pipe_instance.pipe_mk_markdown.return_value = "Test content"
-        mock_unipipe.return_value = mock_pipe_instance
+        # Mock read_fn
+        mock_read_fn.return_value = b'PDF_BYTES'
         
-        with patch('builtins.open', mock_open()):
-            text = extract_text_from_pdf(sample_pdf_path)
+        # Mock the markdown file that do_parse creates
+        md_content = "Test content"
+        md_file_path = temp_dir / sample_pdf_path.stem / 'auto' / f"{sample_pdf_path.stem}.md"
+        
+        def create_md_file(*args, **kwargs):
+            md_file_path.parent.mkdir(parents=True, exist_ok=True)
+            md_file_path.write_text(md_content, encoding='utf-8')
+        
+        mock_do_parse.side_effect = create_md_file
+        
+        text = extract_text_from_pdf(sample_pdf_path)
         
         assert text is not None
         assert "Test content" in text or "test" in text.lower()
