@@ -2,6 +2,7 @@
 
 import pytest
 from unittest.mock import Mock, patch, MagicMock
+from pymilvus import DataType
 from src.vector_store import MilvusVectorStore
 
 
@@ -15,12 +16,12 @@ def mock_milvus():
         # Mock schema with proper structure
         mock_schema = MagicMock()
         mock_schema.auto_id = True
-        mock_field = MagicMock()
-        mock_field.name = "id"
-        mock_field.dtype = "INT64"
-        mock_field.auto_id = True
-        mock_field.is_primary = True
-        mock_schema.fields = [mock_field]
+        mock_vector_field = MagicMock()
+        mock_vector_field.name = "vector"
+        mock_vector_field.dtype = DataType.FLOAT_VECTOR
+        mock_vector_field.params = {"dim": 384}
+
+        mock_schema.fields = [mock_vector_field]
         
         # Mock insert result
         mock_insert_result = MagicMock()
@@ -87,6 +88,19 @@ class TestMilvusVectorStore:
         
         # Should load existing collection
         mock_milvus['collection'].load.assert_called()
+
+    def test_existing_collection_dimension_mismatch(self, mock_milvus):
+        """Ensure mismatch between schema and embedder raises error"""
+        mock_milvus['utility'].has_collection.return_value = True
+        mock_milvus['collection'].schema.fields[0].params = {"dim": 1024}
+
+        with pytest.raises(ValueError, match="vector dimension"):
+            MilvusVectorStore(
+                uri="http://localhost:19530",
+                api_key="test_key",
+                collection_name="mismatch_collection",
+                embedding_dim=384
+            )
     
     def test_insert_data(self, mock_milvus):
         """Test inserting data"""

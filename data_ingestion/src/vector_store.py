@@ -111,12 +111,46 @@ class MilvusVectorStore:
             # Load collection
             collection.load()
             logger.info(f"Collection loaded. Entity count: {collection.num_entities}")
+
+            self._validate_collection_dimension(collection.schema)
             
             return collection
             
         except Exception as e:
             logger.error(f"Error getting/creating collection: {e}")
             raise
+
+    def _extract_vector_dim(self, schema: CollectionSchema) -> Optional[int]:
+        """Extract vector dimension from collection schema"""
+        try:
+            for field in schema.fields:
+                if field.dtype == DataType.FLOAT_VECTOR:
+                    params = getattr(field, "params", {}) or {}
+                    dim = params.get("dim")
+                    if dim:
+                        return int(dim)
+        except Exception as exc:
+            logger.warning(f"Unable to read vector dimension from schema: {exc}")
+        return None
+
+    def _validate_collection_dimension(self, schema: CollectionSchema):
+        """Ensure Milvus collection vector dimension matches configured embeddings"""
+        dim = self._extract_vector_dim(schema)
+        if dim is None:
+            raise ValueError(
+                f"Could not determine vector dimension for collection '{self.collection_name}'."
+            )
+        if dim != self.embedding_dim:
+            raise ValueError(
+                "Milvus collection '{name}' was created with vector dimension {col_dim}, "
+                "but the configured embedding model outputs {embed_dim} dimensions. "
+                "Update your Milvus collection/schema to use {embed_dim} dimensions or set EMBEDDING_DIMENSION "
+                "to {col_dim} so both sides match.".format(
+                    name=self.collection_name,
+                    col_dim=dim,
+                    embed_dim=self.embedding_dim,
+                )
+            )
     
     def insert(
         self,
@@ -280,7 +314,7 @@ class MilvusVectorStore:
                     for field in output_fields:
                         try:
                             entity_dict[field] = hit.entity.get(field)
-                        except:
+                        except Exception:
                             # Fallback: try accessing as attribute
                             entity_dict[field] = getattr(hit.entity, field, None)
                     
