@@ -11,7 +11,7 @@ torchvision==0.24.1
 google-genai>=1.0.0
 
 # Vector Store
-pymilvus==2.3.4
+pymilvus==2.6.3  # Updated from 2.3.4 to fix pkg_resources deprecation warning
 marshmallow==3.26.1
 
 # Utilities
