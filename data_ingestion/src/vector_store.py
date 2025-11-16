@@ -1,5 +1,6 @@
 """Milvus vector store module"""
 
+import json
 import logging
 import numpy as np
 from typing import List, Dict, Any, Optional
@@ -28,7 +29,8 @@ class MilvusVectorStore:
         uri: str = None,
         api_key: str = None,
         collection_name: str = None,
-        embedding_dim: int = 384  # Default for all-MiniLM-L6-v2
+        embedding_dim: int = 384,  # Default for all-MiniLM-L6-v2
+        metric_type: Optional[str] = None,
     ):
         """
         Initialize Milvus vector store
@@ -43,6 +45,7 @@ class MilvusVectorStore:
         self.api_key = api_key or Config.MILVUS_API_KEY
         self.collection_name = collection_name or Config.MILVUS_COLLECTION_NAME
         self.embedding_dim = embedding_dim
+        self.metric_type = (metric_type or Config.MILVUS_METRIC_TYPE).upper()
         
         # Connect to Milvus
         self._connect()
@@ -98,7 +101,7 @@ class MilvusVectorStore:
                 
                 # Create index for vector field
                 index_params = {
-                    "metric_type": "COSINE",
+                    "metric_type": self.metric_type,
                     "index_type": "IVF_FLAT",
                     "params": {"nlist": 128}
                 }
@@ -113,6 +116,7 @@ class MilvusVectorStore:
             logger.info(f"Collection loaded. Entity count: {collection.num_entities}")
 
             self._validate_collection_dimension(collection.schema)
+            self._sync_index_metric(collection)
             
             return collection
             
@@ -151,6 +155,52 @@ class MilvusVectorStore:
                     embed_dim=self.embedding_dim,
                 )
             )
+
+    def _sync_index_metric(self, collection: Collection):
+        """Make sure search metric matches Milvus index metric if defined"""
+        metric = self._extract_index_metric(collection)
+        if metric and metric != self.metric_type:
+            logger.warning(
+                "Milvus collection '%s' uses metric '%s' but config requested '%s'. "
+                "Using collection metric for searches to avoid RPC errors.",
+                self.collection_name,
+                metric,
+                self.metric_type,
+            )
+            self.metric_type = metric
+
+    def _extract_index_metric(self, collection: Collection) -> Optional[str]:
+        """Inspect collection indexes to determine vector field metric"""
+        try:
+            indexes = getattr(collection, "indexes", []) or []
+            for index in indexes:
+                if getattr(index, "field_name", None) != "vector":
+                    continue
+                params = getattr(index, "params", {}) or {}
+                metric = self._parse_metric_type(params)
+                if metric:
+                    return metric
+        except Exception as exc:
+            logger.warning(f"Unable to inspect Milvus index metric: {exc}")
+        return None
+
+    @staticmethod
+    def _parse_metric_type(params: Any) -> Optional[str]:
+        """Extract metric type string from Milvus index params"""
+        if isinstance(params, dict):
+            metric = (
+                params.get("metric_type")
+                or params.get("metric")
+                or params.get("metricType")
+            )
+            return metric.upper() if isinstance(metric, str) else None
+        if isinstance(params, str):
+            try:
+                parsed = json.loads(params)
+                return MilvusVectorStore._parse_metric_type(parsed)
+            except json.JSONDecodeError:
+                return None
+        return None
     
     def insert(
         self,
@@ -293,9 +343,13 @@ class MilvusVectorStore:
             
             if search_params is None:
                 search_params = {
-                    "metric_type": "COSINE",
+                    "metric_type": self.metric_type,
                     "params": {"nprobe": 10}
                 }
+            else:
+                if "metric_type" not in search_params:
+                    search_params = dict(search_params)
+                    search_params["metric_type"] = self.metric_type
             
             results = self.collection.search(
                 data=[query_embedding],

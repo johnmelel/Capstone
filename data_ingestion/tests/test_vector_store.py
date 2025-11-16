@@ -31,6 +31,7 @@ def mock_milvus():
         mock_collection = MagicMock()
         mock_collection.num_entities = 100
         mock_collection.schema = mock_schema
+        mock_collection.indexes = []
         mock_collection.insert.return_value = mock_insert_result
         mock_coll.return_value = mock_collection
         
@@ -101,6 +102,24 @@ class TestMilvusVectorStore:
                 collection_name="mismatch_collection",
                 embedding_dim=384
             )
+
+    def test_existing_collection_metric_override(self, mock_milvus):
+        """Ensure store adopts collection metric when different from config"""
+        mock_milvus['utility'].has_collection.return_value = True
+        mock_index = MagicMock()
+        mock_index.field_name = "vector"
+        mock_index.params = {"metric_type": "L2"}
+        mock_milvus['collection'].indexes = [mock_index]
+
+        store = MilvusVectorStore(
+            uri="http://localhost:19530",
+            api_key="test_key",
+            collection_name="metric_collection",
+            embedding_dim=384,
+            metric_type="COSINE",
+        )
+
+        assert store.metric_type == "L2"
     
     def test_insert_data(self, mock_milvus):
         """Test inserting data"""

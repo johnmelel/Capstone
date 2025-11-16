@@ -21,6 +21,7 @@ class Config:
     MILVUS_URI = os.getenv("MILVUS_URI")
     MILVUS_API_KEY = os.getenv("MILVUS_API_KEY")
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
+    MILVUS_METRIC_TYPE = os.getenv("MILVUS_METRIC_TYPE", "COSINE").upper()
     
     # Gemini Embedding Configuration (New SDK)
     # The new google-genai SDK supports models like:
