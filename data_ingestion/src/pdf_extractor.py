@@ -1,13 +1,30 @@
-"""PDF text extraction module"""
+"""PDF text extraction module using MinerU"""
 
 import logging
 from pathlib import Path
 from typing import Optional, Dict, Any, Union
 import io
+import os
+import tempfile
+import time
+import shutil
 
-import pdfplumber
+try:
+    import torch
+    TORCH_AVAILABLE = True
+except ImportError:
+    TORCH_AVAILABLE = False
+    
+try:
+    from magic_pdf.pipe.UNIPipe import UNIPipe
+    from magic_pdf.rw.DiskReaderWriter import DiskReaderWriter
+    import magic_pdf.model as model_config
+    MINERU_AVAILABLE = True
+except ImportError:
+    MINERU_AVAILABLE = False
 
 from .utils import clean_text
+from .config import Config
 
 
 logger = logging.getLogger(__name__)
@@ -15,17 +32,134 @@ logger = logging.getLogger(__name__)
 class PDFExtractor:
     def __init__(self, extract_images: bool = False):
         """
-        Initialize PDF extractor
+        Initialize PDF extractor with MinerU
         
         Args:
-            extract_images: Whether to extract text from images using OCR (not currently implemented)
+            extract_images: Whether to extract images (Phase 1: not used)
         """
         self.extract_images = extract_images
-        logger.info(f"PDFExtractor initialized (extract_images={extract_images})")
+        
+        # Check MinerU availability
+        if not MINERU_AVAILABLE:
+            logger.error("MinerU (magic-pdf) is not installed. Please install with: pip install magic-pdf[full]")
+            raise ImportError("MinerU (magic-pdf) not available")
+        
+        # Detect GPU availability
+        self.use_gpu = TORCH_AVAILABLE and torch.cuda.is_available()
+        if self.use_gpu:
+            gpu_name = torch.cuda.get_device_name(0)
+            logger.info(f"PDFExtractor initialized with GPU acceleration: {gpu_name}")
+        else:
+            logger.info("PDFExtractor initialized with CPU (GPU not available)")
+        
+        # Configure MinerU backend
+        self.backend = Config.MINERU_BACKEND
+        self.model_source = Config.MINERU_MODEL_SOURCE
+        self.lang = Config.MINERU_LANG
+        self.timeout = Config.PDF_EXTRACTION_TIMEOUT
+        self.debug_mode = Config.MINERU_DEBUG_MODE
+        self.enable_tables = Config.MINERU_ENABLE_TABLES
+        self.enable_formulas = Config.MINERU_ENABLE_FORMULAS
+        
+        logger.info(f"MinerU config: backend={self.backend}, model_source={self.model_source}, "
+                   f"lang={self.lang}, timeout={self.timeout}s, debug={self.debug_mode}")
+    
+    def _extract_text_from_markdown(self, md_file_path: Path) -> Optional[str]:
+        """
+        Extract plain text from MinerU's markdown output
+        
+        Args:
+            md_file_path: Path to markdown file
+            
+        Returns:
+            Extracted text or None
+        """
+        try:
+            if not md_file_path.exists():
+                logger.error(f"Markdown file not found: {md_file_path}")
+                return None
+            
+            with open(md_file_path, 'r', encoding='utf-8') as f:
+                markdown_content = f.read()
+            
+            # For Phase 1, we use the markdown as-is (it's already clean text)
+            # Phase 2 could parse markdown for structured content
+            return markdown_content.strip() if markdown_content else None
+            
+        except Exception as e:
+            logger.error(f"Error reading markdown file {md_file_path}: {e}")
+            return None
+    
+    def _process_pdf_with_mineru(self, pdf_path: Path, output_dir: Path) -> Optional[str]:
+        """
+        Process PDF using MinerU
+        
+        Args:
+            pdf_path: Path to PDF file
+            output_dir: Directory for MinerU outputs
+            
+        Returns:
+            Extracted text or None
+        """
+        try:
+            # Read PDF bytes
+            with open(pdf_path, 'rb') as f:
+                pdf_bytes = f.read()
+            
+            # Initialize DiskReaderWriter for output
+            image_writer = DiskReaderWriter(str(output_dir))
+            
+            # Configure parse method based on config
+            jso_useful_key = {"_pdf_type": "", "model_list": []}
+            
+            # Create UNIPipe instance
+            pipe = UNIPipe(
+                pdf_bytes=pdf_bytes,
+                jso_useful_key=jso_useful_key,
+                image_writer=image_writer
+            )
+            
+            # Execute parsing pipeline
+            pipe.pipe_classify()
+            
+            # Parse based on document type
+            if pipe.jso_useful_key.get("_pdf_type") == "text":
+                pipe.pipe_parse()
+            else:
+                pipe.pipe_parse()  # MinerU handles OCR automatically
+            
+            # Get content list (structured output)
+            content_list = pipe.pipe_mk_uni_format(
+                str(output_dir),
+                drop_mode="none"
+            )
+            
+            # Generate markdown
+            md_content = pipe.pipe_mk_markdown(
+                str(output_dir),
+                drop_mode="none",
+                md_make_mode="mm_md"
+            )
+            
+            # Save markdown to file
+            pdf_name = pdf_path.stem
+            md_file_path = output_dir / f"{pdf_name}.md"
+            
+            with open(md_file_path, 'w', encoding='utf-8') as f:
+                f.write(md_content)
+            
+            logger.info(f"MinerU processing complete: {md_file_path}")
+            
+            # Extract text from markdown
+            return md_content.strip() if md_content else None
+            
+        except Exception as e:
+            logger.error(f"Error processing PDF with MinerU: {e}")
+            return None
     
     def extract_text(self, pdf_source: Union[Path, Any]) -> Optional[str]:
         """
-        Extract text from PDF using PyMuPDF
+        Extract text from PDF using MinerU
         
         Args:
             pdf_source: Path to PDF file or GCS blob object
@@ -33,69 +167,76 @@ class PDFExtractor:
         Returns:
             Extracted text or None if failed
         """
-        import time
         start_time = time.time()
+        temp_pdf_path = None
+        temp_output_dir = None
         
         try:
-            # Handle different input types
+            # Determine source name for logging
             if isinstance(pdf_source, Path):
-                # Local file
-                if not pdf_source.exists():
-                    logger.error(f"PDF file not found: {pdf_source}")
-                    return None
-                
-                if not pdf_source.suffix.lower() == '.pdf':
-                    logger.error(f"File is not a PDF: {pdf_source}")
-                    return None
-                
                 source_name = pdf_source.name
-                pdf = pdfplumber.open(pdf_source)
+                pdf_path = pdf_source
+                
+                # Validate file
+                if not pdf_path.exists():
+                    logger.error(f"PDF file not found: {pdf_path}")
+                    return None
+                
+                if not pdf_path.suffix.lower() == '.pdf':
+                    logger.error(f"File is not a PDF: {pdf_path}")
+                    return None
+                
+                # Create temp output directory
+                temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
                 
             else:
-                # GCS blob (assume it has download_as_bytes method)
+                # GCS blob - need to download to temp file
                 source_name = getattr(pdf_source, 'name', 'unknown.pdf')
                 
-                # Check file size before downloading (avoid memory issues with very large files)
+                # Check file size before downloading (avoid memory issues)
                 if hasattr(pdf_source, 'size') and pdf_source.size > 100 * 1024 * 1024:  # 100MB limit
-                    logger.warning(f"Skipping large file {source_name} ({pdf_source.size} bytes) - too big for memory processing")
+                    logger.warning(f"Skipping large file {source_name} ({pdf_source.size} bytes) - too large")
                     return None
                 
                 logger.info(f"Extracting text from GCS: {source_name}")
                 
-                # Open blob as stream with timeout consideration
-                blob_data = pdf_source.download_as_bytes()
-                pdf = pdfplumber.open(io.BytesIO(blob_data))
-            
-            text_parts = []
-            num_pages = len(pdf.pages)
-            logger.debug(f"Processing {num_pages} pages")
-            
-            # Limit processing to reasonable number of pages to prevent timeouts
-            max_pages = min(num_pages, 500)  # Process max 500 pages
-            
-            for page_num in range(max_pages):
-                # Check for timeout (5 minutes max per PDF)
-                if time.time() - start_time > 300:
-                    logger.warning(f"Timeout reached processing {source_name}, stopping at page {page_num}")
-                    break
+                # Download blob to temporary file
+                temp_pdf_file = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+                temp_pdf_path = Path(temp_pdf_file.name)
+                
+                try:
+                    blob_data = pdf_source.download_as_bytes()
+                    temp_pdf_file.write(blob_data)
+                    temp_pdf_file.flush()
+                    temp_pdf_file.close()
+                    pdf_path = temp_pdf_path
                     
-                page = pdf.pages[page_num]
-                
-                # Extract text from page
-                text = page.extract_text()
-                
-                if text and text.strip():
-                    text_parts.append(text)
+                    # Create temp output directory
+                    temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
+                    
+                except Exception as e:
+                    logger.error(f"Error downloading GCS blob {source_name}: {e}")
+                    temp_pdf_file.close()
+                    if temp_pdf_path and temp_pdf_path.exists():
+                        temp_pdf_path.unlink()
+                    return None
             
-            pdf.close()
+            # Check for timeout before processing
+            if time.time() - start_time > self.timeout:
+                logger.warning(f"Timeout reached before processing {source_name}")
+                return None
             
-            # Combine all text
-            full_text = "\n".join(text_parts)
-            cleaned_text = clean_text(full_text) if full_text else None
+            # Process PDF with MinerU
+            logger.debug(f"Processing {source_name} with MinerU")
+            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            
+            # Clean text
+            cleaned_text = clean_text(extracted_text) if extracted_text else None
             
             processing_time = time.time() - start_time
             if cleaned_text:
-                logger.info(f"Successfully extracted {len(cleaned_text)} characters from {source_name} in {processing_time:.2f}s")
+                logger.info(f"Successfully extracted {len(cleaned_text)} characters from {source_name} "
+                           f"in {processing_time:.2f}s")
             else:
                 logger.warning(f"No text extracted from {source_name}")
             
@@ -106,10 +247,35 @@ class PDFExtractor:
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
             logger.error(f"Error extracting text from {source_name} after {processing_time:.2f}s: {e}")
             return None
+            
+        finally:
+            # Cleanup temporary files
+            if not self.debug_mode:
+                # Delete temp PDF (from GCS download)
+                if temp_pdf_path and temp_pdf_path.exists():
+                    try:
+                        temp_pdf_path.unlink()
+                        logger.debug(f"Deleted temp PDF: {temp_pdf_path}")
+                    except Exception as e:
+                        logger.warning(f"Failed to delete temp PDF {temp_pdf_path}: {e}")
+                
+                # Delete temp output directory
+                if temp_output_dir and temp_output_dir.exists():
+                    try:
+                        shutil.rmtree(temp_output_dir)
+                        logger.debug(f"Deleted temp output dir: {temp_output_dir}")
+                    except Exception as e:
+                        logger.warning(f"Failed to delete temp output dir {temp_output_dir}: {e}")
+            else:
+                # Debug mode - keep files
+                if temp_pdf_path:
+                    logger.info(f"Debug mode: Kept temp PDF at {temp_pdf_path}")
+                if temp_output_dir:
+                    logger.info(f"Debug mode: Kept output dir at {temp_output_dir}")
     
     def extract_with_metadata(self, pdf_source: Union[Path, Any]) -> Optional[Dict[str, Any]]:
         """
-        Extract text and metadata from PDF
+        Extract text and metadata from PDF using MinerU
         
         Args:
             pdf_source: Path to PDF file or GCS blob object
@@ -117,50 +283,55 @@ class PDFExtractor:
         Returns:
             Dictionary containing text and metadata, or None if failed
         """
+        temp_pdf_path = None
+        temp_output_dir = None
+        
         try:
-            # Handle different input types
+            # Determine source name
             if isinstance(pdf_source, Path):
-                # Local file
-                if not pdf_source.exists():
-                    logger.error(f"PDF file not found: {pdf_source}")
+                source_name = pdf_source.name
+                pdf_path = pdf_source
+                
+                if not pdf_path.exists():
+                    logger.error(f"PDF file not found: {pdf_path}")
                     return None
                 
-                source_name = pdf_source.name
-                pdf = pdfplumber.open(pdf_source)
+                temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
                 
             else:
                 # GCS blob
                 source_name = getattr(pdf_source, 'name', 'unknown.pdf')
                 logger.info(f"Extracting metadata from GCS: {source_name}")
                 
-                # Open blob as stream
+                # Download to temp file
+                temp_pdf_file = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+                temp_pdf_path = Path(temp_pdf_file.name)
+                
                 blob_data = pdf_source.download_as_bytes()
-                pdf = pdfplumber.open(io.BytesIO(blob_data))
+                temp_pdf_file.write(blob_data)
+                temp_pdf_file.flush()
+                temp_pdf_file.close()
+                pdf_path = temp_pdf_path
+                
+                temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
             
-            # Extract text
-            text_parts = []
-            for page in pdf.pages:
-                text = page.extract_text()
-                if text and text.strip():
-                    text_parts.append(text)
+            # Extract text using MinerU
+            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            cleaned_text = clean_text(extracted_text) if extracted_text else ""
             
-            full_text = "\n".join(text_parts)
-            cleaned_text = clean_text(full_text) if full_text else ""
-            
-            # Extract metadata (pdfplumber's metadata is more limited)
+            # Basic metadata (MinerU doesn't extract PDF metadata like title/author)
+            # We can extend this in Phase 2 if needed
             metadata = {
-                'title': pdf.metadata.get('Title', '') if pdf.metadata else '',
-                'author': pdf.metadata.get('Author', '') if pdf.metadata else '',
-                'subject': pdf.metadata.get('Subject', '') if pdf.metadata else '',
-                'creator': pdf.metadata.get('Creator', '') if pdf.metadata else '',
-                'producer': pdf.metadata.get('Producer', '') if pdf.metadata else '',
-                'creation_date': pdf.metadata.get('CreationDate', '') if pdf.metadata else '',
-                'modification_date': pdf.metadata.get('ModDate', '') if pdf.metadata else '',
-                'num_pages': len(pdf.pages),
+                'title': '',
+                'author': '',
+                'subject': '',
+                'creator': 'MinerU',
+                'producer': 'MinerU',
+                'creation_date': '',
+                'modification_date': '',
+                'num_pages': 0,  # Could parse from content_list.json if needed
                 'file_name': source_name
             }
-            
-            pdf.close()
             
             return {
                 'text': cleaned_text,
@@ -171,31 +342,39 @@ class PDFExtractor:
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
             logger.error(f"Error extracting from {source_name}: {e}")
             return None
+            
+        finally:
+            # Cleanup
+            if not self.debug_mode:
+                if temp_pdf_path and temp_pdf_path.exists():
+                    try:
+                        temp_pdf_path.unlink()
+                    except Exception as e:
+                        logger.warning(f"Failed to delete temp PDF: {e}")
+                
+                if temp_output_dir and temp_output_dir.exists():
+                    try:
+                        shutil.rmtree(temp_output_dir)
+                    except Exception as e:
+                        logger.warning(f"Failed to delete temp output dir: {e}")
     
     def get_page_count(self, pdf_source: Union[Path, Any]) -> int:
         """
         Get the number of pages in a PDF
+        Note: MinerU doesn't provide direct page count, returning 0 for now
+        Phase 2 could parse content_list.json for accurate page count
         
         Args:
             pdf_source: Path to PDF file or GCS blob object
             
         Returns:
-            Number of pages, or 0 if error
+            Number of pages, or 0 if not available
         """
         try:
-            if isinstance(pdf_source, Path):
-                # Local file
-                if not pdf_source.exists():
-                    return 0
-                pdf = pdfplumber.open(pdf_source)
-            else:
-                # GCS blob
-                blob_data = pdf_source.download_as_bytes()
-                pdf = pdfplumber.open(io.BytesIO(blob_data))
-            
-            page_count = len(pdf.pages)
-            pdf.close()
-            return page_count
+            # For Phase 1, we don't extract page count (would require full processing)
+            # Phase 2 could add lightweight page count extraction
+            logger.debug("Page count not available in Phase 1 (MinerU)")
+            return 0
             
         except Exception as e:
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
@@ -205,11 +384,11 @@ class PDFExtractor:
 
 def extract_text_from_pdf(pdf_source: Union[Path, Any], extract_images: bool = False) -> Optional[str]:
     """
-    Convenience function to extract text from a PDF
+    Convenience function to extract text from a PDF using MinerU
     
     Args:
         pdf_source: Path to PDF file or GCS blob object
-        extract_images: Whether to extract text from images using OCR
+        extract_images: Whether to extract images (Phase 1: not used)
         
     Returns:
         Extracted text or None if failed

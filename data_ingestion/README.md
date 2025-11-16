@@ -6,10 +6,11 @@ A Python application for processing PDFs from Google Cloud Storage, extracting t
 
 - ☁️ **Direct GCS Processing** - Process PDFs directly from Google Cloud Storage without local downloads
 - 📁 **Recursive folder support** - Process from all subfolders/prefixes automatically
-- 📄 Extract text from PDFs using PyMuPDF (fast and accurate)
+- 📄 **Advanced PDF Parsing** - Extract text from PDFs using MinerU (GPU/CPU compatible, OCR support)
 - ✂️ Split text into token-aware chunks (max 2048 tokens for Gemini)
 - 🧠 Generate embeddings using Google Gemini text-embedding-005 API
 - 🗄️ Store embeddings in Milvus vector database
+- 🚀 **GPU Acceleration** - Optional GPU support for faster PDF processing
 - 🐳 Docker support for easy deployment
 - ✅ Comprehensive test suite
 
@@ -61,6 +62,14 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 ```bash
 pip install -r requirements.txt
+```
+
+**Note**: MinerU is a powerful PDF parsing library that supports both CPU and GPU processing. For detailed installation instructions including GPU setup, see [MINERU_SETUP.md](MINERU_SETUP.md).
+
+**Quick GPU Check** (optional):
+```bash
+# Check if GPU is available
+python -c "import torch; print(f'CUDA Available: {torch.cuda.is_available()}')"
 ```
 
 ### 4. Google Cloud Storage Setup
@@ -234,6 +243,13 @@ pytest -v
 | `CHUNK_SIZE` | Maximum characters per chunk | `1500` |
 | `CHUNK_OVERLAP` | Overlap between chunks | `150` |
 | `BATCH_SIZE` | Batch size for processing | `100` |
+| `MINERU_BACKEND` | MinerU backend (pipeline, vlm-transformers, vlm-vllm-engine) | `pipeline` |
+| `MINERU_MODEL_SOURCE` | Model source (huggingface, modelscope, local) | `huggingface` |
+| `MINERU_LANG` | OCR language (en, ch, auto, etc.) | `en` |
+| `PDF_EXTRACTION_TIMEOUT` | Timeout for PDF processing in seconds | `900` (15 min) |
+| `MINERU_DEBUG_MODE` | Keep temporary files for debugging | `false` |
+| `MINERU_ENABLE_TABLES` | Enable table extraction (Phase 2) | `false` |
+| `MINERU_ENABLE_FORMULAS` | Enable formula extraction (Phase 2) | `false` |
 
 ## Architecture
 
@@ -246,7 +262,7 @@ Google Cloud Storage → Direct Stream Processing → Extract Text → Chunk Tex
 ### Components
 
 1. **GCS Client**: Authenticates with GCS and lists PDF blobs from bucket
-2. **PDFExtractor**: Extracts text from PDFs using PyMuPDF (fitz) - fast, accurate, and reliable
+2. **PDFExtractor**: Extracts text from PDFs using MinerU (GPU/CPU compatible, supports OCR for scanned documents)
 3. **TextChunker**: Splits text into token-aware overlapping chunks (max 2048 tokens)
 4. **TextEmbedder**: Generates 768-dim embeddings using Google Gemini text-embedding-005 API
 5. **MilvusVectorStore**: Manages Milvus collection and operations
@@ -270,10 +286,12 @@ Google Cloud Storage → Direct Stream Processing → Extract Text → Chunk Tex
 
 ### PDF Extraction Errors
 
-- Some PDFs may be scanned images without text - consider adding OCR support
-- Password-protected PDFs will fail - ensure PDFs are unlocked
-- PyMuPDF handles most PDF formats well, including complex layouts
-- For scanned documents, consider enabling OCR (pytesseract integration available)
+- **Scanned PDFs**: MinerU automatically handles OCR for scanned documents (no additional setup needed)
+- **Password-protected PDFs**: Will fail - ensure PDFs are unlocked before processing
+- **GPU Out of Memory**: Set `PDF_EXTRACTION_TIMEOUT` to a higher value or process fewer PDFs simultaneously
+- **Slow Processing**: MinerU is more thorough than basic extractors - expect 15-30 seconds per PDF
+- **CUDA Errors**: If GPU errors occur, MinerU will automatically fall back to CPU processing
+- **Debug Mode**: Set `MINERU_DEBUG_MODE=true` to keep temporary files for troubleshooting
 
 ### Milvus Connection Issues
 
@@ -363,4 +381,4 @@ For issues and questions:
 - [Google Gemini API](https://ai.google.dev/) for high-quality text embeddings
 - [Milvus](https://milvus.io/) for vector database
 - [Google Cloud Storage](https://cloud.google.com/storage) for file storage
-- [PyMuPDF](https://pymupdf.readthedocs.io/) for PDF processing
+- [MinerU](https://github.com/opendatalab/MinerU) for advanced PDF parsing with OCR support

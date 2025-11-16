@@ -2,8 +2,10 @@
 google-cloud-storage==2.14.0
 google-auth==2.25.2
 
-# PDF Processing - Using pdfplumber (pure Python, no system dependencies)
-pdfplumber==0.10.3
+# PDF Processing - MinerU for advanced PDF parsing
+magic-pdf[full]>=0.7.0
+torch>=2.0.0
+torchvision>=0.15.0
 
 # Embeddings - Gemini API (New SDK)
 google-genai>=1.0.0
