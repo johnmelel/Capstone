@@ -2,7 +2,7 @@
 FastAPI service for BiomedCLIP text embeddings.
 
 This service loads the microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224 model
-and provides REST endpoints for generating embeddings.
+using the open_clip library and provides REST endpoints for generating embeddings.
 
 The model outputs 512-dimensional embeddings optimized for biomedical text.
 """
@@ -17,7 +17,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from transformers import AutoTokenizer, AutoModel
+from open_clip import create_model_from_pretrained, get_tokenizer
 
 # Configure logging
 logging.basicConfig(
@@ -32,7 +32,7 @@ tokenizer = None
 device = None
 
 # Model configuration
-MODEL_NAME = "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
+MODEL_NAME = "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
 EMBEDDING_DIMENSION = 512
 MAX_LENGTH = 256  # Model's maximum sequence length
 
@@ -60,7 +60,7 @@ class HealthResponse(BaseModel):
 
 
 def load_model():
-    """Load the BiomedCLIP model and tokenizer"""
+    """Load the BiomedCLIP model and tokenizer using open_clip"""
     global model, tokenizer, device
     
     logger.info(f"Loading model: {MODEL_NAME}")
@@ -75,38 +75,19 @@ def load_model():
         logger.info("Using CPU")
     
     try:
-        # Load tokenizer
-        tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-        logger.info("Tokenizer loaded successfully")
+        # Load model and tokenizer from open_clip
+        model, _, _ = create_model_from_pretrained(MODEL_NAME)
+        tokenizer = get_tokenizer(MODEL_NAME)
         
-        # Load model
-        model = AutoModel.from_pretrained(MODEL_NAME)
         model.to(device)
         model.eval()  # Set to evaluation mode
         
         load_time = time.time() - start_time
         logger.info(f"Model loaded successfully in {load_time:.2f} seconds")
-        logger.info(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
         
     except Exception as e:
         logger.error(f"Failed to load model: {e}")
         raise
-
-
-def mean_pooling(model_output, attention_mask):
-    """
-    Perform mean pooling on token embeddings.
-    
-    Args:
-        model_output: Model output containing last_hidden_state
-        attention_mask: Attention mask to ignore padding tokens
-        
-    Returns:
-        Pooled embeddings
-    """
-    token_embeddings = model_output[0]  # First element is last_hidden_state
-    input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-    return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
 
 @asynccontextmanager
@@ -195,27 +176,11 @@ async def embed_texts(request: EmbeddingRequest):
     
     try:
         # Tokenize texts
-        encoded_input = tokenizer(
-            request.texts,
-            padding=True,
-            truncation=True,
-            max_length=MAX_LENGTH,
-            return_tensors="pt"
-        )
-        
-        # Move to device
-        encoded_input = {k: v.to(device) for k, v in encoded_input.items()}
+        text_tokens = tokenizer(request.texts).to(device)
         
         # Generate embeddings
         with torch.no_grad():
-            model_output = model(**encoded_input)
-            
-            # Perform mean pooling
-            embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
-            
-            # Normalize embeddings if requested
-            if request.normalize:
-                embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+            embeddings = model.encode_text(text_tokens, normalize=request.normalize)
             
             # Convert to numpy and then to list
             embeddings_np = embeddings.cpu().numpy()
