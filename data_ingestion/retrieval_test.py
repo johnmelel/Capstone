@@ -7,12 +7,33 @@ and retrieves the top K most similar documents from the vector store.
 
 import logging
 from src.config import Config
-from src.embedder import TextEmbedder
-from src.vector_store import MilvusVectorStore
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+def get_embedder():
+    """Get the appropriate embedder based on configuration"""
+    backend = Config.EMBEDDING_BACKEND
+    
+    if backend == "huggingface":
+        from src.hf_embedder import HuggingFaceEmbedder
+        logger.info(f"Using HuggingFace embedder")
+        return HuggingFaceEmbedder(
+            service_url=Config.EMBEDDING_SERVICE_URL,
+            embedding_dimension=Config.EMBEDDING_DIMENSION
+        )
+    elif backend == "gemini":
+        from src.embedder import TextEmbedder
+        logger.info(f"Using Gemini embedder")
+        return TextEmbedder(
+            model_name=Config.EMBEDDING_MODEL,
+            embedding_dimension=Config.EMBEDDING_DIMENSION
+        )
+    else:
+        raise ValueError(f"Invalid EMBEDDING_BACKEND: {backend}")
+
 
 def main():
     """
@@ -26,12 +47,10 @@ def main():
         Config.validate()
         
         # Initialize the text embedder
-        embedder = TextEmbedder(
-            model_name=Config.EMBEDDING_MODEL,
-            embedding_dimension=Config.EMBEDDING_DIMENSION
-        )
+        embedder = get_embedder()
         
         # Initialize the vector store
+        from src.vector_store import MilvusVectorStore
         vector_store = MilvusVectorStore(
             uri=Config.MILVUS_URI,
             api_key=Config.MILVUS_API_KEY,

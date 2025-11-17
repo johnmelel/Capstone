@@ -1,0 +1,30 @@
+# Docker Compose for Embedding Service
+version: '3.8'
+
+services:
+  embedding-service:
+    build:
+      context: .
+      dockerfile: embedding_service/Dockerfile
+    container_name: biomedclip-embedding-service
+    ports:
+      - "8000:8000"
+    environment:
+      - TRANSFORMERS_CACHE=/models
+    volumes:
+      - ./models:/models  # Cache downloaded models
+    # Uncomment for GPU support (requires nvidia-docker)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s

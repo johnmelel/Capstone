@@ -23,14 +23,23 @@ class Config:
     MILVUS_COLLECTION_NAME = os.getenv("MILVUS_COLLECTION_NAME", "pdf_embeddings")
     MILVUS_METRIC_TYPE = os.getenv("MILVUS_METRIC_TYPE", "COSINE").upper()
     
-    # Gemini Embedding Configuration (New SDK)
+    # Embedding Configuration
+    # Choose between "gemini" or "huggingface" embedding backend
+    EMBEDDING_BACKEND = os.getenv("EMBEDDING_BACKEND", "huggingface")  # "gemini" or "huggingface"
+    
+    # Gemini Embedding Configuration (Legacy - for backward compatibility)
     # The new google-genai SDK supports models like:
     # - gemini-embedding-001 (768 dimensions)
     # - text-embedding-004 (768 dimensions)
     # - text-embedding-005 (768 dimensions)
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
-    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "768"))  # Embedding model output dimension
+    
+    # HuggingFace Embedding Configuration
+    # BiomedCLIP model: microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224
+    # Outputs 512-dimensional embeddings optimized for biomedical text
+    EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8000")
+    EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "512"))  # 512 for BiomedCLIP, 768 for Gemini
     MAX_TOKENS_PER_CHUNK = int(os.getenv("MAX_TOKENS_PER_CHUNK", "2048"))
     
     # Processing Configuration (TOKEN-BASED, not characters)
@@ -63,8 +72,18 @@ class Config:
             ("GCS_BUCKET_NAME", cls.GCS_BUCKET_NAME),
             ("MILVUS_URI", cls.MILVUS_URI),
             ("MILVUS_API_KEY", cls.MILVUS_API_KEY),
-            ("GEMINI_API_KEY", cls.GEMINI_API_KEY),
         ]
+        
+        # Add backend-specific validation
+        if cls.EMBEDDING_BACKEND == "gemini":
+            required_fields.append(("GEMINI_API_KEY", cls.GEMINI_API_KEY))
+        elif cls.EMBEDDING_BACKEND == "huggingface":
+            required_fields.append(("EMBEDDING_SERVICE_URL", cls.EMBEDDING_SERVICE_URL))
+        else:
+            raise ValueError(
+                f"Invalid EMBEDDING_BACKEND: {cls.EMBEDDING_BACKEND}. "
+                f"Must be 'gemini' or 'huggingface'"
+            )
         
         missing_fields = [field for field, value in required_fields if not value]
         

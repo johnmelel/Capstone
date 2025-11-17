@@ -50,3 +50,9 @@ data_ingestion/mineru-implementation-guide.md
 data_ingestion/POST_MIGRATION_CHECKLIST.md
 data_ingestion/MINERU_SETUP.md
 data_ingestion/MIGRATION_SUMMARY.md
+data_ingestion/ARCHITECTURE_DIAGRAM.md
+data_ingestion/DEPLOYMENT_CHECKLIST.md
+data_ingestion/EMBEDDING_MIGRATION_GUIDE.md
+data_ingestion/IMPLEMENTATION_SUMMARY.md
+data_ingestion/IMPLEMENTATION_COMPLETE.md
+data_ingestion/QUICKSTART_EMBEDDINGS.md

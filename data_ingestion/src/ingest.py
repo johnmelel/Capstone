@@ -10,12 +10,33 @@ from google.oauth2 import service_account
 from .config import Config
 from .pdf_extractor import PDFExtractor
 from .chunker import TextChunker
-from .embedder import TextEmbedder
 from .vector_store import MilvusVectorStore
 from .utils import setup_logging
 
 
 logger = setup_logging()
+
+
+def _get_embedder():
+    """Get the appropriate embedder based on configuration"""
+    backend = Config.EMBEDDING_BACKEND
+    
+    if backend == "huggingface":
+        from .hf_embedder import HuggingFaceEmbedder
+        logger.info(f"Using HuggingFace embedder (service URL: {Config.EMBEDDING_SERVICE_URL})")
+        return HuggingFaceEmbedder(
+            service_url=Config.EMBEDDING_SERVICE_URL,
+            embedding_dimension=Config.EMBEDDING_DIMENSION
+        )
+    elif backend == "gemini":
+        from .embedder import TextEmbedder
+        logger.info(f"Using Gemini embedder (model: {Config.EMBEDDING_MODEL})")
+        return TextEmbedder(
+            model_name=Config.EMBEDDING_MODEL,
+            embedding_dimension=Config.EMBEDDING_DIMENSION
+        )
+    else:
+        raise ValueError(f"Invalid EMBEDDING_BACKEND: {backend}")
 
 
 class IngestionPipeline:
@@ -40,7 +61,7 @@ class IngestionPipeline:
             chunk_size=Config.CHUNK_SIZE,
             chunk_overlap=Config.CHUNK_OVERLAP
         )
-        self.embedder = TextEmbedder(model_name=Config.EMBEDDING_MODEL)
+        self.embedder = _get_embedder()
         self.vector_store = MilvusVectorStore(
             uri=Config.MILVUS_URI,
             api_key=Config.MILVUS_API_KEY,

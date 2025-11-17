@@ -7,8 +7,10 @@ A Python application for processing PDFs from Google Cloud Storage, extracting t
 - ☁️ **Direct GCS Processing** - Process PDFs directly from Google Cloud Storage without local downloads
 - 📁 **Recursive folder support** - Process from all subfolders/prefixes automatically
 - 📄 **Advanced PDF Parsing** - Extract text from PDFs using MinerU (GPU/CPU compatible, OCR support)
-- ✂️ Split text into token-aware chunks (max 2048 tokens for Gemini)
-- 🧠 Generate embeddings using Google Gemini text-embedding-005 API
+- ✂️ Split text into token-aware chunks (max 2048 tokens)
+- 🧠 **Flexible Embeddings** - Choose between:
+  - **BiomedCLIP** (HuggingFace) - Optimized for medical/scientific text (512 dimensions)
+  - **Gemini API** - General-purpose embeddings (768 dimensions)
 - 🗄️ Store embeddings in Milvus vector database
 - 🚀 **GPU Acceleration** - Optional GPU support for faster PDF processing
 - 🐳 Docker support for easy deployment
@@ -24,15 +26,23 @@ data_ingestion/
 │   ├── gcs_downloader.py      # Google Cloud Storage client (for listing blobs)
 │   ├── pdf_extractor.py       # PDF text extraction
 │   ├── chunker.py             # Text chunking
-│   ├── embedder.py            # Text embedding generation
+│   ├── embedder.py            # Gemini embedding client (legacy)
+│   ├── hf_embedder.py         # HuggingFace embedding client
 │   ├── vector_store.py        # Milvus vector store interface
 │   ├── ingest.py              # Main ingestion pipeline
 │   └── utils.py               # Utility functions
+├── embedding_service/          # Standalone embedding service
+│   ├── app.py                 # FastAPI service
+│   ├── requirements.txt       # Service dependencies
+│   ├── Dockerfile             # Service container
+│   ├── start_service.sh       # Linux/Mac startup script
+│   └── start_service.bat      # Windows startup script
 ├── tests/                      # Test suite
 ├── .env                        # Environment variables (create from .env.example)
-├── .env.example               # Example environment variables
 ├── requirements.txt           # Python dependencies
-├── Dockerfile                 # Docker configuration
+├── docker-compose.yml         # Container orchestration
+├── QUICKSTART_EMBEDDINGS.md   # Quick start guide for embeddings
+├── EMBEDDING_MIGRATION_GUIDE.md # Detailed migration guide
 └── README.md                  # This file
 ```
 
@@ -42,6 +52,53 @@ data_ingestion/
 - Google Cloud service account with Storage access
 - Milvus instance (cloud or self-hosted)
 - Docker (optional, for containerized deployment)
+
+## Embedding Options
+
+This project supports two embedding backends:
+
+### Option 1: BiomedCLIP (Recommended for Medical/Scientific Text)
+
+**Advantages:**
+- ✅ Optimized for biomedical and scientific text
+- ✅ No API costs (self-hosted)
+- ✅ Full data privacy
+- ✅ Works offline
+- ✅ 512 dimensions
+
+**Quick Start:**
+```bash
+# Start embedding service
+cd embedding_service
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app:app --host 0.0.0.0 --port 8000
+
+# Configure in .env
+EMBEDDING_BACKEND=huggingface
+EMBEDDING_SERVICE_URL=http://localhost:8000
+EMBEDDING_DIMENSION=512
+```
+
+📖 See [QUICKSTART_EMBEDDINGS.md](QUICKSTART_EMBEDDINGS.md) for detailed setup.
+
+### Option 2: Google Gemini API (Legacy)
+
+**Advantages:**
+- ✅ No local infrastructure needed
+- ✅ Always up-to-date models
+- ✅ 768 dimensions
+
+**Setup:**
+```bash
+# Configure in .env
+EMBEDDING_BACKEND=gemini
+GEMINI_API_KEY=your_api_key
+EMBEDDING_DIMENSION=768
+```
+
+📖 See [GEMINI_SETUP.md](GEMINI_SETUP.md) for API key setup.
 
 ## Setup
 
@@ -146,18 +203,28 @@ MILVUS_URI=your-milvus-uri
 MILVUS_API_KEY=your-api-key
 MILVUS_COLLECTION_NAME=pdf_embeddings
 
-# Gemini Embedding Configuration
-GEMINI_API_KEY=your-gemini-api-key  # Get from https://makersuite.google.com/app/apikey
-EMBEDDING_MODEL=text-embedding-005
-MAX_TOKENS_PER_CHUNK=2048
+# Embedding Configuration
+EMBEDDING_BACKEND=huggingface  # Options: "huggingface" or "gemini"
+
+# HuggingFace BiomedCLIP Configuration (when EMBEDDING_BACKEND=huggingface)
+EMBEDDING_SERVICE_URL=http://localhost:8000
+EMBEDDING_DIMENSION=512
+
+# Gemini Configuration (when EMBEDDING_BACKEND=gemini)
+# GEMINI_API_KEY=your-gemini-api-key  # Get from https://makersuite.google.com/app/apikey
+# EMBEDDING_MODEL=text-embedding-004
+# EMBEDDING_DIMENSION=768
 
 # Processing Configuration
+MAX_TOKENS_PER_CHUNK=2048
 CHUNK_SIZE=1500  # Characters (validated against token limit)
 CHUNK_OVERLAP=150
 BATCH_SIZE=100
 ```
 
-**Important**: See [GEMINI_SETUP.md](GEMINI_SETUP.md) for detailed Gemini API configuration.
+**Important**: 
+- For BiomedCLIP: See [QUICKSTART_EMBEDDINGS.md](QUICKSTART_EMBEDDINGS.md)
+- For Gemini: See [GEMINI_SETUP.md](GEMINI_SETUP.md)
 
 ## Usage
 
