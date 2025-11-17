@@ -46,31 +46,22 @@ class TextEmbedder:
         # Initialize Gemini client with the new SDK
         self.client = genai.Client(api_key=self.api_key)
         
-        # Initialize tokenizer for token counting
-        try:
-            self.tokenizer = genai.LocalTokenizer(model_name='gemini-2.0-flash-exp')
-        except (ImportError, RuntimeError, ValueError) as e:
-            logger.warning(f"Could not initialize tokenizer: {e}. Will use estimation.")
-            self.tokenizer = None
+        # Note: Google Genai SDK doesn't have LocalTokenizer
+        # We'll use character-based estimation for token counting
+        self.tokenizer = None
+        logger.debug("Using character-based token estimation (no tokenizer available)")
     
     def _count_tokens(self, text: str) -> int:
         """
-        Count tokens in text using the tokenizer
+        Count tokens in text using character-based estimation.
         
         Args:
             text: Text to count tokens for
             
         Returns:
-            Number of tokens
+            Estimated number of tokens
         """
-        try:
-            if self.tokenizer:
-                result = self.tokenizer.compute_tokens(text)
-                return result.token_count
-        except (AttributeError, RuntimeError) as e:
-            logger.warning(f"Could not count tokens via tokenizer: {e}. Using estimation.")
-        
-        # Rough estimation using constant
+        # Use character-based estimation since tokenizer is not available
         return len(text) // CHARS_PER_TOKEN_ESTIMATE
     
     def _validate_text_length(self, text: str) -> bool:
