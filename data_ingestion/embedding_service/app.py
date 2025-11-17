@@ -76,7 +76,8 @@ def load_model():
     
     try:
         # Load model and tokenizer from open_clip
-        model, _, _ = create_model_from_pretrained(MODEL_NAME)
+        # Note: create_model_from_pretrained returns (model, preprocess) in newer versions
+        model, _ = create_model_from_pretrained(MODEL_NAME)
         tokenizer = get_tokenizer(MODEL_NAME)
         
         model.to(device)
