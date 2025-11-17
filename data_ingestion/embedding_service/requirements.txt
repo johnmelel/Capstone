@@ -8,7 +8,7 @@ pydantic==2.10.3
 transformers==4.47.1
 torch==2.5.1
 sentencepiece==0.2.0
-protobuf==5.29.2
+protobuf==3.20.3
 open_clip_torch==2.20.0
 timm==0.9.12
 
