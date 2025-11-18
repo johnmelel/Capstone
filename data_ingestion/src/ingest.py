@@ -266,9 +266,9 @@ class IngestionPipeline:
                         # For multiple images, we use the first one as representative
                         primary_image = images[0]
                         embedding = self.embedder.embed_multimodal(
-                            text=chunk_data['text'],
-                            image_bytes=primary_image['bytes']  # Use 'bytes' key from ImageData
-                        )
+                            texts=[chunk_data['text']],
+                            images=[primary_image['bytes']]  # Pass as lists
+                        )[0]  # Extract first embedding from batch result
                         
                         # Clean up temporary image data (not needed in Milvus)
                         del chunk_data['images']

@@ -75,10 +75,12 @@ class GCSImageUploader:
         file_hash: str,
         chunk_index: int,
         optimize: bool = True,
-        max_size_kb: int = 1000
+        max_size_kb: int = 1000,
+        max_retries: int = 5,
+        base_delay: float = 1.0
     ) -> str:
         """
-        Upload a single image to GCS
+        Upload a single image to GCS with retry logic for rate limiting
         
         Args:
             image_data: ImageData object containing image bytes and metadata
@@ -86,40 +88,62 @@ class GCSImageUploader:
             chunk_index: Index of the chunk this image belongs to
             optimize: Whether to optimize/compress the image
             max_size_kb: Maximum size in KB before compression (default: 1000)
+            max_retries: Maximum number of retries for rate limit errors
+            base_delay: Base delay in seconds for exponential backoff
             
         Returns:
             GCS URI (gs://bucket/path/to/image.png)
         """
-        try:
-            # Prepare blob name
-            # Format: images/{file_hash}/{chunk_index}_{image_index}.png
-            image_index = image_data['image_index']
-            blob_name = f"{self.images_prefix}/{file_hash}/{chunk_index}_{image_index}.png"
-            
-            # Get image bytes
-            img_bytes = image_data['bytes']
-            
-            # Optimize image if needed
-            if optimize and len(img_bytes) > (max_size_kb * 1024):
-                logger.debug(f"Optimizing image {blob_name} (original size: {len(img_bytes)} bytes)")
-                img_bytes = self._optimize_image(img_bytes, max_size_kb)
-                logger.debug(f"Optimized to {len(img_bytes)} bytes")
-            
-            # Upload to GCS
-            blob = self.bucket.blob(blob_name)
-            blob.upload_from_string(img_bytes, content_type='image/png')
-            
-            gcs_uri = f"gs://{self.bucket_name}/{blob_name}"
-            logger.debug(f"Uploaded image to {gcs_uri}")
-            
-            return gcs_uri
-            
-        except GoogleCloudError as e:
-            logger.error(f"Failed to upload image to GCS: {e}")
-            raise GCSError(f"Failed to upload image") from e
-        except Exception as e:
-            logger.error(f"Unexpected error uploading image: {e}")
-            raise GCSError(f"Unexpected error uploading image") from e
+        import time
+        
+        # Prepare blob name
+        # Format: images/{file_hash}/{chunk_index}_{image_index}.png
+        image_index = image_data['image_index']
+        blob_name = f"{self.images_prefix}/{file_hash}/{chunk_index}_{image_index}.png"
+        
+        # Get image bytes
+        img_bytes = image_data['bytes']
+        
+        # Optimize image if needed
+        if optimize and len(img_bytes) > (max_size_kb * 1024):
+            logger.debug(f"Optimizing image {blob_name} (original size: {len(img_bytes)} bytes)")
+            img_bytes = self._optimize_image(img_bytes, max_size_kb)
+            logger.debug(f"Optimized to {len(img_bytes)} bytes")
+        
+        # Upload with retry logic for rate limiting
+        for attempt in range(max_retries):
+            try:
+                blob = self.bucket.blob(blob_name)
+                blob.upload_from_string(img_bytes, content_type='image/png')
+                
+                gcs_uri = f"gs://{self.bucket_name}/{blob_name}"
+                logger.debug(f"Uploaded image to {gcs_uri}")
+                
+                return gcs_uri
+                
+            except GoogleCloudError as e:
+                # Check if it's a rate limit error (429)
+                if '429' in str(e) or 'rateLimitExceeded' in str(e):
+                    if attempt < max_retries - 1:
+                        # Exponential backoff with jitter
+                        delay = base_delay * (2 ** attempt) + (time.time() % 1)
+                        logger.warning(
+                            f"Rate limit hit for {blob_name}, retrying in {delay:.2f}s "
+                            f"(attempt {attempt + 1}/{max_retries})"
+                        )
+                        time.sleep(delay)
+                        continue
+                    else:
+                        logger.error(f"Failed to upload image after {max_retries} retries due to rate limiting")
+                        raise GCSError(f"Failed to upload image due to rate limiting") from e
+                else:
+                    logger.error(f"Failed to upload image to GCS: {e}")
+                    raise GCSError(f"Failed to upload image") from e
+            except Exception as e:
+                logger.error(f"Unexpected error uploading image: {e}")
+                raise GCSError(f"Unexpected error uploading image") from e
+        
+        raise GCSError(f"Failed to upload image after {max_retries} attempts")
     
     def _optimize_image(self, img_bytes: bytes, max_size_kb: int = 1000) -> bytes:
         """
