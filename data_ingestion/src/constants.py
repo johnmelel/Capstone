@@ -8,7 +8,7 @@ EMBEDDING_RATE_LIMIT_DELAY_SECONDS = 0.1  # Delay between embedding API requests
 EMBEDDING_BATCH_DELAY_SECONDS = 1.0  # Delay between batches
 
 # File size limits
-MAX_PDF_SIZE_BYTES = 100 * 1024 * 1024  # 100MB maximum PDF file size
+MAX_PDF_SIZE_BYTES = 500 * 1024 * 1024  # 500MB maximum PDF file size
 
 # Filename safety
 MAX_FILENAME_LENGTH = 255  # Maximum filename length for most filesystems

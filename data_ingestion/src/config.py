@@ -62,7 +62,7 @@ class Config:
     MINERU_BACKEND = os.getenv("MINERU_BACKEND", "pipeline")  # pipeline, vlm-transformers, vlm-vllm-engine
     MINERU_MODEL_SOURCE = os.getenv("MINERU_MODEL_SOURCE", "huggingface")  # huggingface, modelscope, local
     MINERU_LANG = os.getenv("MINERU_LANG", "en")  # en, ch, auto, etc.
-    PDF_EXTRACTION_TIMEOUT = int(os.getenv("PDF_EXTRACTION_TIMEOUT", "900"))  # 15 minutes default
+    PDF_EXTRACTION_TIMEOUT = int(os.getenv("PDF_EXTRACTION_TIMEOUT", "3600"))  # 1 hour default
     MINERU_DEBUG_MODE = os.getenv("MINERU_DEBUG_MODE", "false").lower() in ("true", "1", "yes")
     MINERU_ENABLE_TABLES = os.getenv("MINERU_ENABLE_TABLES", "false").lower() in ("true", "1", "yes")
     MINERU_ENABLE_FORMULAS = os.getenv("MINERU_ENABLE_FORMULAS", "false").lower() in ("true", "1", "yes")
