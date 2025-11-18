@@ -56,11 +56,31 @@ class IngestionPipeline:
         
         # Initialize components
         logger.info("Initializing pipeline components...")
+        
+        # Initialize PDF extractor with multimodal support if enabled
         self.pdf_extractor = PDFExtractor()
-        self.chunker = TextChunker(
-            chunk_size=Config.CHUNK_SIZE,
-            chunk_overlap=Config.CHUNK_OVERLAP
-        )
+        
+        # Initialize appropriate chunker based on multimodal mode
+        if Config.ENABLE_MULTIMODAL:
+            logger.info("🎨 Multimodal mode enabled - will extract and process images")
+            self.chunker = MultimodalChunker(
+                chunk_size=Config.CHUNK_SIZE,
+                chunk_overlap=Config.CHUNK_OVERLAP
+            )
+            # Initialize image uploader for GCS
+            self.image_uploader = GCSImageUploader(
+                bucket_name=Config.GCS_BUCKET_NAME,
+                service_account_json=Config.GOOGLE_SERVICE_ACCOUNT_JSON,
+                images_prefix=Config.GCS_IMAGES_PREFIX
+            )
+        else:
+            logger.info("📝 Text-only mode - images will be skipped")
+            self.chunker = TextChunker(
+                chunk_size=Config.CHUNK_SIZE,
+                chunk_overlap=Config.CHUNK_OVERLAP
+            )
+            self.image_uploader = None
+        
         self.embedder = _get_embedder()
         self.vector_store = MilvusVectorStore(
             uri=Config.MILVUS_URI,
@@ -148,12 +168,6 @@ class IngestionPipeline:
         """
         logger.info(f"Processing: {pdf_blob.name}")
         
-        # Extract text
-        text = self.pdf_extractor.extract_text(pdf_blob)
-        if not text:
-            logger.warning(f"No text extracted from {pdf_blob.name}, skipping")
-            return []
-        
         # Create a mock file path object for chunker compatibility
         class MockFilePath:
             def __init__(self, name):
@@ -163,11 +177,34 @@ class IngestionPipeline:
         
         mock_file_path = MockFilePath(pdf_blob.name)
         
-        # Chunk text
-        chunks_with_metadata = self.chunker.chunk_with_metadata(
-            text=text,
-            file_path=mock_file_path
-        )
+        # Extract and chunk based on multimodal mode
+        if Config.ENABLE_MULTIMODAL:
+            # Multimodal extraction: text + images
+            result = self.pdf_extractor.extract_with_images(pdf_blob)
+            if not result or not result.text:
+                logger.warning(f"No text extracted from {pdf_blob.name}, skipping")
+                return []
+            
+            logger.info(f"📸 Extracted {len(result.images)} images from {pdf_blob.name}")
+            
+            # Chunk with image association
+            chunks_with_metadata = self.chunker.chunk_with_images(
+                text=result.text,
+                images=result.images,
+                file_path=mock_file_path
+            )
+        else:
+            # Text-only extraction
+            text = self.pdf_extractor.extract_text(pdf_blob)
+            if not text:
+                logger.warning(f"No text extracted from {pdf_blob.name}, skipping")
+                return []
+            
+            # Chunk text
+            chunks_with_metadata = self.chunker.chunk_with_metadata(
+                text=text,
+                file_path=mock_file_path
+            )
         
         if not chunks_with_metadata:
             logger.warning(f"No chunks created from {pdf_blob.name}, skipping")
@@ -189,23 +226,58 @@ class IngestionPipeline:
         for i in range(0, len(chunks_with_metadata), chunk_batch_size):
             batch_chunks = chunks_with_metadata[i:i + chunk_batch_size]
             
-            # Extract texts for embedding
-            batch_texts = [chunk['text'] for chunk in batch_chunks]
-            
-            # Generate embeddings for this batch
             batch_num = i // chunk_batch_size + 1
             total_batches = (len(chunks_with_metadata) + chunk_batch_size - 1) // chunk_batch_size
-            logger.info(f"📊 Embedding batch {batch_num}/{total_batches} for {pdf_blob.name}")
+            logger.info(f"📊 Processing batch {batch_num}/{total_batches} for {pdf_blob.name}")
             
             try:
-                batch_embeddings = self.embedder.embed_text(batch_texts)
-                
-                # Combine embeddings with chunks
-                for j, chunk_data in enumerate(batch_chunks):
-                    chunk_data['embedding'] = batch_embeddings[j].tolist()
+                # Process each chunk in the batch
+                for chunk_data in batch_chunks:
+                    # Handle multimodal chunks with images
+                    if Config.ENABLE_MULTIMODAL and chunk_data.get('images'):
+                        images = chunk_data['images']
+                        logger.info(f"🎨 Chunk has {len(images)} associated images")
+                        
+                        # Upload images to GCS first
+                        uploaded_images = self.image_uploader.upload_images_batch(
+                            images=images,
+                            file_hash=chunk_data['file_name']  # Use filename as identifier
+                        )
+                        
+                        # Store GCS paths and metadata in chunk
+                        chunk_data['image_gcs_paths'] = [img['gcs_path'] for img in uploaded_images]
+                        chunk_data['image_metadata'] = uploaded_images
+                        chunk_data['image_count'] = len(uploaded_images)
+                        chunk_data['has_image'] = True
+                        chunk_data['embedding_type'] = 'multimodal'
+                        
+                        # Generate multimodal embedding (text + first image)
+                        # For multiple images, we use the first one as representative
+                        primary_image = images[0]
+                        embedding = self.embedder.embed_multimodal(
+                            text=chunk_data['text'],
+                            image_bytes=primary_image.image_bytes
+                        )
+                        
+                        # Clean up temporary image data (not needed in Milvus)
+                        del chunk_data['images']
+                    else:
+                        # Text-only chunk
+                        chunk_data['has_image'] = False
+                        chunk_data['embedding_type'] = 'text'
+                        chunk_data['image_count'] = 0
+                        chunk_data['image_gcs_paths'] = []
+                        chunk_data['image_metadata'] = []
+                        
+                        # Generate text-only embedding
+                        embedding = self.embedder.embed_text([chunk_data['text']])[0]
+                    
+                    # Add embedding to chunk
+                    chunk_data['embedding'] = embedding.tolist()
                     all_chunks_with_embeddings.append(chunk_data)
+                    
             except Exception as e:
-                logger.error(f"Failed to generate embeddings for batch {batch_num}: {e}")
+                logger.error(f"Failed to process batch {batch_num}: {e}")
                 raise  # Re-raise to handle at file level
         
         return all_chunks_with_embeddings
