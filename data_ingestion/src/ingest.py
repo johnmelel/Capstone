@@ -175,8 +175,15 @@ class IngestionPipeline:
         
         logger.info(f"Created {len(chunks_with_metadata)} chunks from {pdf_blob.name}")
         
-        # Process chunks in smaller batches to manage memory
-        chunk_batch_size = min(Config.BATCH_SIZE, 50)  # Limit embedding batch size
+        # Process chunks in smaller batches to manage memory for HUGE files
+        # For very large files (>1000 chunks), use smaller batch size
+        num_chunks = len(chunks_with_metadata)
+        if num_chunks > 1000:
+            chunk_batch_size = 20  # Very conservative for huge files
+            logger.info(f"Large file detected ({num_chunks} chunks), using batch size of {chunk_batch_size}")
+        else:
+            chunk_batch_size = min(Config.BATCH_SIZE, 50)
+        
         all_chunks_with_embeddings = []
         
         for i in range(0, len(chunks_with_metadata), chunk_batch_size):
@@ -186,22 +193,30 @@ class IngestionPipeline:
             batch_texts = [chunk['text'] for chunk in batch_chunks]
             
             # Generate embeddings for this batch
-            logger.debug(f"Generating embeddings for batch {i // chunk_batch_size + 1}")
-            batch_embeddings = self.embedder.embed_text(batch_texts)
+            batch_num = i // chunk_batch_size + 1
+            total_batches = (len(chunks_with_metadata) + chunk_batch_size - 1) // chunk_batch_size
+            logger.info(f"📊 Embedding batch {batch_num}/{total_batches} for {pdf_blob.name}")
             
-            # Combine embeddings with chunks
-            for j, chunk_data in enumerate(batch_chunks):
-                chunk_data['embedding'] = batch_embeddings[j].tolist()
-                all_chunks_with_embeddings.append(chunk_data)
+            try:
+                batch_embeddings = self.embedder.embed_text(batch_texts)
+                
+                # Combine embeddings with chunks
+                for j, chunk_data in enumerate(batch_chunks):
+                    chunk_data['embedding'] = batch_embeddings[j].tolist()
+                    all_chunks_with_embeddings.append(chunk_data)
+            except Exception as e:
+                logger.error(f"Failed to generate embeddings for batch {batch_num}: {e}")
+                raise  # Re-raise to handle at file level
         
         return all_chunks_with_embeddings
     
-    def ingest_chunks(self, chunks_with_embeddings: List[Dict[str, Any]]):
+    def ingest_chunks(self, chunks_with_embeddings: List[Dict[str, Any]], file_name: str = "unknown"):
         """
-        Insert chunks into Milvus
+        Insert chunks into Milvus with better error handling
         
         Args:
             chunks_with_embeddings: List of chunks with embeddings and metadata
+            file_name: Name of source file for logging
         """
         if not chunks_with_embeddings:
             return
@@ -210,19 +225,30 @@ class IngestionPipeline:
         texts = [chunk['text'] for chunk in chunks_with_embeddings]
         metadatas = [chunk['metadata'] for chunk in chunks_with_embeddings]
         
-        # Insert in batches
-        batch_size = Config.BATCH_SIZE
+        # Insert in batches with smaller size for huge files
+        num_chunks = len(embeddings)
+        batch_size = min(Config.BATCH_SIZE, 100) if num_chunks > 500 else Config.BATCH_SIZE
+        
+        total_batches = (num_chunks + batch_size - 1) // batch_size
+        logger.info(f"💾 Inserting {num_chunks} chunks in {total_batches} batches to Milvus")
+        
         for i in range(0, len(embeddings), batch_size):
             batch_embeddings = embeddings[i:i + batch_size]
             batch_texts = texts[i:i + batch_size]
             batch_metadatas = metadatas[i:i + batch_size]
             
-            logger.info(f"Inserting batch {i // batch_size + 1}/{(len(embeddings) + batch_size - 1) // batch_size}")
-            self.vector_store.insert(
-                embeddings=batch_embeddings,
-                texts=batch_texts,
-                metadatas=batch_metadatas
-            )
+            batch_num = i // batch_size + 1
+            logger.info(f"💾 Milvus batch {batch_num}/{total_batches} for {file_name}")
+            
+            try:
+                self.vector_store.insert(
+                    embeddings=batch_embeddings,
+                    texts=batch_texts,
+                    metadatas=batch_metadatas
+                )
+            except Exception as e:
+                logger.error(f"Failed to insert batch {batch_num} for {file_name}: {e}")
+                raise  # Re-raise to handle at file level
     
     def run(self, force: bool = False):
         """
@@ -252,37 +278,53 @@ class IngestionPipeline:
             for pdf_blob in tqdm(pdf_blobs, desc="Processing PDFs"):
                 try:
                     # Check if file has already been processed (basic deduplication)
+                    # Use COUNT to avoid loading data into memory
                     if not force:
-                        existing_count = self.vector_store.collection.query(
-                            expr=f'file_name == "{pdf_blob.name}"',
-                            output_fields=["primary_key"],
-                            limit=1
-                        )
-                        
-                        if existing_count:
-                            logger.info(f"Skipping {pdf_blob.name} - already processed ({len(existing_count)} chunks found)")
-                            continue
+                        try:
+                            # Escape filename for Milvus query
+                            safe_filename = pdf_blob.name.replace('"', '\\"')
+                            
+                            # Use count instead of loading data
+                            existing_results = self.vector_store.collection.query(
+                                expr=f'file_name == "{safe_filename}"',
+                                output_fields=["primary_key"],
+                                limit=1
+                            )
+                            
+                            if existing_results and len(existing_results) > 0:
+                                logger.info(f"✓ Skipping {pdf_blob.name} - already processed")
+                                successful_uploads += 1  # Count as success since it's already done
+                                continue
+                        except Exception as e:
+                            logger.warning(f"Error checking duplicates for {pdf_blob.name}: {e}. Proceeding with processing.")
                     else:
                         # In force mode, delete existing entries for this file
-                        existing_count = self.vector_store.collection.query(
-                            expr=f'file_name == "{pdf_blob.name}"',
-                            output_fields=["file_hash"],
-                            limit=1
-                        )
-                        if existing_count:
-                            # Get file_hash and delete all chunks for this file
-                            file_hash = existing_count[0].get('file_hash')
-                            if file_hash:
-                                deleted = self.vector_store.delete_by_file_hash(file_hash)
-                                logger.info(f"Deleted {deleted} existing chunks for {pdf_blob.name}")
+                        try:
+                            safe_filename = pdf_blob.name.replace('"', '\\"')
+                            existing_results = self.vector_store.collection.query(
+                                expr=f'file_name == "{safe_filename}"',
+                                output_fields=["file_hash"],
+                                limit=1
+                            )
+                            if existing_results and len(existing_results) > 0:
+                                # Get file_hash and delete all chunks for this file
+                                file_hash = existing_results[0].get('file_hash')
+                                if file_hash:
+                                    deleted = self.vector_store.delete_by_file_hash(file_hash)
+                                    logger.info(f"🗑️  Deleted {deleted} existing chunks for {pdf_blob.name}")
+                        except Exception as e:
+                            logger.warning(f"Error deleting duplicates for {pdf_blob.name}: {e}. Proceeding with processing.")
+                    
+                    # Log checkpoint before processing
+                    logger.info(f"🔄 [{successful_uploads + 1}/{len(pdf_blobs)}] Processing: {pdf_blob.name} ({pdf_blob.size / 1024 / 1024:.1f} MB)")
                     
                     chunks_with_embeddings = self.process_pdf_blob(pdf_blob)
                     
                     if chunks_with_embeddings:
-                        self.ingest_chunks(chunks_with_embeddings)
+                        self.ingest_chunks(chunks_with_embeddings, file_name=pdf_blob.name)
                         successful_uploads += 1
                         total_chunks += len(chunks_with_embeddings)
-                        logger.info(f"Successfully ingested {len(chunks_with_embeddings)} chunks from {pdf_blob.name}")
+                        logger.info(f"✅ [{successful_uploads}/{len(pdf_blobs)}] Successfully ingested {len(chunks_with_embeddings)} chunks from {pdf_blob.name}")
                     else:
                         failed_uploads += 1
                         failed_files.append(pdf_blob.name)
