@@ -1,12 +1,14 @@
 """Text chunking module with simple token-based chunking"""
 
 import logging
+import json
 from typing import List, Dict, Any
 from pathlib import Path
 
 from .config import Config
 from .constants import CHARS_PER_TOKEN_ESTIMATE
 from .utils import create_metadata, get_file_hash
+from .types import ImageData
 
 
 logger = logging.getLogger(__name__)
@@ -176,4 +178,163 @@ def chunk_text_simple(
     """
     chunker = TextChunker(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
     return chunker.chunk_text(text)
+
+
+class MultimodalChunker(TextChunker):
+    """Class to chunk text and associate images with chunks"""
+    
+    def __init__(self, chunk_size: int = None, chunk_overlap: int = None):
+        """
+        Initialize multimodal chunker
+        
+        Args:
+            chunk_size: Target size of each chunk in TOKENS
+            chunk_overlap: Number of TOKENS to overlap between chunks
+        """
+        super().__init__(chunk_size, chunk_overlap)
+        logger.info("MultimodalChunker initialized for text + image processing")
+    
+    def _associate_images_with_chunks(
+        self,
+        chunks: List[str],
+        images: List[ImageData]
+    ) -> List[List[ImageData]]:
+        """
+        Associate images with text chunks based on page proximity
+        
+        Simple strategy: Distribute images across chunks based on page numbers
+        - If no page info, put all images in first chunk
+        - Otherwise, distribute images to chunks proportionally
+        
+        Args:
+            chunks: List of text chunks
+            images: List of ImageData objects with page_num info
+            
+        Returns:
+            List of image lists, one per chunk
+        """
+        if not images:
+            return [[] for _ in chunks]
+        
+        num_chunks = len(chunks)
+        chunk_images = [[] for _ in chunks]
+        
+        # Check if we have page number information
+        has_page_info = any(img.get('page_num', 0) > 0 for img in images)
+        
+        if not has_page_info or num_chunks == 1:
+            # No page info or single chunk: put all images in first chunk
+            chunk_images[0] = images
+            logger.debug(f"Assigned all {len(images)} images to first chunk (no page info)")
+        else:
+            # Distribute images based on page numbers
+            # Simple approach: divide page range into chunk ranges
+            max_page = max(img.get('page_num', 1) for img in images)
+            pages_per_chunk = max(1, max_page / num_chunks)
+            
+            for img in images:
+                page_num = img.get('page_num', 1)
+                # Calculate which chunk this page belongs to
+                chunk_idx = min(int((page_num - 1) / pages_per_chunk), num_chunks - 1)
+                chunk_images[chunk_idx].append(img)
+                logger.debug(f"Assigned image from page {page_num} to chunk {chunk_idx}")
+        
+        return chunk_images
+    
+    def chunk_with_images(
+        self,
+        text: str,
+        images: List[ImageData],
+        file_path: Any,
+        **additional_metadata
+    ) -> List[Dict[str, Any]]:
+        """
+        Chunk text and associate images with chunks
+        
+        Args:
+            text: Text to chunk
+            images: List of ImageData objects
+            file_path: Path to source file or blob object
+            **additional_metadata: Additional metadata to include
+            
+        Returns:
+            List of dictionaries containing chunk text, images, and metadata
+        """
+        # Get text chunks
+        text_chunks = self.chunk_text(text)
+        
+        # Associate images with chunks
+        chunk_images_lists = self._associate_images_with_chunks(text_chunks, images)
+        
+        # Generate file hash
+        if isinstance(file_path, Path):
+            file_hash = get_file_hash(file_path)
+        else:
+            if hasattr(file_path, 'etag'):
+                file_hash = file_path.etag.strip('"')
+            elif hasattr(file_path, 'size') and hasattr(file_path, 'name'):
+                import hashlib
+                hash_input = f"{file_path.name}:{file_path.size}"
+                file_hash = hashlib.md5(hash_input.encode()).hexdigest()
+            else:
+                import hashlib
+                file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
+        
+        # Create chunks with metadata
+        chunks_with_metadata = []
+        for idx, (chunk_text, chunk_images) in enumerate(zip(text_chunks, chunk_images_lists)):
+            token_count = self._estimate_tokens(chunk_text)
+            has_image = len(chunk_images) > 0
+            embedding_type = "multimodal" if has_image else "text"
+            
+            # Basic metadata
+            metadata = create_metadata(
+                file_name=file_path.name,
+                file_hash=file_hash,
+                chunk_index=idx,
+                total_chunks=len(text_chunks),
+                token_count=token_count,
+                **additional_metadata
+            )
+            
+            # Add multimodal fields
+            metadata['has_image'] = has_image
+            metadata['image_count'] = len(chunk_images)
+            metadata['embedding_type'] = embedding_type
+            metadata['image_gcs_paths'] = '[]'  # Will be set after GCS upload
+            
+            # Create image metadata JSON
+            image_metadata_list = []
+            for img in chunk_images:
+                img_meta = {
+                    'page_num': img.get('page_num', 0),
+                    'image_index': img.get('image_index', 0),
+                    'size': img.get('size', (0, 0)),
+                    'bbox': img.get('bbox')
+                }
+                image_metadata_list.append(img_meta)
+            
+            metadata['image_metadata'] = json.dumps(image_metadata_list)
+            
+            chunk_data = {
+                'text': chunk_text,
+                'images': chunk_images,  # Keep ImageData objects for processing
+                'metadata': metadata
+            }
+            
+            chunks_with_metadata.append(chunk_data)
+            
+            logger.debug(
+                f"Chunk {idx}: {token_count} tokens, {len(chunk_images)} images, "
+                f"type={embedding_type}"
+            )
+        
+        logger.info(
+            f"Created {len(chunks_with_metadata)} chunks: "
+            f"{sum(1 for c in chunks_with_metadata if c['metadata']['has_image'])} with images, "
+            f"{sum(1 for c in chunks_with_metadata if not c['metadata']['has_image'])} text-only"
+        )
+        
+        return chunks_with_metadata
+
 

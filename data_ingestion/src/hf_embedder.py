@@ -1,10 +1,19 @@
 """HuggingFace BiomedCLIP embedding client that communicates with the embedding service"""
 
 import logging
-from typing import List, Union
+from typing import List, Union, Optional
 import numpy as np
 import requests
 import time
+import base64
+import io
+from pathlib import Path
+
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 
 from .config import Config
 from .exceptions import EmbeddingError
@@ -77,21 +86,37 @@ class HuggingFaceEmbedder:
                 f"Please ensure the service is running."
             ) from e
     
-    def _make_request(self, texts: List[str], normalize: bool = True) -> dict:
+    def _make_request(
+        self,
+        texts: Optional[List[str]] = None,
+        images: Optional[List[str]] = None,
+        mode: str = "text",
+        normalize: bool = True,
+        fusion_method: str = "average"
+    ) -> dict:
         """
         Make a request to the embedding service with retry logic
         
         Args:
             texts: List of texts to embed
+            images: List of base64-encoded images
+            mode: Embedding mode - "text", "image", or "multimodal"
             normalize: Whether to normalize embeddings
+            fusion_method: Method to fuse text+image embeddings
             
         Returns:
             Response JSON data
         """
         payload = {
-            "texts": texts,
-            "normalize": normalize
+            "mode": mode,
+            "normalize": normalize,
+            "fusion_method": fusion_method
         }
+        
+        if texts:
+            payload["texts"] = texts
+        if images:
+            payload["images"] = images
         
         last_error = None
         for attempt in range(self.max_retries):
@@ -205,6 +230,154 @@ class HuggingFaceEmbedder:
     def get_embedding_dimension(self) -> int:
         """Get the dimension of the embeddings"""
         return self.embedding_dim
+    
+    def _encode_image_to_base64(self, image_source: Union[Path, bytes, Image.Image]) -> str:
+        """
+        Encode image to base64 string
+        
+        Args:
+            image_source: Path to image file, image bytes, or PIL Image
+            
+        Returns:
+            Base64-encoded image string
+        """
+        if not PIL_AVAILABLE:
+            raise ImportError("PIL/Pillow is required for image processing")
+        
+        try:
+            # Convert to PIL Image
+            if isinstance(image_source, Path):
+                img = Image.open(image_source)
+            elif isinstance(image_source, bytes):
+                img = Image.open(io.BytesIO(image_source))
+            elif isinstance(image_source, Image.Image):
+                img = image_source
+            else:
+                raise ValueError(f"Unsupported image source type: {type(image_source)}")
+            
+            # Convert to RGB if necessary
+            if img.mode != 'RGB':
+                img = img.convert('RGB')
+            
+            # Encode to base64
+            buffer = io.BytesIO()
+            img.save(buffer, format='PNG')
+            img_bytes = buffer.getvalue()
+            
+            return base64.b64encode(img_bytes).decode('utf-8')
+            
+        except Exception as e:
+            logger.error(f"Failed to encode image: {e}")
+            raise EmbeddingError(f"Failed to encode image") from e
+    
+    def embed_image(self, image: Union[Path, bytes, Image.Image, List]) -> np.ndarray:
+        """
+        Generate embeddings for images using the embedding service
+        
+        Args:
+            image: Single image (Path, bytes, or PIL Image) or list of images
+            
+        Returns:
+            Numpy array of embeddings
+        """
+        try:
+            # Handle single image or list
+            if not isinstance(image, list):
+                images = [image]
+            else:
+                images = image
+            
+            # Encode images to base64
+            base64_images = [self._encode_image_to_base64(img) for img in images]
+            
+            # Make request
+            response_data = self._make_request(
+                images=base64_images,
+                mode="image",
+                normalize=True
+            )
+            
+            # Extract embeddings
+            embeddings = response_data.get('embeddings', [])
+            
+            if not embeddings:
+                logger.warning("No embeddings returned from service")
+                return np.zeros((len(images), self.embedding_dim), dtype=np.float32)
+            
+            embeddings_array = np.array(embeddings, dtype=np.float32)
+            
+            logger.debug(
+                f"Generated embeddings for {len(images)} images "
+                f"in {response_data.get('processing_time', 0):.3f}s"
+            )
+            
+            return embeddings_array
+            
+        except EmbeddingError:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error generating image embeddings: {e}")
+            raise EmbeddingError(f"Failed to generate image embeddings") from e
+    
+    def embed_multimodal(
+        self,
+        texts: List[str],
+        images: List[Union[Path, bytes, Image.Image]],
+        fusion_method: str = "average"
+    ) -> np.ndarray:
+        """
+        Generate multimodal embeddings (text + image fusion)
+        
+        Args:
+            texts: List of text strings
+            images: List of images (same length as texts)
+            fusion_method: How to fuse embeddings - "average", "max", or "concat"
+            
+        Returns:
+            Numpy array of fused embeddings
+        """
+        try:
+            if len(texts) != len(images):
+                raise ValueError(
+                    f"Number of texts ({len(texts)}) must match "
+                    f"number of images ({len(images)})"
+                )
+            
+            # Encode images to base64
+            base64_images = [self._encode_image_to_base64(img) for img in images]
+            
+            # Make request
+            response_data = self._make_request(
+                texts=texts,
+                images=base64_images,
+                mode="multimodal",
+                normalize=True,
+                fusion_method=fusion_method
+            )
+            
+            # Extract embeddings
+            embeddings = response_data.get('embeddings', [])
+            
+            if not embeddings:
+                logger.warning("No embeddings returned from service")
+                # Dimension depends on fusion method
+                dim = self.embedding_dim if fusion_method != "concat" else self.embedding_dim * 2
+                return np.zeros((len(texts), dim), dtype=np.float32)
+            
+            embeddings_array = np.array(embeddings, dtype=np.float32)
+            
+            logger.debug(
+                f"Generated {len(texts)} multimodal embeddings "
+                f"in {response_data.get('processing_time', 0):.3f}s"
+            )
+            
+            return embeddings_array
+            
+        except EmbeddingError:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error generating multimodal embeddings: {e}")
+            raise EmbeddingError(f"Failed to generate multimodal embeddings") from e
 
 
 def embed_texts(

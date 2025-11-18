@@ -9,11 +9,14 @@ The model outputs 512-dimensional embeddings optimized for biomedical text.
 
 import logging
 import time
+import base64
+import io
 from typing import List, Optional
 from contextlib import asynccontextmanager
 
 import torch
 import numpy as np
+from PIL import Image
 from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -29,18 +32,23 @@ logger = logging.getLogger(__name__)
 # Global variables for model and tokenizer
 model = None
 tokenizer = None
+preprocess = None  # Image preprocessing function
 device = None
 
 # Model configuration
 MODEL_NAME = "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
 EMBEDDING_DIMENSION = 512
 MAX_LENGTH = 256  # Model's maximum sequence length
+IMAGE_SIZE = 224  # Expected image size for ViT
 
 
 class EmbeddingRequest(BaseModel):
     """Request model for embedding generation"""
-    texts: List[str] = Field(..., description="List of texts to embed", min_items=1, max_items=100)
+    texts: Optional[List[str]] = Field(None, description="List of texts to embed", max_items=100)
+    images: Optional[List[str]] = Field(None, description="List of base64-encoded images", max_items=50)
+    mode: str = Field("text", description="Embedding mode: 'text', 'image', or 'multimodal'")
     normalize: bool = Field(default=True, description="Whether to normalize embeddings")
+    fusion_method: str = Field("average", description="Method to fuse text+image: 'average', 'concat', 'max'")
 
 
 class EmbeddingResponse(BaseModel):
@@ -61,7 +69,7 @@ class HealthResponse(BaseModel):
 
 def load_model():
     """Load the BiomedCLIP model and tokenizer using open_clip"""
-    global model, tokenizer, device
+    global model, tokenizer, preprocess, device
     
     logger.info(f"Loading model: {MODEL_NAME}")
     start_time = time.time()
@@ -76,8 +84,8 @@ def load_model():
     
     try:
         # Load model and tokenizer from open_clip
-        # Note: create_model_from_pretrained returns (model, preprocess) in newer versions
-        model, _ = create_model_from_pretrained(MODEL_NAME)
+        # create_model_from_pretrained returns (model, preprocess)
+        model, preprocess = create_model_from_pretrained(MODEL_NAME)
         tokenizer = get_tokenizer(MODEL_NAME)
         
         model.to(device)
@@ -85,6 +93,7 @@ def load_model():
         
         load_time = time.time() - start_time
         logger.info(f"Model loaded successfully in {load_time:.2f} seconds")
+        logger.info(f"Image preprocessing available: {preprocess is not None}")
         
     except Exception as e:
         logger.error(f"Failed to load model: {e}")
@@ -101,9 +110,73 @@ async def lifespan(app: FastAPI):
     yield
     # Shutdown
     logger.info("Shutting down embedding service...")
-    global model, tokenizer
+    global model, tokenizer, preprocess
     model = None
     tokenizer = None
+    preprocess = None
+
+
+def decode_base64_image(base64_str: str) -> Image.Image:
+    """Decode base64 string to PIL Image"""
+    try:
+        # Remove data URI prefix if present
+        if ',' in base64_str:
+            base64_str = base64_str.split(',', 1)[1]
+        
+        # Decode base64
+        img_bytes = base64.b64decode(base64_str)
+        img = Image.open(io.BytesIO(img_bytes))
+        
+        # Convert to RGB if necessary
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        
+        return img
+    except Exception as e:
+        logger.error(f"Failed to decode base64 image: {e}")
+        raise ValueError(f"Invalid base64 image data: {e}")
+
+
+def fuse_embeddings(
+    text_embeddings: Optional[torch.Tensor],
+    image_embeddings: Optional[torch.Tensor],
+    method: str = "average"
+) -> torch.Tensor:
+    """
+    Fuse text and image embeddings
+    
+    Args:
+        text_embeddings: Text embeddings tensor (N, D)
+        image_embeddings: Image embeddings tensor (M, D)
+        method: Fusion method - 'average', 'concat', or 'max'
+    
+    Returns:
+        Fused embeddings tensor
+    """
+    if text_embeddings is None and image_embeddings is None:
+        raise ValueError("At least one of text or image embeddings must be provided")
+    
+    if text_embeddings is None:
+        return image_embeddings
+    
+    if image_embeddings is None:
+        return text_embeddings
+    
+    if method == "average":
+        # Average text and image embeddings (proven effective for CLIP)
+        return (text_embeddings + image_embeddings) / 2
+    
+    elif method == "max":
+        # Element-wise maximum
+        return torch.maximum(text_embeddings, image_embeddings)
+    
+    elif method == "concat":
+        # Concatenate (doubles dimensionality)
+        return torch.cat([text_embeddings, image_embeddings], dim=-1)
+    
+    else:
+        logger.warning(f"Unknown fusion method '{method}', using 'average'")
+        return (text_embeddings + image_embeddings) / 2
 
 
 # Initialize FastAPI app
@@ -159,10 +232,10 @@ async def root():
 @app.post("/embed", response_model=EmbeddingResponse)
 async def embed_texts(request: EmbeddingRequest):
     """
-    Generate embeddings for input texts.
+    Generate embeddings for input texts and/or images.
     
     Args:
-        request: EmbeddingRequest containing texts to embed
+        request: EmbeddingRequest with texts, images, and mode
         
     Returns:
         EmbeddingResponse with embeddings and metadata
@@ -173,31 +246,117 @@ async def embed_texts(request: EmbeddingRequest):
             detail="Model not loaded"
         )
     
+    # Validate request
+    if request.mode == "text" and not request.texts:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="texts is required for mode='text'"
+        )
+    if request.mode == "image" and not request.images:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="images is required for mode='image'"
+        )
+    if request.mode == "multimodal" and not (request.texts and request.images):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Both texts and images are required for mode='multimodal'"
+        )
+    
     start_time = time.time()
     
     try:
-        # Tokenize texts
-        text_tokens = tokenizer(request.texts).to(device)
+        embeddings_list = []
         
-        # Generate embeddings
-        with torch.no_grad():
-            embeddings = model.encode_text(text_tokens, normalize=request.normalize)
+        if request.mode == "text":
+            # Text-only embeddings
+            text_tokens = tokenizer(request.texts).to(device)
             
-            # Convert to numpy and then to list
-            embeddings_np = embeddings.cpu().numpy()
-            embeddings_list = embeddings_np.tolist()
+            with torch.no_grad():
+                embeddings = model.encode_text(text_tokens, normalize=request.normalize)
+                embeddings_list = embeddings.cpu().numpy().tolist()
+        
+        elif request.mode == "image":
+            # Image-only embeddings
+            if preprocess is None:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Image preprocessing not available"
+                )
+            
+            # Decode and preprocess images
+            pil_images = [decode_base64_image(img_b64) for img_b64 in request.images]
+            image_tensors = torch.stack([preprocess(img) for img in pil_images]).to(device)
+            
+            with torch.no_grad():
+                embeddings = model.encode_image(image_tensors, normalize=request.normalize)
+                embeddings_list = embeddings.cpu().numpy().tolist()
+        
+        elif request.mode == "multimodal":
+            # Multimodal fusion
+            if preprocess is None:
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Image preprocessing not available"
+                )
+            
+            # Ensure equal lengths or broadcast
+            num_texts = len(request.texts)
+            num_images = len(request.images)
+            
+            if num_texts != num_images:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Number of texts ({num_texts}) must match number of images ({num_images}) for multimodal mode"
+                )
+            
+            # Encode texts
+            text_tokens = tokenizer(request.texts).to(device)
+            
+            # Decode and preprocess images
+            pil_images = [decode_base64_image(img_b64) for img_b64 in request.images]
+            image_tensors = torch.stack([preprocess(img) for img in pil_images]).to(device)
+            
+            with torch.no_grad():
+                text_embeddings = model.encode_text(text_tokens, normalize=False)
+                image_embeddings = model.encode_image(image_tensors, normalize=False)
+                
+                # Fuse embeddings
+                fused_embeddings = fuse_embeddings(
+                    text_embeddings,
+                    image_embeddings,
+                    method=request.fusion_method
+                )
+                
+                # Normalize if requested
+                if request.normalize:
+                    fused_embeddings = fused_embeddings / fused_embeddings.norm(dim=-1, keepdim=True)
+                
+                embeddings_list = fused_embeddings.cpu().numpy().tolist()
+        
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid mode: {request.mode}. Must be 'text', 'image', or 'multimodal'"
+            )
         
         processing_time = time.time() - start_time
         
-        logger.info(f"Generated {len(embeddings_list)} embeddings in {processing_time:.3f}s")
+        logger.info(f"Generated {len(embeddings_list)} {request.mode} embeddings in {processing_time:.3f}s")
         
         return EmbeddingResponse(
             embeddings=embeddings_list,
-            dimension=EMBEDDING_DIMENSION,
+            dimension=EMBEDDING_DIMENSION if request.mode != "multimodal" or request.fusion_method != "concat" else EMBEDDING_DIMENSION * 2,
             model=MODEL_NAME,
             processing_time=processing_time
         )
         
+    except ValueError as e:
+        logger.error(f"Validation error: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
     except Exception as e:
         logger.error(f"Error generating embeddings: {e}", exc_info=True)
         raise HTTPException(

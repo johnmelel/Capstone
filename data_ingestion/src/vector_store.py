@@ -102,11 +102,17 @@ class MilvusVectorStore:
             FieldSchema(name="file_hash", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="chunk_index", dtype=DataType.INT16),
             FieldSchema(name="total_chunks", dtype=DataType.INT16),
+            # Multimodal fields
+            FieldSchema(name="has_image", dtype=DataType.BOOL, default_value=False),
+            FieldSchema(name="embedding_type", dtype=DataType.VARCHAR, max_length=32, default_value="text"),
+            FieldSchema(name="image_count", dtype=DataType.INT16, default_value=0),
+            FieldSchema(name="image_gcs_paths", dtype=DataType.VARCHAR, max_length=5000, default_value="[]"),
+            FieldSchema(name="image_metadata", dtype=DataType.VARCHAR, max_length=5000, default_value="{}"),
         ]
         
         schema = CollectionSchema(
             fields=fields,
-            description="PDF document embeddings"
+            description="PDF document embeddings with multimodal support"
         )
         
         return schema
@@ -243,7 +249,7 @@ class MilvusVectorStore:
         Args:
             embeddings: List of embedding vectors
             texts: List of text chunks
-            metadatas: List of metadata dictionaries
+            metadatas: List of metadata dictionaries (now includes multimodal fields)
             
         Returns:
             List of inserted IDs
@@ -252,12 +258,18 @@ class MilvusVectorStore:
             raise ValueError("embeddings, texts, and metadatas must have the same length")
         
         try:
-            # Extract metadata fields
+            # Extract metadata fields (existing)
             file_names = [m.get('file_name', '') for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
-            # Convert to numpy int16 for Milvus INT16 fields
             chunk_indices = np.array([m.get('chunk_index', 0) for m in metadatas], dtype=np.int16)
             total_chunks_list = np.array([m.get('total_chunks', 0) for m in metadatas], dtype=np.int16)
+            
+            # Extract multimodal metadata fields (new)
+            has_image = [m.get('has_image', False) for m in metadatas]
+            embedding_type = [m.get('embedding_type', 'text') for m in metadatas]
+            image_count = np.array([m.get('image_count', 0) for m in metadatas], dtype=np.int16)
+            image_gcs_paths = [m.get('image_gcs_paths', '[]') for m in metadatas]  # JSON string
+            image_metadata = [m.get('image_metadata', '{}') for m in metadatas]  # JSON string
 
             # Convert embeddings to a NumPy array for Milvus
             embeddings_np = np.array(embeddings, dtype=np.float32)
@@ -275,11 +287,15 @@ class MilvusVectorStore:
                 file_hashes,
                 chunk_indices,
                 total_chunks_list,
+                has_image,
+                embedding_type,
+                image_count,
+                image_gcs_paths,
+                image_metadata,
             ]
 
             if not is_auto_id:
                 # Generate primary keys if auto_id is false - must be numpy.int64
-                # Mask to ensure values fit in signed int64 range
                 primary_keys = np.array([uuid.uuid4().int & 0x7FFFFFFFFFFFFFFF for _ in range(len(embeddings))], dtype=np.int64)
                 logger.debug(f"Generated {len(primary_keys)} primary keys")
                 data.insert(0, primary_keys)
@@ -295,7 +311,6 @@ class MilvusVectorStore:
             if hasattr(insert_result, 'primary_keys'):
                 return [str(pk) for pk in insert_result.primary_keys]
             else:
-                # Fallback for older versions or if primary_keys not available
                 return []
             
         except MilvusException as e:
@@ -318,7 +333,7 @@ class MilvusVectorStore:
         Args:
             query_embedding: Query embedding vector
             top_k: Number of results to return
-            output_fields: Fields to return in results
+            output_fields: Fields to return in results (includes multimodal fields)
             search_params: Optional dictionary of search parameters
             
         Returns:
@@ -326,7 +341,11 @@ class MilvusVectorStore:
         """
         try:
             if output_fields is None:
-                output_fields = ["text", "file_name", "chunk_index", "total_chunks"]
+                output_fields = [
+                    "text", "file_name", "chunk_index", "total_chunks",
+                    "has_image", "embedding_type", "image_count",
+                    "image_gcs_paths", "image_metadata"
+                ]
             
             if search_params is None:
                 search_params = {

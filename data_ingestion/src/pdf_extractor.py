@@ -2,10 +2,17 @@
 
 import logging
 from pathlib import Path
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, List
 import tempfile
 import time
 import shutil
+import json
+
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
 
 try:
     import torch
@@ -23,7 +30,7 @@ from .utils import clean_text
 from .config import Config
 from .exceptions import PDFExtractionError
 from .constants import MAX_PDF_SIZE_BYTES
-from .types import PDFExtractionResult, PDFMetadata
+from .types import PDFExtractionResult, PDFMetadata, MultimodalPDFExtractionResult, ImageData
 
 
 logger = logging.getLogger(__name__)
@@ -92,6 +99,116 @@ class PDFExtractor:
             logger.error(f"Encoding error reading markdown {md_file_path}: {e}")
             return None
     
+    def _extract_images_from_output(self, output_dir: Path, pdf_name: str) -> List[ImageData]:
+        """
+        Extract images from MinerU output directory
+        
+        Args:
+            output_dir: Base output directory
+            pdf_name: Name of the PDF (without extension)
+            
+        Returns:
+            List of ImageData objects
+        """
+        images = []
+        
+        try:
+            # Images are in: output_dir/pdf_name/auto/images/
+            images_dir = output_dir / pdf_name / 'auto' / 'images'
+            
+            if not images_dir.exists():
+                logger.debug(f"No images directory found at {images_dir}")
+                return images
+            
+            # Find all image files
+            image_files = list(images_dir.glob('*.png')) + list(images_dir.glob('*.jpg'))
+            
+            if not image_files:
+                logger.debug(f"No images found in {images_dir}")
+                return images
+            
+            logger.info(f"Found {len(image_files)} images in {images_dir}")
+            
+            # Load content_list.json for metadata if available
+            content_list_path = output_dir / pdf_name / 'auto' / f"{pdf_name}_content_list.json"
+            image_metadata_map = {}
+            
+            if content_list_path.exists():
+                try:
+                    with open(content_list_path, 'r', encoding='utf-8') as f:
+                        content_data = json.load(f)
+                        # Extract image metadata from content list
+                        # Format varies, but typically has image info with page numbers
+                        if isinstance(content_data, list):
+                            for item in content_data:
+                                if isinstance(item, dict) and item.get('type') == 'image':
+                                    img_path = item.get('img_path', '')
+                                    if img_path:
+                                        image_metadata_map[Path(img_path).name] = item
+                except Exception as e:
+                    logger.warning(f"Failed to parse content_list.json: {e}")
+            
+            # Process each image
+            for img_path in image_files:
+                try:
+                    # Read image bytes
+                    with open(img_path, 'rb') as f:
+                        img_bytes = f.read()
+                    
+                    # Get image dimensions
+                    size = (0, 0)
+                    if PIL_AVAILABLE:
+                        try:
+                            with Image.open(img_path) as img:
+                                size = img.size
+                        except Exception as e:
+                            logger.warning(f"Failed to get image size for {img_path}: {e}")
+                    
+                    # Parse filename for page/index info
+                    # MinerU format: image_1_2.png (page 1, image 2)
+                    filename = img_path.stem
+                    page_num = 0
+                    image_index = 0
+                    
+                    try:
+                        parts = filename.replace('image_', '').split('_')
+                        if len(parts) >= 2:
+                            page_num = int(parts[0])
+                            image_index = int(parts[1])
+                    except (ValueError, IndexError):
+                        logger.debug(f"Could not parse page/index from filename: {filename}")
+                    
+                    # Get metadata from content list if available
+                    bbox = None
+                    metadata = image_metadata_map.get(img_path.name, {})
+                    if metadata.get('bbox'):
+                        bbox = metadata['bbox']
+                    
+                    # Create ImageData object
+                    image_data: ImageData = {
+                        'path': img_path,
+                        'bytes': img_bytes,
+                        'page_num': page_num,
+                        'image_index': image_index,
+                        'bbox': bbox,
+                        'size': size,
+                        'gcs_path': None  # Will be set after GCS upload
+                    }
+                    
+                    images.append(image_data)
+                    logger.debug(f"Extracted image: {img_path.name}, page={page_num}, size={size}")
+                    
+                except Exception as e:
+                    logger.error(f"Failed to process image {img_path}: {e}")
+                    continue
+            
+            logger.info(f"Successfully extracted {len(images)} images")
+            return images
+            
+        except Exception as e:
+            logger.error(f"Error extracting images from {output_dir}: {e}")
+            return []
+    
     def _process_pdf_with_mineru(self, pdf_path: Path, output_dir: Path) -> Optional[str]:
         """
         Process PDF using MinerU official API
@@ -122,7 +239,7 @@ class PDFExtractor:
                 f_dump_middle_json=False,
                 f_dump_model_output=False,
                 f_dump_orig_pdf=False,
-                f_dump_content_list=False,
+                f_dump_content_list=self.extract_images,  # Enable for image metadata
                 f_draw_layout_bbox=False,
                 f_draw_span_bbox=False
             )
@@ -395,6 +512,135 @@ class PDFExtractor:
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
             logger.error(f"Error getting page count from {source_name}: {e}")
             return 0
+    
+    def extract_with_images(self, pdf_source: Union[Path, Any]) -> Optional[MultimodalPDFExtractionResult]:
+        """
+        Extract text, images, and metadata from PDF using MinerU
+        
+        Args:
+            pdf_source: Path to PDF file or GCS blob object
+            
+        Returns:
+            MultimodalPDFExtractionResult with text, images, and metadata, or None if failed
+        """
+        start_time = time.time()
+        temp_pdf_path = None
+        temp_output_dir = None
+        
+        try:
+            # Determine source name
+            if isinstance(pdf_source, Path):
+                source_name = pdf_source.name
+                pdf_path = pdf_source
+                
+                if not pdf_path.exists():
+                    logger.error(f"PDF file not found: {pdf_path}")
+                    return None
+                
+                temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
+                
+            else:
+                # GCS blob
+                source_name = getattr(pdf_source, 'name', 'unknown.pdf')
+                logger.info(f"Extracting text and images from GCS: {source_name}")
+                
+                # Check file size
+                if hasattr(pdf_source, 'size') and pdf_source.size > MAX_PDF_SIZE_BYTES:
+                    logger.warning(f"Skipping large file {source_name} ({pdf_source.size} bytes)")
+                    return None
+                
+                # Download to temp file
+                temp_pdf_file = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+                temp_pdf_path = Path(temp_pdf_file.name)
+                
+                blob_data = pdf_source.download_as_bytes()
+                temp_pdf_file.write(blob_data)
+                temp_pdf_file.flush()
+                temp_pdf_file.close()
+                pdf_path = temp_pdf_path
+                
+                temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
+            
+            # Check timeout
+            if time.time() - start_time > self.timeout:
+                logger.warning(f"Timeout reached before processing {source_name}")
+                return None
+            
+            # Process PDF with MinerU
+            logger.debug(f"Processing {source_name} with MinerU (images enabled)")
+            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            cleaned_text = clean_text(extracted_text) if extracted_text else ""
+            
+            # Extract images if enabled
+            images = []
+            if self.extract_images:
+                pdf_name = pdf_path.stem
+                images = self._extract_images_from_output(temp_output_dir, pdf_name)
+            
+            # Basic metadata
+            metadata: PDFMetadata = {
+                'title': '',
+                'author': '',
+                'subject': '',
+                'creator': 'MinerU',
+                'producer': 'MinerU',
+                'creation_date': '',
+                'modification_date': '',
+                'num_pages': 0,
+                'file_name': source_name
+            }
+            
+            processing_time = time.time() - start_time
+            logger.info(
+                f"Successfully extracted {len(cleaned_text)} chars and {len(images)} images "
+                f"from {source_name} in {processing_time:.2f}s"
+            )
+            
+            result: MultimodalPDFExtractionResult = {
+                'text': cleaned_text,
+                'images': images,
+                'metadata': metadata
+            }
+            
+            return result
+            
+        except (IOError, OSError, FileNotFoundError) as e:
+            processing_time = time.time() - start_time
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"File I/O error extracting from {source_name} after {processing_time:.2f}s: {e}")
+            return None
+        except TimeoutError as e:
+            processing_time = time.time() - start_time
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"Timeout extracting from {source_name} after {processing_time:.2f}s: {e}")
+            return None
+        except Exception as e:
+            processing_time = time.time() - start_time
+            source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
+            logger.error(f"Unexpected error extracting from {source_name} after {processing_time:.2f}s: {e}")
+            return None
+            
+        finally:
+            # Cleanup temporary files
+            if not self.debug_mode:
+                if temp_pdf_path and temp_pdf_path.exists():
+                    try:
+                        temp_pdf_path.unlink()
+                        logger.debug(f"Deleted temp PDF: {temp_pdf_path}")
+                    except (OSError, PermissionError) as e:
+                        logger.warning(f"Failed to delete temp PDF {temp_pdf_path}: {e}")
+                
+                if temp_output_dir and temp_output_dir.exists():
+                    try:
+                        shutil.rmtree(temp_output_dir)
+                        logger.debug(f"Deleted temp output dir: {temp_output_dir}")
+                    except (OSError, PermissionError) as e:
+                        logger.warning(f"Failed to delete temp output dir {temp_output_dir}: {e}")
+            else:
+                if temp_pdf_path:
+                    logger.info(f"Debug mode: Kept temp PDF at {temp_pdf_path}")
+                if temp_output_dir:
+                    logger.info(f"Debug mode: Kept output dir at {temp_output_dir}")
 
 
 def extract_text_from_pdf(pdf_source: Union[Path, Any], extract_images: bool = False) -> Optional[str]:

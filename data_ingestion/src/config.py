@@ -14,6 +14,7 @@ class Config:
     # Google Cloud Storage Configuration
     GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
     GCS_BUCKET_PREFIX = os.getenv("GCS_BUCKET_PREFIX", "")  # Folder path in bucket (optional)
+    GCS_IMAGES_PREFIX = os.getenv("GCS_IMAGES_PREFIX", "images")  # Folder for extracted images
     GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON", "service_account.json")
     GCS_RECURSIVE = os.getenv("GCS_RECURSIVE", "true").lower() in ("true", "1", "yes")
     
@@ -48,6 +49,14 @@ class Config:
     CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", "1792"))
     CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", "64"))
     BATCH_SIZE = int(os.getenv("BATCH_SIZE", "100"))
+    
+    # Multimodal Configuration
+    ENABLE_MULTIMODAL = os.getenv("ENABLE_MULTIMODAL", "false").lower() in ("true", "1", "yes")
+    IMAGE_FORMAT = os.getenv("IMAGE_FORMAT", "PNG").upper()  # PNG or JPEG
+    IMAGE_QUALITY = int(os.getenv("IMAGE_QUALITY", "95"))  # For JPEG compression
+    MAX_IMAGE_SIZE_KB = int(os.getenv("MAX_IMAGE_SIZE_KB", "1000"))  # Max size before compression
+    EMBEDDING_FUSION_METHOD = os.getenv("EMBEDDING_FUSION_METHOD", "average")  # How to fuse text + image embeddings
+    CLEANUP_TEMP_IMAGES = os.getenv("CLEANUP_TEMP_IMAGES", "true").lower() in ("true", "1", "yes")
     
     # MinerU PDF Extraction Configuration
     MINERU_BACKEND = os.getenv("MINERU_BACKEND", "pipeline")  # pipeline, vlm-transformers, vlm-vllm-engine
