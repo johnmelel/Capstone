@@ -149,7 +149,7 @@ class PDFExtractor:
                     logger.warning(f"Failed to parse content_list.json: {e}")
             
             # Process each image
-            for img_path in image_files:
+            for img_idx, img_path in enumerate(image_files):
                 try:
                     # Read image bytes
                     with open(img_path, 'rb') as f:
@@ -165,18 +165,20 @@ class PDFExtractor:
                             logger.warning(f"Failed to get image size for {img_path}: {e}")
                     
                     # Parse filename for page/index info
-                    # MinerU format: image_1_2.png (page 1, image 2)
+                    # MinerU may use different formats: image_1_2.png or hash-based names
                     filename = img_path.stem
                     page_num = 0
-                    image_index = 0
+                    image_index = img_idx  # Use enumeration index as fallback
                     
+                    # Try to parse page/index from filename if in expected format
                     try:
-                        parts = filename.replace('image_', '').split('_')
-                        if len(parts) >= 2:
-                            page_num = int(parts[0])
-                            image_index = int(parts[1])
+                        if filename.startswith('image_'):
+                            parts = filename.replace('image_', '').split('_')
+                            if len(parts) >= 2:
+                                page_num = int(parts[0])
+                                image_index = int(parts[1])
                     except (ValueError, IndexError):
-                        logger.debug(f"Could not parse page/index from filename: {filename}")
+                        logger.debug(f"Using enumeration index for {filename}")
                     
                     # Get metadata from content list if available
                     bbox = None

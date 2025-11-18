@@ -106,8 +106,8 @@ class MilvusVectorStore:
             FieldSchema(name="has_image", dtype=DataType.BOOL, default_value=False),
             FieldSchema(name="embedding_type", dtype=DataType.VARCHAR, max_length=32, default_value="text"),
             FieldSchema(name="image_count", dtype=DataType.INT16),  # No default value for INT16
-            FieldSchema(name="image_gcs_paths", dtype=DataType.VARCHAR, max_length=5000, default_value="[]"),
-            FieldSchema(name="image_metadata", dtype=DataType.VARCHAR, max_length=5000, default_value="{}"),
+            FieldSchema(name="image_gcs_paths", dtype=DataType.VARCHAR, max_length=10000, default_value="[]"),
+            FieldSchema(name="image_metadata", dtype=DataType.VARCHAR, max_length=10000, default_value="{}"),
         ]
         
         schema = CollectionSchema(
