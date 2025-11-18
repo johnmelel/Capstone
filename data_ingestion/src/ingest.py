@@ -182,16 +182,16 @@ class IngestionPipeline:
         if Config.ENABLE_MULTIMODAL:
             # Multimodal extraction: text + images
             result = self.pdf_extractor.extract_with_images(pdf_blob)
-            if not result or not result.text:
+            if not result or not result.get('text'):
                 logger.warning(f"No text extracted from {pdf_blob.name}, skipping")
                 return []
             
-            logger.info(f"📸 Extracted {len(result.images)} images from {pdf_blob.name}")
+            logger.info(f"📸 Extracted {len(result['images'])} images from {pdf_blob.name}")
             
             # Chunk with image association
             chunks_with_metadata = self.chunker.chunk_with_images(
-                text=result.text,
-                images=result.images,
+                text=result['text'],
+                images=result['images'],
                 file_path=mock_file_path
             )
         else:
