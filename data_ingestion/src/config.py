@@ -67,6 +67,12 @@ class Config:
     MINERU_ENABLE_TABLES = os.getenv("MINERU_ENABLE_TABLES", "false").lower() in ("true", "1", "yes")
     MINERU_ENABLE_FORMULAS = os.getenv("MINERU_ENABLE_FORMULAS", "false").lower() in ("true", "1", "yes")
     
+    # Memory Management Configuration
+    MAX_IMAGES_PER_CHUNK = int(os.getenv("MAX_IMAGES_PER_CHUNK", "10"))  # Limit images per chunk
+    MAX_CHUNK_BATCH_SIZE = int(os.getenv("MAX_CHUNK_BATCH_SIZE", "20"))  # Max chunks to process at once
+    IMAGE_UPLOAD_BATCH_SIZE = int(os.getenv("IMAGE_UPLOAD_BATCH_SIZE", "5"))  # Upload images in small batches
+    MAX_PDF_SIZE_MB = int(os.getenv("MAX_PDF_SIZE_MB", "500"))  # Skip PDFs larger than this (MB)
+    
     # Local Storage (removed - no longer needed for stream processing)
     # DOWNLOAD_DIR = Path(os.getenv("DOWNLOAD_DIR", "./downloads"))
 

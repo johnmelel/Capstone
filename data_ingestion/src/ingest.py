@@ -2,6 +2,7 @@
 
 import logging
 import json
+import gc
 from typing import List, Dict, Any
 from tqdm import tqdm
 
@@ -215,9 +216,15 @@ class IngestionPipeline:
         logger.info(f"Created {len(chunks_with_metadata)} chunks from {pdf_blob.name}")
         
         # Process chunks in smaller batches to manage memory for HUGE files
-        # For very large files (>1000 chunks), use smaller batch size
+        # Adaptive batch sizing based on file size and multimodal content
         num_chunks = len(chunks_with_metadata)
-        if num_chunks > 1000:
+        has_images = any(c.get('images') for c in chunks_with_metadata)
+        
+        if has_images:
+            # Smaller batches for multimodal content (images use more memory)
+            chunk_batch_size = min(Config.MAX_CHUNK_BATCH_SIZE, 10)
+            logger.info(f"Multimodal file with {num_chunks} chunks, using batch size of {chunk_batch_size}")
+        elif num_chunks > 1000:
             chunk_batch_size = 20  # Very conservative for huge files
             logger.info(f"Large file detected ({num_chunks} chunks), using batch size of {chunk_batch_size}")
         else:
@@ -238,18 +245,35 @@ class IngestionPipeline:
                     # Handle multimodal chunks with images
                     if Config.ENABLE_MULTIMODAL and chunk_data.get('images'):
                         images = chunk_data['images']
+                        
+                        # Limit images per chunk to prevent memory issues
+                        if len(images) > Config.MAX_IMAGES_PER_CHUNK:
+                            logger.warning(
+                                f"Chunk has {len(images)} images, limiting to {Config.MAX_IMAGES_PER_CHUNK} "
+                                f"to prevent memory issues"
+                            )
+                            images = images[:Config.MAX_IMAGES_PER_CHUNK]
+                        
                         logger.info(f"🎨 Chunk has {len(images)} associated images")
                         
-                        # Upload images to GCS first
+                        # Upload images to GCS in smaller batches to avoid rate limiting
                         # Use file_hash from metadata as identifier
                         file_hash = chunk_data['metadata']['file_hash']
                         chunk_index = chunk_data['metadata']['chunk_index']
                         
-                        uploaded_images = self.image_uploader.upload_images_batch(
-                            images=images,
-                            file_hash=file_hash,
-                            chunk_index=chunk_index
-                        )
+                        uploaded_images = []
+                        for i in range(0, len(images), Config.IMAGE_UPLOAD_BATCH_SIZE):
+                            batch = images[i:i + Config.IMAGE_UPLOAD_BATCH_SIZE]
+                            batch_uploaded = self.image_uploader.upload_images_batch(
+                                images=batch,
+                                file_hash=file_hash,
+                                chunk_index=chunk_index
+                            )
+                            uploaded_images.extend(batch_uploaded)
+                            # Small delay between batches to avoid rate limiting
+                            if i + Config.IMAGE_UPLOAD_BATCH_SIZE < len(images):
+                                import time
+                                time.sleep(0.5)
                         
                         # Store GCS paths and metadata in chunk
                         chunk_data['image_gcs_paths'] = [img['gcs_path'] for img in uploaded_images]
@@ -272,6 +296,9 @@ class IngestionPipeline:
                         
                         # Clean up temporary image data (not needed in Milvus)
                         del chunk_data['images']
+                        
+                        # Clean up uploaded image bytes to free memory
+                        del images
                     else:
                         # Text-only chunk
                         chunk_data['has_image'] = False
@@ -290,6 +317,9 @@ class IngestionPipeline:
             except Exception as e:
                 logger.error(f"Failed to process batch {batch_num}: {e}")
                 raise  # Re-raise to handle at file level
+            finally:
+                # Force garbage collection after each batch to free memory
+                gc.collect()
         
         return all_chunks_with_embeddings
     
@@ -397,6 +427,16 @@ class IngestionPipeline:
                                     logger.info(f"🗑️  Deleted {deleted} existing chunks for {pdf_blob.name}")
                         except Exception as e:
                             logger.warning(f"Error deleting duplicates for {pdf_blob.name}: {e}. Proceeding with processing.")
+                    
+                    # Check file size and warn for very large files
+                    file_size_mb = pdf_blob.size / (1024 * 1024)
+                    if file_size_mb > 100:
+                        logger.warning(f"⚠️  Large file detected: {file_size_mb:.1f} MB - processing with memory safeguards")
+                    if file_size_mb > Config.MAX_PDF_SIZE_MB:
+                        logger.error(f"❌ File too large: {file_size_mb:.1f} MB - skipping to prevent memory issues (limit: {Config.MAX_PDF_SIZE_MB} MB)")
+                        failed_uploads += 1
+                        failed_files.append(pdf_blob.name)
+                        continue
                     
                     # Log checkpoint before processing
                     logger.info(f"🔄 [{successful_uploads + 1}/{len(pdf_blobs)}] Processing: {pdf_blob.name} ({pdf_blob.size / 1024 / 1024:.1f} MB)")

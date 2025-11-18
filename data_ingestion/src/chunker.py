@@ -202,9 +202,10 @@ class MultimodalChunker(TextChunker):
         """
         Associate images with text chunks based on page proximity
         
-        Simple strategy: Distribute images across chunks based on page numbers
-        - If no page info, put all images in first chunk
-        - Otherwise, distribute images to chunks proportionally
+        Strategy: Distribute images evenly across chunks to avoid memory issues
+        - Prefer page-based distribution if page info is available
+        - Otherwise, distribute images evenly across all chunks
+        - Never put all images in a single chunk
         
         Args:
             chunks: List of text chunks
@@ -223,9 +224,20 @@ class MultimodalChunker(TextChunker):
         has_page_info = any(img.get('page_num', 0) > 0 for img in images)
         
         if not has_page_info or num_chunks == 1:
-            # No page info or single chunk: put all images in first chunk
-            chunk_images[0] = images
-            logger.debug(f"Assigned all {len(images)} images to first chunk (no page info)")
+            # No page info: distribute images evenly across chunks
+            # This prevents putting all images in one chunk
+            if num_chunks == 1:
+                chunk_images[0] = images
+                logger.debug(f"Single chunk: assigned all {len(images)} images")
+            else:
+                # Round-robin distribution
+                for idx, img in enumerate(images):
+                    chunk_idx = idx % num_chunks
+                    chunk_images[chunk_idx].append(img)
+                logger.info(
+                    f"Distributed {len(images)} images evenly across {num_chunks} chunks "
+                    f"(no page info available)"
+                )
         else:
             # Distribute images based on page numbers
             # Simple approach: divide page range into chunk ranges

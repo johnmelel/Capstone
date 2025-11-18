@@ -1,6 +1,7 @@
 """PDF text extraction module using MinerU"""
 
 import logging
+import gc
 from pathlib import Path
 from typing import Optional, Dict, Any, Union, List
 import tempfile
@@ -205,6 +206,11 @@ class PDFExtractor:
                     continue
             
             logger.info(f"Successfully extracted {len(images)} images")
+            
+            # Force garbage collection after extracting many images
+            if len(images) > 20:
+                gc.collect()
+            
             return images
             
         except Exception as e:
