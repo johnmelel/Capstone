@@ -239,7 +239,7 @@ class PDFExtractor:
                 f_dump_middle_json=False,
                 f_dump_model_output=False,
                 f_dump_orig_pdf=False,
-                f_dump_content_list=self.extract_images,  # Enable for image metadata
+                f_dump_content_list=True,  # Always enable for image extraction
                 f_draw_layout_bbox=False,
                 f_draw_span_bbox=False
             )
@@ -571,11 +571,10 @@ class PDFExtractor:
             extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
             cleaned_text = clean_text(extracted_text) if extracted_text else ""
             
-            # Extract images if enabled
+            # Extract images - always extract when extract_with_images is called
             images = []
-            if self.extract_images:
-                pdf_name = pdf_path.stem
-                images = self._extract_images_from_output(temp_output_dir, pdf_name)
+            pdf_name = pdf_path.stem
+            images = self._extract_images_from_output(temp_output_dir, pdf_name)
             
             # Basic metadata
             metadata: PDFMetadata = {

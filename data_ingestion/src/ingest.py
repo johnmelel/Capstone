@@ -59,7 +59,7 @@ class IngestionPipeline:
         logger.info("Initializing pipeline components...")
         
         # Initialize PDF extractor with multimodal support if enabled
-        self.pdf_extractor = PDFExtractor()
+        self.pdf_extractor = PDFExtractor(extract_images=Config.ENABLE_MULTIMODAL)
         
         # Initialize appropriate chunker based on multimodal mode
         if Config.ENABLE_MULTIMODAL:
@@ -257,7 +257,7 @@ class IngestionPipeline:
                         primary_image = images[0]
                         embedding = self.embedder.embed_multimodal(
                             text=chunk_data['text'],
-                            image_bytes=primary_image.image_bytes
+                            image_bytes=primary_image['bytes']  # Use 'bytes' key from ImageData
                         )
                         
                         # Clean up temporary image data (not needed in Milvus)

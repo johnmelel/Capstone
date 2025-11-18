@@ -186,9 +186,9 @@ class GCSImageUploader:
         self,
         images: List[ImageData],
         file_hash: str,
-        chunk_index: int,
+        chunk_index: int = 0,
         optimize: bool = True
-    ) -> List[str]:
+    ) -> List[dict]:
         """
         Upload multiple images for a chunk
         
@@ -199,23 +199,29 @@ class GCSImageUploader:
             optimize: Whether to optimize/compress images
             
         Returns:
-            List of GCS URIs
+            List of dicts with image metadata including gcs_path
         """
-        gcs_paths = []
+        uploaded_images = []
         
         for image_data in images:
             try:
                 gcs_uri = self.upload_image(image_data, file_hash, chunk_index, optimize)
-                gcs_paths.append(gcs_uri)
                 # Update image_data with GCS path
                 image_data['gcs_path'] = gcs_uri
+                uploaded_images.append({
+                    'gcs_path': gcs_uri,
+                    'page_num': image_data.get('page_num', 0),
+                    'image_index': image_data.get('image_index', 0),
+                    'size': image_data.get('size', (0, 0)),
+                    'bbox': image_data.get('bbox')
+                })
             except Exception as e:
                 logger.error(f"Failed to upload image {image_data.get('path', 'unknown')}: {e}")
                 # Continue with other images
                 continue
         
-        logger.info(f"Uploaded {len(gcs_paths)}/{len(images)} images for chunk {chunk_index}")
-        return gcs_paths
+        logger.info(f"Uploaded {len(uploaded_images)}/{len(images)} images for chunk {chunk_index}")
+        return uploaded_images
     
     def delete_images_by_file_hash(self, file_hash: str) -> int:
         """
