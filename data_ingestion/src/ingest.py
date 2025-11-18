@@ -71,7 +71,7 @@ class IngestionPipeline:
             # Initialize image uploader for GCS
             self.image_uploader = GCSImageUploader(
                 bucket_name=Config.GCS_BUCKET_NAME,
-                service_account_json=Config.GOOGLE_SERVICE_ACCOUNT_JSON,
+                service_account_file=Config.GOOGLE_SERVICE_ACCOUNT_JSON,
                 images_prefix=Config.GCS_IMAGES_PREFIX
             )
         else:
