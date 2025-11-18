@@ -1,6 +1,7 @@
 """Main ingestion orchestrator"""
 
 import logging
+import json
 from typing import List, Dict, Any
 from tqdm import tqdm
 
@@ -240,9 +241,14 @@ class IngestionPipeline:
                         logger.info(f"🎨 Chunk has {len(images)} associated images")
                         
                         # Upload images to GCS first
+                        # Use file_hash from metadata as identifier
+                        file_hash = chunk_data['metadata']['file_hash']
+                        chunk_index = chunk_data['metadata']['chunk_index']
+                        
                         uploaded_images = self.image_uploader.upload_images_batch(
                             images=images,
-                            file_hash=chunk_data['file_name']  # Use filename as identifier
+                            file_hash=file_hash,
+                            chunk_index=chunk_index
                         )
                         
                         # Store GCS paths and metadata in chunk
@@ -251,6 +257,10 @@ class IngestionPipeline:
                         chunk_data['image_count'] = len(uploaded_images)
                         chunk_data['has_image'] = True
                         chunk_data['embedding_type'] = 'multimodal'
+                        
+                        # Update metadata fields
+                        chunk_data['metadata']['image_gcs_paths'] = json.dumps([img['gcs_path'] for img in uploaded_images])
+                        chunk_data['metadata']['image_metadata'] = json.dumps(uploaded_images)
                         
                         # Generate multimodal embedding (text + first image)
                         # For multiple images, we use the first one as representative
