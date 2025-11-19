@@ -1,0 +1,27 @@
+# Google Cloud Storage
+google-cloud-storage==2.14.0
+google-auth==2.25.2
+
+# PDF Processing - MinerU for advanced PDF parsing (v2.6.4+)
+mineru[core]==2.6.4
+torch==2.9.1
+torchvision==0.24.1
+
+# Embeddings - Support for both Gemini and HuggingFace
+# Gemini API (Legacy support)
+google-genai>=1.0.0
+
+# HuggingFace Embedder Client (HTTP requests to embedding service)
+requests>=2.31.0
+
+# Vector Store
+pymilvus==2.6.3  # Updated from 2.3.4 to fix pkg_resources deprecation warning
+marshmallow==3.26.1
+
+# Utilities
+python-dotenv==1.2.1
+
+# Testing
+pytest==7.4.3
+pytest-mock==3.12.0
+pytest-cov==4.1.0

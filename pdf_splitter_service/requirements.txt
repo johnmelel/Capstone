@@ -1,0 +1,9 @@
+# Google Cloud Storage
+google-cloud-storage==2.14.0
+google-auth==2.25.2
+
+# PDF Processing - PyMuPDF for reading and writing PDFs
+PyMuPDF>=1.23.0
+
+# Utilities
+python-dotenv==1.2.1
