@@ -1,0 +1,64 @@
+.message-input-container {
+    padding: 1.5rem 2rem;
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+}
+
+.input-wrapper {
+    display: flex;
+    gap: 1rem;
+    max-width: 100%;
+    position: relative;
+}
+
+.message-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    padding-right: 3.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 9999px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.message-input:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.message-input:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+
+.send-button {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #2563eb;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.send-button:hover:not(:disabled) {
+    background-color: #eff6ff;
+}
+
+.send-button:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.send-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
