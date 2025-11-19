@@ -35,7 +35,7 @@ app.add_middleware(
 # Initialize Orchestrator
 # We need to handle the service account path. 
 # We'll look for it in the root or use an environment variable.
-SERVICE_ACCOUNT_FILE = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "adsp-34002-ip09-team-2-e0cca2d396a9.json")
+SERVICE_ACCOUNT_FILE = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "adsp-34002-ip09-team-2-a02bd14c0e77.json")
 SERVICE_ACCOUNT_PATH = os.path.join(project_root, SERVICE_ACCOUNT_FILE)
 
 # Global orchestrator instance
