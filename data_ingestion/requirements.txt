@@ -8,7 +8,6 @@ torch==2.9.1
 torchvision==0.24.1
 
 # Embeddings - Support for both Gemini and HuggingFace
-# Gemini API (Legacy support)
 google-genai>=1.0.0
 
 # HuggingFace Embedder Client (HTTP requests to embedding service)

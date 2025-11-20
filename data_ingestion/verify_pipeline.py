@@ -78,6 +78,10 @@ def verify_pipeline(input_path: str):
     extractor = PDFExtractor(extract_images=True)
     result = extractor.extract_with_images(mock_blob)
     
+    if result is None:
+        print("ERROR: Extraction failed. See logs above for details.")
+        return
+
     text = result['text']
     images = result['images']
     

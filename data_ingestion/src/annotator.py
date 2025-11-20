@@ -1,5 +1,6 @@
 import logging
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from typing import Optional
 from .config import Config
 
@@ -13,12 +14,12 @@ class GeminiAnnotator:
     def __init__(self):
         if not Config.GEMINI_API_KEY:
             logger.warning("GEMINI_API_KEY not found. GeminiAnnotator will be disabled.")
-            self.model = None
+            self.client = None
             return
             
-        genai.configure(api_key=Config.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel(Config.GEMINI_ANNOTATION_MODEL)
-        logger.info(f"GeminiAnnotator initialized with model: {Config.GEMINI_ANNOTATION_MODEL}")
+        self.client = genai.Client(api_key=Config.GEMINI_API_KEY)
+        self.model_name = Config.GEMINI_ANNOTATION_MODEL
+        logger.info(f"GeminiAnnotator initialized with model: {self.model_name}")
         
     def annotate_image(self, image_bytes: bytes, prompt: str) -> Optional[str]:
         """
@@ -31,17 +32,18 @@ class GeminiAnnotator:
         Returns:
             Generated text or None if failed
         """
-        if not self.model:
+        if not self.client:
             return None
             
         try:
-            # Create image part
-            image_part = {
-                "mime_type": "image/jpeg", # Assuming JPEG/PNG, Gemini handles common formats
-                "data": image_bytes
-            }
+            # Create image part using types
+            # We assume JPEG for simplicity, but Gemini handles most formats
+            image_part = types.Part.from_bytes(data=image_bytes, mime_type="image/jpeg")
             
-            response = self.model.generate_content([prompt, image_part])
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=[prompt, image_part]
+            )
             
             if response.text:
                 return response.text.strip()
