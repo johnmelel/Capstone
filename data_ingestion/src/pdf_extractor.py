@@ -147,20 +147,58 @@ class PDFExtractor:
                                 if isinstance(item, dict) and item.get('type') == 'image':
                                     img_path = item.get('img_path', '')
                                     if img_path:
+                                        # Check for direct image_caption field from Mineru
+                                        caption = None
+                                        if item.get('image_caption'):
+                                            # image_caption is usually a list of strings
+                                            captions = item.get('image_caption')
+                                            if isinstance(captions, list):
+                                                caption = " ".join(captions)
+                                            elif isinstance(captions, str):
+                                                caption = captions
+                                        
                                         image_metadata_map[Path(img_path).name] = item
-                except Exception as e:
-                    logger.warning(f"Failed to parse content_list.json: {e}")
+                                        if caption:
+                                            # Store found caption directly
+                                            # We use a separate map or just rely on image_metadata_map later?
+                                            # Let's put it in a pre-filled map for captions
+                                            # But we need to be careful about the fallback logic below.
+                                            pass
+
+            # Tag images with captions
+            # Strategy: 
+            # 1. Use 'image_caption' from Mineru content_list if available
+            # 2. Fallback to CaptionTagger (proximity search) if not
             
-            # Tag images with captions using CaptionTagger
             tagger = CaptionTagger()
             tagged_images_map = {}
+            
+            # First pass: Try to get captions from content_list directly
             if content_list:
+                for item in content_list:
+                    if item.get('type') == 'image':
+                        img_path = item.get('img_path', '')
+                        if img_path:
+                            captions = item.get('image_caption')
+                            if captions:
+                                if isinstance(captions, list):
+                                    tagged_images_map[Path(img_path).name] = " ".join(captions)
+                                elif isinstance(captions, str):
+                                    tagged_images_map[Path(img_path).name] = captions
+            
+            # Second pass: Run CaptionTagger for any images that still don't have captions
+            # We only run tagger if we have content_list
+            if content_list:
+                # We can run tagger on the whole list, then only use results if we don't have one yet
                 tagged_content = tagger.tag_images(content_list)
                 for item in tagged_content:
                     if item.get('type') == 'image':
                         img_path = item.get('img_path', '')
                         if img_path:
-                            tagged_images_map[Path(img_path).name] = item.get('caption')
+                            filename = Path(img_path).name
+                            # Only use tagger result if we didn't find a direct caption
+                            if filename not in tagged_images_map:
+                                tagged_images_map[filename] = item.get('caption')
 
             # Process each image
             
