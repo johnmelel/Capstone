@@ -67,6 +67,9 @@ def verify_pipeline(input_path: str):
         def download_to_filename(self, filename):
             import shutil
             shutil.copy(self._path, filename)
+        def download_as_bytes(self):
+            with open(self._path, 'rb') as f:
+                return f.read()
             
     mock_blob = MockBlob(pdf_path)
     
