@@ -4,11 +4,12 @@ from unittest.mock import MagicMock, patch
 import sys
 from pathlib import Path
 
-# Add src to path (relative to data_ingestion folder)
-sys.path.append(str(Path(__file__).parent / "src"))
+# Add data_ingestion to path to allow src imports
+if str(Path(__file__).parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).parent))
 
-from chunker import ExactTokenChunker, ImageCaptionChunker, SimpleTokenChunker
-from pdf_extractor import PDFExtractor
+from src.chunker import ExactTokenChunker, ImageCaptionChunker, SimpleTokenChunker
+from src.pdf_extractor import PDFExtractor
 
 class TestBifurcatedIngestion(unittest.TestCase):
     

@@ -9,12 +9,13 @@ from google.cloud import storage
 from google.oauth2 import service_account
 import tempfile
 
-# Add src to path (relative to data_ingestion folder)
-sys.path.insert(0, str(Path(__file__).parent / 'src'))
+# Add data_ingestion to path to allow src imports if running from different location
+if str(Path(__file__).parent) not in sys.path:
+    sys.path.insert(0, str(Path(__file__).parent))
 
-from config import Config
-from pdf_extractor import PDFExtractor
-from chunker import ExactTokenChunker, ImageCaptionChunker, chunk_with_metadata
+from src.config import Config
+from src.pdf_extractor import PDFExtractor
+from src.chunker import ExactTokenChunker, ImageCaptionChunker, chunk_with_metadata
 
 # Load environment
 load_dotenv()
