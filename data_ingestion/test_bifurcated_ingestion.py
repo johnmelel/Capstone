@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 import sys
 from pathlib import Path
 
-# Add src to path
-sys.path.append(str(Path(__file__).parent / "data_ingestion" / "src"))
+# Add src to path (relative to data_ingestion folder)
+sys.path.append(str(Path(__file__).parent / "src"))
 
 from chunker import ExactTokenChunker, ImageCaptionChunker, SimpleTokenChunker
 from pdf_extractor import PDFExtractor
