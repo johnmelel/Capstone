@@ -108,11 +108,20 @@ def verify_pipeline(input_path: str):
     # Image Chunking
     image_chunker = ImageCaptionChunker(text_chunker)
     image_chunks = []
+    image_caption_pairs = []
     
     print("\n[Checking Image Chunking & Caption Splitting]")
     for i, img in enumerate(images):
         caption = img.get('caption')
         chunks = image_chunker.chunk_image(img)
+        
+        # Collect for export
+        pair = {
+            "image_index": i,
+            "image_filename": Path(img['path']).name,
+            "original_caption": caption,
+            "chunks": []
+        }
         
         if i < 3 or len(chunks) > 1: # Show first few or any split ones
             print(f"Image {i}: Caption Length={len(caption) if caption else 0}")
@@ -125,10 +134,41 @@ def verify_pipeline(input_path: str):
                  
         if chunks:
              # Flatten for count
-             for c in chunks:
-                 image_chunks.append(c)
+             for j, (img_data, cap_chunk) in enumerate(chunks):
+                 image_chunks.append((img_data, cap_chunk))
+                 pair["chunks"].append({
+                     "chunk_index": j,
+                     "caption_chunk": cap_chunk
+                 })
+        
+        image_caption_pairs.append(pair)
 
     print(f"\nTotal Image Chunks generated: {len(image_chunks)}")
+    
+    # 4. Save Debug Artifacts
+    debug_dir = Path("debug_output")
+    debug_dir.mkdir(exist_ok=True)
+    
+    # Save processed text (Markdown with captions)
+    md_path = debug_dir / "processed_text.md"
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(text)
+    print(f"\nSaved processed markdown to: {md_path.absolute()}")
+    
+    # Save images
+    images_dir = debug_dir / "images"
+    images_dir.mkdir(exist_ok=True)
+    for img in images:
+        img_name = Path(img['path']).name
+        with open(images_dir / img_name, "wb") as f:
+            f.write(img['bytes'])
+    print(f"Saved {len(images)} extracted images to: {images_dir.absolute()}")
+
+    # Save JSON pairs
+    output_json_path = debug_dir / "verification_pairs.json"
+    with open(output_json_path, "w", encoding="utf-8") as f:
+        json.dump(image_caption_pairs, f, indent=2)
+    print(f"Saved detailed image-caption pairs to: {output_json_path.absolute()}")
     
     # Cleanup
     if input_path.startswith("gs://"):
