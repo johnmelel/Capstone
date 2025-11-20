@@ -53,6 +53,9 @@ def verify_pipeline(input_path: str):
     print(f"{'='*80}\n")
     
     # 1. Setup
+    # Enable debug mode to preserve raw artifacts
+    Config.MINERU_DEBUG_MODE = True
+    
     pdf_path = download_from_gcs(input_path)
     if not pdf_path.exists():
         print(f"Error: File not found: {pdf_path}")

@@ -657,26 +657,42 @@ class PDFExtractor:
                         image_type_map[img_filename] = block.get('type')
 
                 # Annotate Images/Tables
-                for img in images:
-                    filename = Path(img['path']).name
-                    current_caption = img.get('caption')
-                    img_type = image_type_map.get(filename, 'image') # Default to image
-                    
-                    # Case 1: It's a Table -> Always annotate with Table Prompt
-                    if img_type == 'table':
-                        logger.info(f"Annotating Table: {filename}")
-                        annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
-                        if annotation:
-                            img['caption'] = annotation # Override/Set caption
-                            logger.info(f"Generated table annotation for {filename}")
-                    
-                    # Case 2: It's an Image AND has NO caption -> Annotate with Image Prompt
-                    elif not current_caption:
-                        logger.info(f"Annotating Captionless Image: {filename}")
-                        annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
-                        if annotation:
-                            img['caption'] = annotation
-                            logger.info(f"Generated image annotation for {filename}")
+                from concurrent.futures import ThreadPoolExecutor, as_completed
+                
+                def process_image_annotation(img):
+                    try:
+                        filename = Path(img['path']).name
+                        current_caption = img.get('caption')
+                        img_type = image_type_map.get(filename, 'image') # Default to image
+                        
+                        # Case 1: It's a Table -> Always annotate with Table Prompt
+                        if img_type == 'table':
+                            logger.info(f"Annotating Table: {filename}")
+                            annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
+                            if annotation:
+                                img['caption'] = annotation # Override/Set caption
+                                logger.info(f"Generated table annotation for {filename}")
+                        
+                        # Case 2: It's an Image AND has NO caption -> Annotate with Image Prompt
+                        elif not current_caption:
+                            logger.info(f"Annotating Captionless Image: {filename}")
+                            annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
+                            if annotation:
+                                img['caption'] = annotation
+                                logger.info(f"Generated image annotation for {filename}")
+                    except Exception as e:
+                        logger.error(f"Error processing image {filename}: {e}")
+
+                # Use ThreadPoolExecutor for parallel processing
+                # Limit max_workers to avoid hitting rate limits too hard (though Gemini has high limits)
+                max_workers = 10 
+                with ThreadPoolExecutor(max_workers=max_workers) as executor:
+                    futures = [executor.submit(process_image_annotation, img) for img in images]
+                    for future in as_completed(futures):
+                        try:
+                            future.result()
+                        except Exception as e:
+                            logger.error(f"Thread execution failed: {e}")
 
             except ImportError as e:
                 logger.warning(f"GeminiAnnotator dependency missing: {e}. Skipping image annotation.")

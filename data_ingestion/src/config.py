@@ -37,7 +37,7 @@ class Config:
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
     
     # Gemini Annotation Configuration
-    GEMINI_ANNOTATION_MODEL = os.getenv("GEMINI_ANNOTATION_MODEL", "gemini-3-pro-preview")
+    GEMINI_ANNOTATION_MODEL = os.getenv("GEMINI_ANNOTATION_MODEL", "gemini-2.5-flash")
     
     GEMINI_TABLE_PROMPT = """
     You are an expert at OCR and analyzing scientific tables. 
