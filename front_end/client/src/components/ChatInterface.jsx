@@ -135,37 +135,69 @@ const ChatInterface = () => {
         }
     };
 
-    const handleNewChat = () => {
-        console.log('handleNewChat called, current messages:', messages.length);
+    // Helper function to save the current conversation
+    const saveCurrentConversation = () => {
+        console.log('saveCurrentConversation called, messages:', messages.length);
+
+        // Only save if there are user messages (more than just the initial bot greeting)
         if (messages.length > 1) {
             const firstUserMessage = messages.find(m => m.sender === 'user');
             const title = firstUserMessage ?
                 (firstUserMessage.text.length > 50 ? firstUserMessage.text.substring(0, 50) + '...' : firstUserMessage.text) :
                 'New conversation';
 
-            const newConversation = {
-                id: Date.now(),
-                title,
-                messages: [...messages],
-                timestamp: new Date().toISOString()
-            };
+            // Check if this conversation is already saved
+            if (currentConversationId) {
+                // Update existing conversation
+                console.log('Updating existing conversation:', currentConversationId);
+                setConversations(prev => prev.map(conv =>
+                    conv.id === currentConversationId
+                        ? { ...conv, messages: [...messages], timestamp: new Date().toISOString() }
+                        : conv
+                ));
+            } else {
+                // Save as new conversation
+                const newConversation = {
+                    id: Date.now(),
+                    title,
+                    messages: [...messages],
+                    timestamp: new Date().toISOString()
+                };
 
-            console.log('Saving conversation:', newConversation.title);
-            setConversations(prev => {
-                const updated = [newConversation, ...prev];
-                console.log('Updated conversations:', updated.length);
-                return updated;
-            });
+                console.log('Saving new conversation:', newConversation.title);
+                setConversations(prev => {
+                    const updated = [newConversation, ...prev];
+                    console.log('Updated conversations:', updated.length);
+                    return updated;
+                });
+
+                // Set the current conversation ID so future saves update instead of creating duplicates
+                setCurrentConversationId(newConversation.id);
+            }
         } else {
             console.log('Not saving - only initial message present');
         }
+    };
 
+    const handleNewChat = () => {
+        console.log('handleNewChat called');
+
+        // Save current conversation before starting a new one
+        saveCurrentConversation();
+
+        // Reset to new chat
         setMessages([{ id: Date.now(), text: "Hello! I'm Iris AI, your Medical Assistant. How can I help you today?", sender: 'bot' }]);
         setSelectedPatient(null);
         setCurrentConversationId(null);
     };
 
     const handleLoadConversation = (conversationId) => {
+        console.log('handleLoadConversation called:', conversationId);
+
+        // Save current conversation before switching
+        saveCurrentConversation();
+
+        // Load the selected conversation
         const conversation = conversations.find(c => c.id === conversationId);
         if (conversation) {
             setMessages(conversation.messages);
