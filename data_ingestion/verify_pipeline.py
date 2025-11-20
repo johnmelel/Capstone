@@ -146,14 +146,20 @@ def verify_pipeline(input_path: str):
     print(f"\nTotal Image Chunks generated: {len(image_chunks)}")
     
     # 4. Save Debug Artifacts
-    debug_dir = Path("debug_output")
-    debug_dir.mkdir(exist_ok=True)
+    import datetime
+    import shutil
+    
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    debug_dir = Path("debug_output") / timestamp
+    debug_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n[Debug Output]")
+    print(f"Saving artifacts to: {debug_dir.absolute()}")
     
     # Save processed text (Markdown with captions)
     md_path = debug_dir / "processed_text.md"
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(text)
-    print(f"\nSaved processed markdown to: {md_path.absolute()}")
+    print(f"  - Processed markdown: {md_path.name}")
     
     # Save images
     images_dir = debug_dir / "images"
@@ -162,13 +168,37 @@ def verify_pipeline(input_path: str):
         img_name = Path(img['path']).name
         with open(images_dir / img_name, "wb") as f:
             f.write(img['bytes'])
-    print(f"Saved {len(images)} extracted images to: {images_dir.absolute()}")
+    print(f"  - Extracted images: {len(images)} files in images/")
 
     # Save JSON pairs
     output_json_path = debug_dir / "verification_pairs.json"
     with open(output_json_path, "w", encoding="utf-8") as f:
         json.dump(image_caption_pairs, f, indent=2)
-    print(f"Saved detailed image-caption pairs to: {output_json_path.absolute()}")
+    print(f"  - Verification pairs: {output_json_path.name}")
+    
+    # Copy Raw Mineru Artifacts
+    raw_dir = result.get('raw_output_dir')
+    if raw_dir:
+        raw_path = Path(raw_dir)
+        # The raw output structure is usually {output_dir}/{filename_no_ext}/...
+        # We need to find the content_list.json and layout.pdf
+        
+        # Mineru output structure is a bit nested, let's look for the files recursively
+        found_artifacts = False
+        for f in raw_path.rglob("*"):
+            if f.name.endswith("_content_list.json"):
+                shutil.copy(f, debug_dir / "content_list.json")
+                print(f"  - Raw content list: content_list.json")
+                found_artifacts = True
+            elif f.name.endswith("_layout.pdf"):
+                shutil.copy(f, debug_dir / "layout.pdf")
+                print(f"  - Raw layout PDF: layout.pdf")
+                found_artifacts = True
+                
+        if not found_artifacts:
+             print(f"  WARNING: Could not find raw Mineru artifacts in {raw_path}")
+    else:
+        print("  WARNING: No raw output directory returned from extractor.")
     
     # Cleanup
     if input_path.startswith("gs://"):

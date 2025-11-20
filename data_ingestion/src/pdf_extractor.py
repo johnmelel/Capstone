@@ -671,21 +671,6 @@ class PDFExtractor:
             }
             
             processing_time = time.time() - start_time
-            logger.info(
-                f"Successfully extracted {len(cleaned_text)} chars and {len(images)} images "
-                f"from {source_name} in {processing_time:.2f}s"
-            )
-            
-            result: MultimodalPDFExtractionResult = {
-                'text': cleaned_text,
-                'images': images,
-                'metadata': metadata
-            }
-            
-            return result
-            
-        except (IOError, OSError, FileNotFoundError) as e:
-            processing_time = time.time() - start_time
             source_name = getattr(pdf_source, 'name', str(pdf_source)) if hasattr(pdf_source, 'name') else str(pdf_source)
             logger.error(f"File I/O error extracting from {source_name} after {processing_time:.2f}s: {e}")
             return None
