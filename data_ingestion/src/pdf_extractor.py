@@ -32,6 +32,7 @@ from .config import Config
 from .exceptions import PDFExtractionError
 from .constants import MAX_PDF_SIZE_BYTES
 from .types import PDFExtractionResult, PDFMetadata, MultimodalPDFExtractionResult, ImageData
+from .caption_tagger import CaptionTagger
 
 
 logger = logging.getLogger(__name__)
@@ -133,14 +134,15 @@ class PDFExtractor:
             # Load content_list.json for metadata if available
             content_list_path = output_dir / pdf_name / 'auto' / f"{pdf_name}_content_list.json"
             image_metadata_map = {}
+            content_list = []
             
             if content_list_path.exists():
                 try:
                     with open(content_list_path, 'r', encoding='utf-8') as f:
                         content_data = json.load(f)
-                        # Extract image metadata from content list
-                        # Format varies, but typically has image info with page numbers
                         if isinstance(content_data, list):
+                            content_list = content_data
+                            # Extract image metadata from content list
                             for item in content_data:
                                 if isinstance(item, dict) and item.get('type') == 'image':
                                     img_path = item.get('img_path', '')
@@ -148,6 +150,19 @@ class PDFExtractor:
                                         image_metadata_map[Path(img_path).name] = item
                 except Exception as e:
                     logger.warning(f"Failed to parse content_list.json: {e}")
+            
+            # Tag images with captions using CaptionTagger
+            tagger = CaptionTagger()
+            tagged_images_map = {}
+            if content_list:
+                tagged_content = tagger.tag_images(content_list)
+                for item in tagged_content:
+                    if item.get('type') == 'image':
+                        img_path = item.get('img_path', '')
+                        if img_path:
+                            tagged_images_map[Path(img_path).name] = item.get('caption')
+
+            # Process each image
             
             # Process each image
             for img_idx, img_path in enumerate(image_files):
@@ -195,6 +210,8 @@ class PDFExtractor:
                         'image_index': image_index,
                         'bbox': bbox,
                         'size': size,
+                        'size': size,
+                        'caption': tagged_images_map.get(img_path.name),  # Add caption
                         'gcs_path': None  # Will be set after GCS upload
                     }
                     
@@ -583,6 +600,38 @@ class PDFExtractor:
             images = []
             pdf_name = pdf_path.stem
             images = self._extract_images_from_output(temp_output_dir, pdf_name)
+            
+            # Post-process text: Replace markdown image tags with captions
+            if extracted_text:
+                import re
+                
+                # Create a map of filename -> caption
+                image_caption_map = {
+                    Path(img['path']).name: img.get('caption') 
+                    for img in images
+                }
+                
+                def replace_image_tag(match):
+                    # Match format: ![](images/filename.jpg)
+                    full_path = match.group(1)
+                    filename = Path(full_path).name
+                    
+                    caption = image_caption_map.get(filename)
+                    if caption:
+                        return f"\n[Image: {caption}]\n"
+                    else:
+                        # Remove tag if no caption to reduce noise
+                        return ""
+                
+                # Regex to find markdown image tags: ![](.../images/...)
+                # MinerU output format: ![](images/...)
+                pattern = r'!\[\]\((.*?)\)'
+                processed_text = re.sub(pattern, replace_image_tag, extracted_text)
+                
+                # Clean the processed text
+                cleaned_text = clean_text(processed_text)
+            else:
+                cleaned_text = ""
             
             # Basic metadata
             metadata: PDFMetadata = {
