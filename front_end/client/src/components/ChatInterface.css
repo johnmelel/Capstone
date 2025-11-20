@@ -1,25 +1,81 @@
 .chat-interface {
   display: flex;
-  flex-direction: column;
   height: 100vh;
-  max-width: 1200px;
-  margin: 0 auto;
   background-color: #f9fafb;
-  box-shadow: 0 0 20px rgba(0,0,0,0.05);
 }
 
-.chat-header {
-  padding: 1rem 2rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e7eb;
+.left-sidebar-container,
+.right-sidebar-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.center-chat-area {
+  flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  background-color: #ffffff;
+  position: relative;
 }
 
-.chat-header h1 {
-  margin: 0;
+.resize-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background-color: rgba(250, 194, 194, 0.1);
+  cursor: col-resize;
+  z-index: 100;
+  transition: background-color 0.2s;
+}
+
+.resize-handle:hover {
+  background-color: rgba(91, 249, 244, 0.3);
+}
+
+.resize-handle:active {
+  background-color: #800000;
+}
+
+.resize-handle-right {
+  right: 0;
+}
+
+.resize-handle-left {
+  left: 0;
+}
+
+.iris-badge {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.iris-title {
+  background-color: #800000;
+  color: white;
+  padding: 0.75rem 2.5rem;
+  border-radius: 9999px;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #111827;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.iris-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.university-logo {
+  height: 3rem;
+  width: auto;
 }

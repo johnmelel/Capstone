@@ -1,8 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './MessageInput.css';
 
-const MessageInput = ({ onSendMessage, isLoading }) => {
+const MessageInput = ({ onSendMessage, isLoading, selectedPatient, patients }) => {
     const [text, setText] = useState('');
+
+    useEffect(() => {
+        if (selectedPatient && patients) {
+            const patient = patients.find(p => p.id === selectedPatient);
+            if (patient) {
+                setText(`@${patient.name}: `);
+            }
+        }
+    }, [selectedPatient, patients]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
