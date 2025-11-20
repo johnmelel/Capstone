@@ -625,6 +625,58 @@ class PDFExtractor:
             pdf_name = pdf_path.stem
             images = self._extract_images_from_output(temp_output_dir, pdf_name)
             
+            # --- Gemini Annotation Integration ---
+            from .annotator import GeminiAnnotator
+            from .config import Config
+            
+            annotator = GeminiAnnotator()
+            
+            # Load content_list.json to identify tables
+            content_list_path = None
+            # Mineru output structure: {temp_output_dir}/{pdf_name}/auto/{pdf_name}_content_list.json
+            # But sometimes it varies, so let's search
+            for f in temp_output_dir.rglob("*_content_list.json"):
+                content_list_path = f
+                break
+                
+            content_list = []
+            if content_list_path and content_list_path.exists():
+                try:
+                    with open(content_list_path, 'r', encoding='utf-8') as f:
+                        content_list = json.load(f)
+                except Exception as e:
+                    logger.warning(f"Failed to load content_list.json: {e}")
+
+            # Create a map of image filename -> content block type
+            # We need to know if an image is a 'table' or just an 'image'
+            image_type_map = {}
+            for block in content_list:
+                if block.get('type') in ('image', 'table') and block.get('img_path'):
+                    img_filename = Path(block['img_path']).name
+                    image_type_map[img_filename] = block.get('type')
+
+            # Annotate Images/Tables
+            for img in images:
+                filename = Path(img['path']).name
+                current_caption = img.get('caption')
+                img_type = image_type_map.get(filename, 'image') # Default to image
+                
+                # Case 1: It's a Table -> Always annotate with Table Prompt
+                if img_type == 'table':
+                    logger.info(f"Annotating Table: {filename}")
+                    annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
+                    if annotation:
+                        img['caption'] = annotation # Override/Set caption
+                        logger.info(f"Generated table annotation for {filename}")
+                
+                # Case 2: It's an Image AND has NO caption -> Annotate with Image Prompt
+                elif not current_caption:
+                    logger.info(f"Annotating Captionless Image: {filename}")
+                    annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
+                    if annotation:
+                        img['caption'] = annotation
+                        logger.info(f"Generated image annotation for {filename}")
+
             # Post-process text: Replace markdown image tags with captions
             if extracted_text:
                 import re
