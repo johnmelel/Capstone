@@ -8,11 +8,12 @@ torch==2.9.1
 torchvision==0.24.1
 
 # Embeddings - Support for both Gemini and HuggingFace
-# Gemini API (Legacy support)
 google-genai>=1.0.0
 
 # HuggingFace Embedder Client (HTTP requests to embedding service)
 requests>=2.31.0
+transformers>=4.36.0  # For exact tokenization
+
 
 # Vector Store
 pymilvus==2.6.3  # Updated from 2.3.4 to fix pkg_resources deprecation warning

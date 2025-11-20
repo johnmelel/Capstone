@@ -32,6 +32,7 @@ from .config import Config
 from .exceptions import PDFExtractionError
 from .constants import MAX_PDF_SIZE_BYTES
 from .types import PDFExtractionResult, PDFMetadata, MultimodalPDFExtractionResult, ImageData
+from .caption_tagger import CaptionTagger
 
 
 logger = logging.getLogger(__name__)
@@ -133,14 +134,15 @@ class PDFExtractor:
             # Load content_list.json for metadata if available
             content_list_path = output_dir / pdf_name / 'auto' / f"{pdf_name}_content_list.json"
             image_metadata_map = {}
+            content_list = []
             
             if content_list_path.exists():
                 try:
                     with open(content_list_path, 'r', encoding='utf-8') as f:
                         content_data = json.load(f)
-                        # Extract image metadata from content list
-                        # Format varies, but typically has image info with page numbers
                         if isinstance(content_data, list):
+                            content_list = content_data
+                            # Extract image metadata from content list
                             for item in content_data:
                                 if isinstance(item, dict) and item.get('type') == 'image':
                                     img_path = item.get('img_path', '')
@@ -148,6 +150,43 @@ class PDFExtractor:
                                         image_metadata_map[Path(img_path).name] = item
                 except Exception as e:
                     logger.warning(f"Failed to parse content_list.json: {e}")
+            
+            # Tag images with captions
+            # Strategy: 
+            # 1. Use 'image_caption' from Mineru content_list if available
+            # 2. Fallback to CaptionTagger (proximity search) if not
+            
+            tagger = CaptionTagger()
+            tagged_images_map = {}
+            
+            # First pass: Try to get captions from content_list directly
+            if content_list:
+                for item in content_list:
+                    if item.get('type') == 'image':
+                        img_path = item.get('img_path', '')
+                        if img_path:
+                            captions = item.get('image_caption')
+                            if captions:
+                                if isinstance(captions, list):
+                                    tagged_images_map[Path(img_path).name] = " ".join(captions)
+                                elif isinstance(captions, str):
+                                    tagged_images_map[Path(img_path).name] = captions
+            
+            # Second pass: Run CaptionTagger for any images that still don't have captions
+            # We only run tagger if we have content_list
+            if content_list:
+                # We can run tagger on the whole list, then only use results if we don't have one yet
+                tagged_content = tagger.tag_images(content_list)
+                for item in tagged_content:
+                    if item.get('type') == 'image':
+                        img_path = item.get('img_path', '')
+                        if img_path:
+                            filename = Path(img_path).name
+                            # Only use tagger result if we didn't find a direct caption
+                            if filename not in tagged_images_map:
+                                tagged_images_map[filename] = item.get('caption')
+
+            # Process each image
             
             # Process each image
             for img_idx, img_path in enumerate(image_files):
@@ -195,6 +234,8 @@ class PDFExtractor:
                         'image_index': image_index,
                         'bbox': bbox,
                         'size': size,
+                        'size': size,
+                        'caption': tagged_images_map.get(img_path.name),  # Add caption
                         'gcs_path': None  # Will be set after GCS upload
                     }
                     
@@ -584,6 +625,96 @@ class PDFExtractor:
             pdf_name = pdf_path.stem
             images = self._extract_images_from_output(temp_output_dir, pdf_name)
             
+            # --- Gemini Annotation Integration ---
+            try:
+                from .annotator import GeminiAnnotator
+                from .config import Config
+                
+                annotator = GeminiAnnotator()
+                
+                # Load content_list.json to identify tables
+                content_list_path = None
+                # Mineru output structure: {temp_output_dir}/{pdf_name}/auto/{pdf_name}_content_list.json
+                # But sometimes it varies, so let's search
+                for f in temp_output_dir.rglob("*_content_list.json"):
+                    content_list_path = f
+                    break
+                    
+                content_list = []
+                if content_list_path and content_list_path.exists():
+                    try:
+                        with open(content_list_path, 'r', encoding='utf-8') as f:
+                            content_list = json.load(f)
+                    except Exception as e:
+                        logger.warning(f"Failed to load content_list.json: {e}")
+
+                # Create a map of image filename -> content block type
+                # We need to know if an image is a 'table' or just an 'image'
+                image_type_map = {}
+                for block in content_list:
+                    if block.get('type') in ('image', 'table') and block.get('img_path'):
+                        img_filename = Path(block['img_path']).name
+                        image_type_map[img_filename] = block.get('type')
+
+                # Annotate Images/Tables
+                for img in images:
+                    filename = Path(img['path']).name
+                    current_caption = img.get('caption')
+                    img_type = image_type_map.get(filename, 'image') # Default to image
+                    
+                    # Case 1: It's a Table -> Always annotate with Table Prompt
+                    if img_type == 'table':
+                        logger.info(f"Annotating Table: {filename}")
+                        annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
+                        if annotation:
+                            img['caption'] = annotation # Override/Set caption
+                            logger.info(f"Generated table annotation for {filename}")
+                    
+                    # Case 2: It's an Image AND has NO caption -> Annotate with Image Prompt
+                    elif not current_caption:
+                        logger.info(f"Annotating Captionless Image: {filename}")
+                        annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
+                        if annotation:
+                            img['caption'] = annotation
+                            logger.info(f"Generated image annotation for {filename}")
+
+            except ImportError as e:
+                logger.warning(f"GeminiAnnotator dependency missing: {e}. Skipping image annotation.")
+            except Exception as e:
+                logger.warning(f"Error during Gemini annotation: {e}. Skipping annotation.")
+
+            # Post-process text: Replace markdown image tags with captions
+            if extracted_text:
+                import re
+                
+                # Create a map of filename -> caption
+                image_caption_map = {
+                    Path(img['path']).name: img.get('caption') 
+                    for img in images
+                }
+                
+                def replace_image_tag(match):
+                    # Match format: ![](images/filename.jpg)
+                    full_path = match.group(1)
+                    filename = Path(full_path).name
+                    
+                    caption = image_caption_map.get(filename)
+                    if caption:
+                        return f"\n[Image: {caption}]\n"
+                    else:
+                        # Remove tag if no caption to reduce noise
+                        return ""
+                
+                # Regex to find markdown image tags: ![](.../images/...)
+                # MinerU output format: ![](images/...)
+                pattern = r'!\[\]\((.*?)\)'
+                processed_text = re.sub(pattern, replace_image_tag, extracted_text)
+                
+                # Clean the processed text
+                cleaned_text = clean_text(processed_text)
+            else:
+                cleaned_text = ""
+            
             # Basic metadata
             metadata: PDFMetadata = {
                 'title': '',
@@ -597,16 +728,11 @@ class PDFExtractor:
                 'file_name': source_name
             }
             
-            processing_time = time.time() - start_time
-            logger.info(
-                f"Successfully extracted {len(cleaned_text)} chars and {len(images)} images "
-                f"from {source_name} in {processing_time:.2f}s"
-            )
-            
             result: MultimodalPDFExtractionResult = {
                 'text': cleaned_text,
                 'images': images,
-                'metadata': metadata
+                'metadata': metadata,
+                'raw_output_dir': str(temp_output_dir)
             }
             
             return result
