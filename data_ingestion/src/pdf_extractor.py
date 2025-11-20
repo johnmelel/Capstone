@@ -147,24 +147,10 @@ class PDFExtractor:
                                 if isinstance(item, dict) and item.get('type') == 'image':
                                     img_path = item.get('img_path', '')
                                     if img_path:
-                                        # Check for direct image_caption field from Mineru
-                                        caption = None
-                                        if item.get('image_caption'):
-                                            # image_caption is usually a list of strings
-                                            captions = item.get('image_caption')
-                                            if isinstance(captions, list):
-                                                caption = " ".join(captions)
-                                            elif isinstance(captions, str):
-                                                caption = captions
-                                        
                                         image_metadata_map[Path(img_path).name] = item
-                                        if caption:
-                                            # Store found caption directly
-                                            # We use a separate map or just rely on image_metadata_map later?
-                                            # Let's put it in a pre-filled map for captions
-                                            # But we need to be careful about the fallback logic below.
-                                            pass
-
+                except Exception as e:
+                    logger.warning(f"Failed to parse content_list.json: {e}")
+            
             # Tag images with captions
             # Strategy: 
             # 1. Use 'image_caption' from Mineru content_list if available
