@@ -36,6 +36,24 @@ class Config:
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
     
+    # Gemini Annotation Configuration
+    GEMINI_ANNOTATION_MODEL = os.getenv("GEMINI_ANNOTATION_MODEL", "gemini-3-pro-preview")
+    
+    GEMINI_TABLE_PROMPT = """
+    You are an expert at OCR and analyzing scientific tables. 
+    1. Transcribe the content of this table into a markdown table format.
+    2. Provide a concise summary of what the table shows, including key trends or data points.
+    3. Only return the markdown table and the summary. Do not add conversational filler.
+    """
+    
+    GEMINI_IMAGE_PROMPT = """
+    You are an expert at analyzing scientific figures and medical images.
+    1. Provide a detailed description of what is shown in this image.
+    2. If there is text in the image, transcribe it.
+    3. Focus on the medical/scientific details relevant to the image.
+    4. Only return the description. Do not add conversational filler.
+    """
+    
     # HuggingFace Embedding Configuration
     # BiomedCLIP model: microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224
     # Outputs 512-dimensional embeddings optimized for biomedical text
