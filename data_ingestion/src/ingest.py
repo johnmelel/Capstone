@@ -299,9 +299,22 @@ class IngestionPipeline:
         if not chunks_with_embeddings:
             return
         
-        embeddings = [chunk['embedding'] for chunk in chunks_with_embeddings]
-        texts = [chunk['text'] for chunk in chunks_with_embeddings]
-        metadatas = [chunk['metadata'] for chunk in chunks_with_embeddings]
+        # Validate chunks before insertion
+        valid_chunks = []
+        for chunk in chunks_with_embeddings:
+            text_len = len(chunk['text'])
+            if text_len > 9000:
+                logger.warning(f"⚠️ Skipping chunk with text length {text_len} > 9000 chars (Milvus limit 10k). File: {file_name}")
+                continue
+            valid_chunks.append(chunk)
+            
+        if not valid_chunks:
+            logger.warning(f"No valid chunks to insert for {file_name}")
+            return
+        
+        embeddings = [chunk['embedding'] for chunk in valid_chunks]
+        texts = [chunk['text'] for chunk in valid_chunks]
+        metadatas = [chunk['metadata'] for chunk in valid_chunks]
         
         # Insert in batches
         batch_size = Config.BATCH_SIZE

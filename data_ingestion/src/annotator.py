@@ -46,7 +46,12 @@ class GeminiAnnotator:
             )
             
             if response.text:
-                return response.text.strip()
+                text = response.text.strip()
+                # Hard cutoff safeguard
+                if len(text) > 5000:
+                    logger.warning(f"Truncating Gemini annotation from {len(text)} to 5000 chars")
+                    text = text[:5000] + "...(truncated)"
+                return text
             return None
             
         except Exception as e:

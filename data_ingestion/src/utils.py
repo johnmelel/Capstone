@@ -24,6 +24,13 @@ def setup_logging(level: int = logging.INFO) -> logging.Logger:
         format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
+    
+    # Suppress noisy pdfminer warnings
+    logging.getLogger("pdfminer").setLevel(logging.ERROR)
+    logging.getLogger("pdfminer.pdfinterp").setLevel(logging.ERROR)
+    logging.getLogger("pdfminer.pdfpage").setLevel(logging.ERROR)
+    logging.getLogger("pdfminer.pdfdocument").setLevel(logging.ERROR)
+    
     return logging.getLogger(__name__)
 
 

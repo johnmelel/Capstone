@@ -44,14 +44,16 @@ class Config:
     1. Transcribe the content of this table into a markdown table format.
     2. Provide a concise summary of what the table shows, including key trends or data points.
     3. Only return the markdown table and the summary. Do not add conversational filler.
+    4. KEEP IT CONCISE.
     """
     
     GEMINI_IMAGE_PROMPT = """
     You are an expert at analyzing scientific figures and medical images.
-    1. Provide a detailed description of what is shown in this image.
-    2. If there is text in the image, transcribe it.
+    1. Provide a concise description of what is shown in this image (max 3-4 sentences).
+    2. If there is text in the image, transcribe the key parts.
     3. Focus on the medical/scientific details relevant to the image.
     4. Only return the description. Do not add conversational filler.
+    5. KEEP IT CONCISE.
     """
     
     # HuggingFace Embedding Configuration

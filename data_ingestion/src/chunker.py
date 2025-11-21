@@ -57,7 +57,9 @@ class RecursiveTokenChunker(TextChunker):
 
     def _count_tokens(self, text: str) -> int:
         if self.tokenizer:
-            return len(self.tokenizer.encode(text, add_special_tokens=False))
+            # verbose=False to suppress token length warnings
+            # truncation=False to ensure we count ALL tokens, not just up to model max length
+            return len(self.tokenizer.encode(text, add_special_tokens=False, truncation=False, verbose=False))
         else:
             return len(text) // 4  # Rough approximation
 

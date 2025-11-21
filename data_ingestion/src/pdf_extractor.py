@@ -315,6 +315,11 @@ class PDFExtractor:
                 
                 if item_type in ['text', 'table_caption', 'image_caption', 'formula_caption']:
                     if text_content:
+                        # Sanity check: Skip massive text blocks (likely base64 garbage)
+                        if len(text_content) > 10000:
+                            logger.warning(f"Skipping suspicious text block of length {len(text_content)} on page {page_idx}")
+                            continue
+                            
                         if page_idx not in pages_map:
                             pages_map[page_idx] = []
                         pages_map[page_idx].append(text_content)
