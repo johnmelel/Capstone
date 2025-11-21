@@ -165,6 +165,7 @@ class IngestionPipeline:
             pages = [{'text': text, 'page_num': 1}] # Default to page 1 for text-only
         
         # 2. Text Stream Processing
+        text_chunks = []
         if pages:
             text_chunks = chunk_with_metadata(
                 text_or_pages=pages,
