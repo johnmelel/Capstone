@@ -8,7 +8,7 @@ from pathlib import Path
 if str(Path(__file__).parent) not in sys.path:
     sys.path.insert(0, str(Path(__file__).parent))
 
-from src.chunker import RecursiveTokenChunker, ImageCaptionChunker, SimpleTokenChunker
+from src.chunker import RecursiveTokenChunker, ImageCaptionChunker
 from src.pdf_extractor import PDFExtractor
 
 class TestBifurcatedIngestion(unittest.TestCase):

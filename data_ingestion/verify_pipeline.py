@@ -15,7 +15,7 @@ if str(Path(__file__).parent) not in sys.path:
 
 from src.config import Config
 from src.pdf_extractor import PDFExtractor
-from src.chunker import ExactTokenChunker, ImageCaptionChunker, chunk_with_metadata
+from src.chunker import RecursiveTokenChunker, ImageCaptionChunker, chunk_with_metadata
 
 # Load environment
 load_dotenv()
@@ -87,9 +87,11 @@ def verify_pipeline(input_path: str):
 
     text = result['text']
     images = result['images']
+    pages = result.get('pages', [])
     
     print(f"\n[Extraction Result]")
     print(f"Text Length: {len(text)} chars")
+    print(f"Page Count: {len(pages)}")
     print(f"Image Count: {len(images)}")
     
     # Check for replaced tags
@@ -108,8 +110,12 @@ def verify_pipeline(input_path: str):
     print("\n>>> Running Chunkers...")
     
     # Text Chunking
-    text_chunker = ExactTokenChunker(chunk_size=512, chunk_overlap=50)
-    text_chunks = chunk_with_metadata(text, pdf_path, text_chunker)
+    text_chunker = RecursiveTokenChunker(chunk_size=512, chunk_overlap=50)
+    
+    # Use pages if available, otherwise fallback to text
+    chunk_input = pages if pages else text
+    
+    text_chunks = chunk_with_metadata(chunk_input, pdf_path, text_chunker)
     print(f"Generated {len(text_chunks)} text chunks.")
     
     # Image Chunking

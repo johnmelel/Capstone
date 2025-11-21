@@ -11,7 +11,6 @@ from google.oauth2 import service_account
 
 from .config import Config
 from .pdf_extractor import PDFExtractor
-from .chunker import ExactTokenChunker, ImageCaptionChunker, chunk_with_metadata
 from .vector_store import MilvusVectorStore
 from .gcs_image_uploader import GCSImageUploader
 from .utils import setup_logging
