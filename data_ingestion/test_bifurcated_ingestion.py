@@ -109,10 +109,11 @@ class TestBifurcatedIngestion(unittest.TestCase):
         image_block = next(b for b in tagged if b.get('img_path') == 'fig1.png')
         self.assertEqual(image_block['caption'], 'Figure 1: Graph')
         
-        # Test Image max distance
+        # Test Image max distance - text must be beyond +/- 1 neighbor range and > max_distance
         content_list_far = [
             {'type': 'image', 'img_path': 'fig2.png', 'page_idx': 0, 'bbox': [0, 0, 100, 100]},
-            {'type': 'text', 'text': 'Figure 2: Far', 'page_idx': 0, 'bbox': [0, 400, 100, 410]} # > 200 units away
+            {'type': 'text', 'text': 'Unrelated text', 'page_idx': 0, 'bbox': [0, 120, 100, 130]},  # +1 neighbor (doesn't match)
+            {'type': 'text', 'text': 'Figure 2: Far', 'page_idx': 0, 'bbox': [0, 400, 100, 410]}    # +2 neighbor, 300 units away (> max_distance of 200)
         ]
         tagged_far = tagger.tag_images(content_list_far)
         image_far = next(b for b in tagged_far if b.get('img_path') == 'fig2.png')

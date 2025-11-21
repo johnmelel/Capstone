@@ -11,6 +11,7 @@ from google.oauth2 import service_account
 
 from .config import Config
 from .pdf_extractor import PDFExtractor
+from .chunker import RecursiveTokenChunker, ImageCaptionChunker, chunk_with_metadata
 from .vector_store import MilvusVectorStore
 from .gcs_image_uploader import GCSImageUploader
 from .utils import setup_logging
@@ -54,7 +55,6 @@ class IngestionPipeline:
         self.pdf_extractor = PDFExtractor(extract_images=Config.ENABLE_MULTIMODAL)
         
         # Initialize RecursiveTokenChunker for text
-        from .chunker import RecursiveTokenChunker, ImageCaptionChunker, chunk_with_metadata
         self.text_chunker = RecursiveTokenChunker(
             chunk_size=Config.CHUNK_SIZE,
             chunk_overlap=Config.CHUNK_OVERLAP
