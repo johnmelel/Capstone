@@ -223,6 +223,12 @@ class IngestionPipeline:
                 for img_data, caption_text in caption_splits:
                     # Create metadata
                     metadata = text_chunks[0]['metadata'].copy() if text_chunks else {}
+                    if not text_chunks:
+                        metadata.update({
+                            'file_name': pdf_blob.name,
+                            'file_hash': file_hash
+                        })
+                        
                     metadata.update({
                         'chunk_index': len(all_chunks) + len(image_chunks), # Continue index
                         'has_image': True,
