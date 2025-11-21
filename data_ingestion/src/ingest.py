@@ -54,8 +54,9 @@ class IngestionPipeline:
         
         self.pdf_extractor = PDFExtractor(extract_images=Config.ENABLE_MULTIMODAL)
         
-        # Initialize ExactTokenChunker for text
-        self.text_chunker = ExactTokenChunker(
+        # Initialize RecursiveTokenChunker for text
+        from .chunker import RecursiveTokenChunker, ImageCaptionChunker, chunk_with_metadata
+        self.text_chunker = RecursiveTokenChunker(
             chunk_size=Config.CHUNK_SIZE,
             chunk_overlap=Config.CHUNK_OVERLAP
         )
@@ -148,19 +149,26 @@ class IngestionPipeline:
             result = self.pdf_extractor.extract_with_images(pdf_blob)
             if not result:
                 return []
-            text = result['text']
-            images = result['images']
-            logger.info(f"📸 Extracted {len(images)} images from {pdf_blob.name}")
+            # result has 'text', 'pages', 'images', 'metadata'
+            pages = result.get('pages', [])
+            images = result.get('images', [])
+            
+            # Fallback if pages not present (legacy extraction)
+            if not pages and result.get('text'):
+                pages = [{'text': result['text'], 'page_num': 1}]
+                
+            logger.info(f"📸 Extracted {len(images)} images and {len(pages)} pages from {pdf_blob.name}")
         else:
             text = self.pdf_extractor.extract_text(pdf_blob)
             images = []
             if not text:
                 return []
+            pages = [{'text': text, 'page_num': 1}] # Default to page 1 for text-only
         
         # 2. Text Stream Processing
-        if text:
+        if pages:
             text_chunks = chunk_with_metadata(
-                text=text,
+                text_or_pages=pages,
                 file_path=mock_file_path,
                 chunker=self.text_chunker,
                 embedding_type='text',

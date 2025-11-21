@@ -8,13 +8,16 @@ class CaptionTagger:
 
     def __init__(self):
         # Regex to identify potential caption text (e.g., "Figure 1:", "Fig. 2", "Table 1")
-        # We can expand this list based on observation
         self.caption_patterns = [
             re.compile(r'^(Figure|Fig\.?)\s*\d+', re.IGNORECASE),
             re.compile(r'^(Table|Tab\.?)\s*\d+', re.IGNORECASE),
+            re.compile(r'^Table:', re.IGNORECASE), # Strict "Table:"
             re.compile(r'^(Graph|Chart)\s*\d+', re.IGNORECASE),
             re.compile(r'^(Source|Note):', re.IGNORECASE)
         ]
+        
+        # Specific pattern for tables
+        self.table_pattern = re.compile(r'^(Table|Tab\.?)(:|\s*\d+)', re.IGNORECASE)
 
     def is_caption(self, text: str) -> bool:
         """Check if text matches common caption patterns."""
@@ -25,6 +28,12 @@ class CaptionTagger:
             if pattern.match(text):
                 return True
         return False
+
+    def is_table_caption(self, text: str) -> bool:
+        """Check if text matches table caption patterns."""
+        if not text:
+            return False
+        return bool(self.table_pattern.match(text.strip()))
 
     def tag_images(self, content_list: List[Dict]) -> List[Dict]:
         """
@@ -39,7 +48,8 @@ class CaptionTagger:
         tagged_images = []
         
         for i, block in enumerate(content_list):
-            if block.get('type') == 'image':
+            block_type = block.get('type')
+            if block_type in ('image', 'table'):
                 caption, caption_id = self._find_caption_for_image(content_list, i)
                 
                 image_block = block.copy()
@@ -98,13 +108,14 @@ class CaptionTagger:
         else:
             return 'bottom' if dy > 0 else 'top'
 
-    def _find_closest_text_geometric(self, content_list: List[Dict], image_index: int, window: int = 2, grace: float = 10.0) -> Tuple[Optional[str], Optional[int]]:
+    def _find_closest_text_geometric(self, content_list: List[Dict], image_index: int, window: int = 2, grace: float = 10.0, max_distance: float = 200.0) -> Tuple[Optional[str], Optional[int]]:
         """
         Find closest text block geometrically within a window.
         Priority: Shortest Distance (with grace), then Position (Bottom > Right > Left > Top)
         
         Args:
             grace: Distance difference to consider "equal" (in PDF points)
+            max_distance: Maximum distance to consider a text block related (in PDF points)
         """
         img_block = content_list[image_index]
         img_bbox = img_block.get('bbox')
@@ -137,6 +148,11 @@ class CaptionTagger:
                 continue
                 
             dist = self._calculate_distance(img_bbox, text_bbox)
+            
+            # Check max distance
+            if dist > max_distance:
+                continue
+                
             pos = self._get_relative_position(img_bbox, text_bbox)
             
             # Priority score for position (lower is better)
@@ -168,14 +184,41 @@ class CaptionTagger:
 
     def _find_caption_for_image(self, content_list: List[Dict], image_index: int) -> Tuple[Optional[str], Optional[int]]:
         """
-        Look for a caption near the image.
+        Look for a caption near the image/table.
         Strategy:
         1. Regex pattern check on immediate neighbors (+/- 1)
-        2. Geometric proximity check within window (+/- 2)
+        2. Geometric proximity check within window (+/- 2) - IMAGES ONLY
         
         Returns:
             Tuple of (caption_text, caption_block_index)
         """
+        block = content_list[image_index]
+        block_type = block.get('type', 'image')
+        
+        # --- TABLE LOGIC ---
+        if block_type == 'table':
+            # Only check +/- 1 neighbor for "Table:" pattern
+            
+            # Check next block
+            if image_index + 1 < len(content_list):
+                next_block = content_list[image_index + 1]
+                if next_block.get('type') == 'text':
+                    text = next_block.get('text', '').strip()
+                    if self.is_table_caption(text):
+                        return text, image_index + 1
+
+            # Check previous block
+            if image_index - 1 >= 0:
+                prev_block = content_list[image_index - 1]
+                if prev_block.get('type') == 'text':
+                    text = prev_block.get('text', '').strip()
+                    if self.is_table_caption(text):
+                        return text, image_index - 1
+            
+            # No geometric fallback for tables as requested
+            return None, None
+
+        # --- IMAGE LOGIC ---
         
         # 1. Regex Check (Immediate neighbors)
         # Check next block
@@ -190,5 +233,6 @@ class CaptionTagger:
             if prev_block.get('type') == 'text' and self.is_caption(prev_block.get('text', '')):
                 return prev_block.get('text', '').strip(), image_index - 1
                 
-        # 2. Geometric Fallback
-        return self._find_closest_text_geometric(content_list, image_index, window=2)
+        # 2. Geometric Fallback (with max_distance)
+        # Using 200 PDF points (approx 2.7 inches) as default max distance
+        return self._find_closest_text_geometric(content_list, image_index, window=2, max_distance=200.0)

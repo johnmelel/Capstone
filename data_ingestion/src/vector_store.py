@@ -101,11 +101,10 @@ class MilvusVectorStore:
             FieldSchema(name="file_name", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="file_hash", dtype=DataType.VARCHAR, max_length=512),
             FieldSchema(name="chunk_index", dtype=DataType.INT16),
-            FieldSchema(name="total_chunks", dtype=DataType.INT16),
-            # Multimodal fields - Note: INT16 fields cannot have default values in Milvus
+            FieldSchema(name="page_num", dtype=DataType.INT16),
+            # Multimodal fields
             FieldSchema(name="has_image", dtype=DataType.BOOL, default_value=False),
             FieldSchema(name="embedding_type", dtype=DataType.VARCHAR, max_length=32, default_value="text"),
-            FieldSchema(name="image_count", dtype=DataType.INT16),  # No default value for INT16
             FieldSchema(name="image_gcs_paths", dtype=DataType.VARCHAR, max_length=10000, default_value="[]"),
             FieldSchema(name="image_metadata", dtype=DataType.VARCHAR, max_length=10000, default_value="{}"),
         ]
@@ -262,12 +261,11 @@ class MilvusVectorStore:
             file_names = [m.get('file_name', '') for m in metadatas]
             file_hashes = [m.get('file_hash', '') for m in metadatas]
             chunk_indices = np.array([m.get('chunk_index', 0) for m in metadatas], dtype=np.int16)
-            total_chunks_list = np.array([m.get('total_chunks', 0) for m in metadatas], dtype=np.int16)
+            page_nums = np.array([m.get('page_num', 1) for m in metadatas], dtype=np.int16)
             
             # Extract multimodal metadata fields (new)
             has_image = [m.get('has_image', False) for m in metadatas]
             embedding_type = [m.get('embedding_type', 'text') for m in metadatas]
-            image_count = np.array([m.get('image_count', 0) for m in metadatas], dtype=np.int16)
             image_gcs_paths = [m.get('image_gcs_paths', '[]') for m in metadatas]  # JSON string
             image_metadata = [m.get('image_metadata', '{}') for m in metadatas]  # JSON string
 
@@ -286,10 +284,9 @@ class MilvusVectorStore:
                 file_names,
                 file_hashes,
                 chunk_indices,
-                total_chunks_list,
+                page_nums,
                 has_image,
                 embedding_type,
-                image_count,
                 image_gcs_paths,
                 image_metadata,
             ]

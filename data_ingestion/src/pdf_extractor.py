@@ -288,36 +288,59 @@ class PDFExtractor:
                 f_dump_middle_json=False,
                 f_dump_model_output=False,
                 f_dump_orig_pdf=False,
-                f_dump_content_list=True,  # Always enable for image extraction
+                f_dump_content_list=True,
                 f_draw_layout_bbox=False,
                 f_draw_span_bbox=False
             )
             
-            # Read the generated markdown file
-            md_file_path = output_dir / pdf_name / 'auto' / f"{pdf_name}.md"
+            # 3. Parse Output
+            output_dir = Path(output_dir)
+            content_list_path = output_dir / pdf_name / 'auto' / f"{pdf_name}_content_list.json"
             
-            if not md_file_path.exists():
-                logger.error(f"Markdown file not found at expected path: {md_file_path}")
-                return None
+            if not content_list_path.exists():
+                logger.error(f"MinerU content list not found at {content_list_path}")
+                return None, [], []
+
+            with open(content_list_path, 'r', encoding='utf-8') as f:
+                content_list = json.load(f)
+
+            # Extract text per page
+            pages_map = {}
+            full_text_parts = []
             
-            with open(md_file_path, 'r', encoding='utf-8') as f:
-                md_content = f.read()
+            for item in content_list:
+                page_idx = item.get('page_idx', 0)
+                item_type = item.get('type')
+                text_content = item.get('text', '')
+                
+                if item_type in ['text', 'table_caption', 'image_caption', 'formula_caption']:
+                    if text_content:
+                        if page_idx not in pages_map:
+                            pages_map[page_idx] = []
+                        pages_map[page_idx].append(text_content)
+                        full_text_parts.append(text_content)
             
-            logger.info(f"MinerU processing complete: {md_file_path}")
+            # Construct PageData list
+            pages = []
+            sorted_page_idxs = sorted(pages_map.keys())
+            for idx in sorted_page_idxs:
+                page_text = "\n\n".join(pages_map[idx])
+                pages.append({
+                    'text': page_text,
+                    'page_num': idx + 1  # Convert to 1-based
+                })
             
-            # Extract text from markdown
-            return md_content.strip() if md_content else None
+            full_text = "\n\n".join(full_text_parts)
             
-        except (IOError, OSError, FileNotFoundError) as e:
-            logger.error(f"File I/O error processing PDF with MinerU: {e}")
-            return None
-        except ImportError as e:
-            logger.error(f"Missing MinerU dependency: {e}")
-            raise PDFExtractionError("MinerU dependencies not properly installed") from e
+            # Extract images
+            images = self._extract_images_from_output(output_dir, pdf_name)
+            
+            return full_text, pages, images
+
         except Exception as e:
-            logger.error(f"Unexpected error processing PDF with MinerU: {e}")
-            return None
-    
+            logger.error(f"MinerU processing failed: {e}")
+            return None, [], []
+            
     def extract_text(self, pdf_source: Union[Path, Any]) -> Optional[str]:
         """
         Extract text from PDF using MinerU
@@ -395,7 +418,8 @@ class PDFExtractor:
             
             # Process PDF with MinerU
             logger.debug(f"Processing {source_name} with MinerU")
-            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            # _process_pdf_with_mineru returns (text, pages, images)
+            extracted_text, _, _ = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
             
             # Clean text
             cleaned_text = clean_text(extracted_text) if extracted_text else None
@@ -493,7 +517,7 @@ class PDFExtractor:
                 temp_output_dir = Path(tempfile.mkdtemp(prefix="mineru_output_"))
             
             # Extract text using MinerU
-            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            extracted_text, _, _ = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
             cleaned_text = clean_text(extracted_text) if extracted_text else ""
             
             # Basic metadata (MinerU doesn't extract PDF metadata like title/author)
@@ -617,13 +641,10 @@ class PDFExtractor:
             
             # Process PDF with MinerU
             logger.debug(f"Processing {source_name} with MinerU (images enabled)")
-            extracted_text = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
+            extracted_text, pages, images = self._process_pdf_with_mineru(pdf_path, temp_output_dir)
             cleaned_text = clean_text(extracted_text) if extracted_text else ""
             
-            # Extract images - always extract when extract_with_images is called
-            images = []
-            pdf_name = pdf_path.stem
-            images = self._extract_images_from_output(temp_output_dir, pdf_name)
+            # Images are already extracted by _process_pdf_with_mineru
             
             # --- Gemini Annotation Integration ---
             try:
@@ -665,21 +686,23 @@ class PDFExtractor:
                         current_caption = img.get('caption')
                         img_type = image_type_map.get(filename, 'image') # Default to image
                         
-                        # Case 1: It's a Table -> Always annotate with Table Prompt
-                        if img_type == 'table':
-                            logger.info(f"Annotating Table: {filename}")
-                            annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
-                            if annotation:
-                                img['caption'] = annotation # Override/Set caption
-                                logger.info(f"Generated table annotation for {filename}")
-                        
-                        # Case 2: It's an Image AND has NO caption -> Annotate with Image Prompt
-                        elif not current_caption:
-                            logger.info(f"Annotating Captionless Image: {filename}")
-                            annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
-                            if annotation:
-                                img['caption'] = annotation
-                                logger.info(f"Generated image annotation for {filename}")
+                        # Only annotate if NO caption exists (from Mineru or CaptionTagger)
+                        if not current_caption:
+                            if img_type == 'table':
+                                logger.info(f"Annotating Captionless Table: {filename}")
+                                annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_TABLE_PROMPT)
+                                if annotation:
+                                    img['caption'] = annotation
+                                    logger.info(f"Generated table annotation for {filename}")
+                            else:
+                                logger.info(f"Annotating Captionless Image: {filename}")
+                                annotation = annotator.annotate_image(img['bytes'], Config.GEMINI_IMAGE_PROMPT)
+                                if annotation:
+                                    img['caption'] = annotation
+                                    logger.info(f"Generated image annotation for {filename}")
+                        else:
+                            logger.debug(f"Skipping annotation for {filename} (type={img_type}): Caption exists")
+                            
                     except Exception as e:
                         logger.error(f"Error processing image {filename}: {e}")
 
@@ -746,6 +769,7 @@ class PDFExtractor:
             
             result: MultimodalPDFExtractionResult = {
                 'text': cleaned_text,
+                'pages': pages,
                 'images': images,
                 'metadata': metadata,
                 'raw_output_dir': str(temp_output_dir)

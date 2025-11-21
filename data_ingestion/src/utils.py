@@ -51,7 +51,6 @@ def create_metadata(
     file_name: str,
     file_hash: str,
     chunk_index: int,
-    total_chunks: int,
     **kwargs
 ) -> Dict[str, Any]:
     """Create metadata dictionary for a chunk"""
@@ -59,7 +58,6 @@ def create_metadata(
         "file_name": file_name,
         "file_hash": file_hash,
         "chunk_index": chunk_index,
-        "total_chunks": total_chunks,
     }
     metadata.update(kwargs)
     return metadata

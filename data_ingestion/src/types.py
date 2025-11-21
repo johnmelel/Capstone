@@ -28,15 +28,23 @@ class PDFMetadata(TypedDict):
     file_name: str
 
 
+class PageData(TypedDict):
+    """Data for a single page"""
+    text: str
+    page_num: int
+
+
 class PDFExtractionResult(TypedDict):
     """Result of PDF text extraction with metadata"""
-    text: str
+    text: str  # Full text (concatenated)
+    pages: List[PageData]  # Text per page
     metadata: PDFMetadata
 
 
 class MultimodalPDFExtractionResult(TypedDict):
     """Result of PDF extraction with text, images, and metadata"""
-    text: str
+    text: str  # Full text (concatenated)
+    pages: List[PageData]  # Text per page
     images: List[ImageData]
     metadata: PDFMetadata
 

@@ -1,8 +1,8 @@
-"""Text chunking module with exact tokenization support"""
+"""Text chunking module with recursive splitting and page awareness"""
 
 import logging
-import json
-from typing import List, Dict, Any, Tuple, Optional
+import re
+from typing import List, Dict, Any, Tuple, Optional, Union
 from pathlib import Path
 
 try:
@@ -13,7 +13,7 @@ except ImportError:
 
 from .config import Config
 from .utils import create_metadata, get_file_hash
-from .types import ImageData
+from .types import ImageData, PageData
 
 
 logger = logging.getLogger(__name__)
@@ -26,100 +26,131 @@ class TextChunker:
         self.chunk_size = chunk_size or Config.CHUNK_SIZE
         self.chunk_overlap = chunk_overlap or Config.CHUNK_OVERLAP
         
-    def chunk_text(self, text: str) -> List[str]:
-        """Override in subclasses"""
+    def chunk_text(self, text_or_pages: Union[str, List[PageData]]) -> List[Dict[str, Any]]:
+        """
+        Chunk text or pages.
+        Returns list of dicts: {'text': str, 'page_num': int}
+        """
         raise NotImplementedError
 
 
-class SimpleTokenChunker(TextChunker):
-    """Legacy chunker using character heuristic (1 token ≈ 4 chars)"""
-    
-    def __init__(self, chunk_size: int = None, chunk_overlap: int = None):
-        super().__init__(chunk_size, chunk_overlap)
-        logger.info(f"SimpleTokenChunker initialized: chunk_size={self.chunk_size}, overlap={self.chunk_overlap}")
-
-    def _estimate_tokens(self, text: str) -> int:
-        return len(text) // 4
-    
-    def _chars_from_tokens(self, num_tokens: int) -> int:
-        return num_tokens * 4
-    
-    def chunk_text(self, text: str) -> List[str]:
-        if not text:
-            return []
-        
-        chunk_size_chars = self._chars_from_tokens(self.chunk_size)
-        overlap_chars = self._chars_from_tokens(self.chunk_overlap)
-        step_size = chunk_size_chars - overlap_chars
-        
-        chunks = []
-        start = 0
-        text_length = len(text)
-        
-        while start < text_length:
-            end = min(start + chunk_size_chars, text_length)
-            chunk = text[start:end].strip()
-            
-            if chunk:
-                chunks.append(chunk)
-            
-            start += step_size
-            if end >= text_length:
-                break
-        
-        return chunks
-
-
-class ExactTokenChunker(TextChunker):
-    """Chunker using HuggingFace tokenizer for exact counts"""
+class RecursiveTokenChunker(TextChunker):
+    """
+    Chunker that splits text recursively by separators (paragraphs, sentences, etc.)
+    while respecting token limits.
+    """
     
     def __init__(self, model_name: str = "microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224", chunk_size: int = None, chunk_overlap: int = None):
         super().__init__(chunk_size, chunk_overlap)
+        self.separators = ["\n\n", "\n", ". ", " ", ""]
         
-        if not TRANSFORMERS_AVAILABLE:
-            logger.warning("Transformers not available, falling back to SimpleTokenChunker")
-            self._fallback = SimpleTokenChunker(chunk_size, chunk_overlap)
-            return
+        if TRANSFORMERS_AVAILABLE:
+            try:
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+                logger.info(f"RecursiveTokenChunker initialized with model: {model_name}")
+            except Exception as e:
+                logger.error(f"Failed to load tokenizer {model_name}: {e}")
+                self.tokenizer = None
+        else:
+            self.tokenizer = None
+            logger.warning("Transformers not available, using character-based approximation")
 
-        try:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            logger.info(f"ExactTokenChunker initialized with model: {model_name}")
-            self._fallback = None
-        except Exception as e:
-            logger.error(f"Failed to load tokenizer {model_name}: {e}")
-            logger.warning("Falling back to SimpleTokenChunker")
-            self._fallback = SimpleTokenChunker(chunk_size, chunk_overlap)
+    def _count_tokens(self, text: str) -> int:
+        if self.tokenizer:
+            return len(self.tokenizer.encode(text, add_special_tokens=False))
+        else:
+            return len(text) // 4  # Rough approximation
 
-    def chunk_text(self, text: str) -> List[str]:
-        if self._fallback:
-            return self._fallback.chunk_text(text)
-            
-        if not text:
-            return []
-
-        # Tokenize entire text
-        tokens = self.tokenizer.encode(text, add_special_tokens=False)
-        total_tokens = len(tokens)
+    def _split_text(self, text: str, separators: List[str]) -> List[str]:
+        """
+        Recursively split text into chunks that fit within chunk_size.
+        """
+        final_chunks = []
         
-        chunks = []
-        start = 0
-        step_size = self.chunk_size - self.chunk_overlap
+        # If text fits, return it
+        if self._count_tokens(text) <= self.chunk_size:
+            return [text]
         
-        while start < total_tokens:
-            end = min(start + self.chunk_size, total_tokens)
-            chunk_tokens = tokens[start:end]
+        # If no separators left, force split
+        if not separators:
+            # Hard split by tokens
+            if self.tokenizer:
+                tokens = self.tokenizer.encode(text, add_special_tokens=False)
+                chunks = []
+                for i in range(0, len(tokens), self.chunk_size - self.chunk_overlap):
+                    chunk_tokens = tokens[i:i + self.chunk_size]
+                    chunks.append(self.tokenizer.decode(chunk_tokens, skip_special_tokens=True))
+                return chunks
+            else:
+                # Hard split by chars
+                char_limit = self.chunk_size * 4
+                return [text[i:i+char_limit] for i in range(0, len(text), char_limit)]
+
+        # Use current separator
+        separator = separators[0]
+        next_separators = separators[1:]
+        
+        if separator == "":
+            splits = list(text) # Split by character
+        else:
+            splits = text.split(separator)
             
-            # Decode back to text
-            chunk_text = self.tokenizer.decode(chunk_tokens, skip_special_tokens=True).strip()
-            if chunk_text:
-                chunks.append(chunk_text)
+        # Merge splits into chunks
+        current_chunk = []
+        current_len = 0
+        
+        for split in splits:
+            split_len = self._count_tokens(split)
             
-            start += step_size
-            if end >= total_tokens:
-                break
+            if current_len + split_len + (1 if separator else 0) > self.chunk_size:
+                # Current chunk is full, save it
+                if current_chunk:
+                    doc = separator.join(current_chunk)
+                    if self._count_tokens(doc) > self.chunk_size:
+                        # If even one split is too big, recurse on it
+                        if len(current_chunk) == 1:
+                             final_chunks.extend(self._split_text(doc, next_separators))
+                        else:
+                             # This shouldn't happen often if logic is right, but safety net
+                             final_chunks.append(doc) 
+                    else:
+                        final_chunks.append(doc)
+                    
+                    # Apply overlap (simplified: just keep last item if it fits)
+                    # Implementing proper overlap in recursive split is tricky.
+                    # For now, we reset.
+                    current_chunk = []
+                    current_len = 0
+            
+            current_chunk.append(split)
+            current_len += split_len
+            
+        if current_chunk:
+            final_chunks.append(separator.join(current_chunk))
+            
+        return final_chunks
+
+    def chunk_text(self, text_or_pages: Union[str, List[PageData]]) -> List[Dict[str, Any]]:
+        chunks_with_page = []
+        
+        if isinstance(text_or_pages, str):
+            # Legacy mode: single string, unknown page (assume 1)
+            raw_chunks = self._split_text(text_or_pages, self.separators)
+            for chunk in raw_chunks:
+                if chunk.strip():
+                    chunks_with_page.append({'text': chunk.strip(), 'page_num': 1})
+        else:
+            # Page-aware mode
+            for page in text_or_pages:
+                page_text = page['text']
+                page_num = page['page_num']
                 
-        logger.debug(f"Split text into {len(chunks)} chunks using exact tokenization")
-        return chunks
+                raw_chunks = self._split_text(page_text, self.separators)
+                for chunk in raw_chunks:
+                    if chunk.strip():
+                        chunks_with_page.append({'text': chunk.strip(), 'page_num': page_num})
+                        
+        return chunks_with_page
 
 
 class ImageCaptionChunker:
@@ -140,21 +171,20 @@ class ImageCaptionChunker:
         if not caption:
             return [(image, None)]
             
-        # Case 2: Caption fits in one chunk
-        # We use the text chunker to check/split
-        caption_chunks = self.text_chunker.chunk_text(caption)
+        # Case 2: Chunk caption
+        # We pass caption as string, so page_num defaults to 1 (irrelevant for image chunks usually)
+        caption_chunks_dicts = self.text_chunker.chunk_text(caption)
         
-        if not caption_chunks:
-            # Should not happen if caption is not empty, but safety check
+        if not caption_chunks_dicts:
             return [(image, None)]
             
         # Case 3: Caption split into multiple chunks
         # Duplicate image for each caption chunk
-        return [(image, chunk) for chunk in caption_chunks]
+        return [(image, chunk_dict['text']) for chunk_dict in caption_chunks_dicts]
 
 
 def chunk_with_metadata(
-    text: str,
+    text_or_pages: Union[str, List[PageData]],
     file_path: Any,
     chunker: TextChunker,
     **additional_metadata
@@ -162,7 +192,7 @@ def chunk_with_metadata(
     """
     Chunk text and create metadata for each chunk
     """
-    chunks = chunker.chunk_text(text)
+    chunks_data = chunker.chunk_text(text_or_pages)
     
     # Generate file hash
     if isinstance(file_path, Path):
@@ -180,22 +210,21 @@ def chunk_with_metadata(
             file_hash = hashlib.md5(file_path.name.encode()).hexdigest()
     
     chunks_with_metadata = []
-    for idx, chunk in enumerate(chunks):
+    for idx, item in enumerate(chunks_data):
+        chunk_text = item['text']
+        page_num = item['page_num']
+        
         metadata = create_metadata(
             file_name=file_path.name,
             file_hash=file_hash,
             chunk_index=idx,
-            total_chunks=len(chunks),
-            token_count=len(chunk.split()), # Rough estimate for metadata
+            page_num=page_num,
             **additional_metadata
         )
         
         chunks_with_metadata.append({
-            'text': chunk,
+            'text': chunk_text,
             'metadata': metadata
         })
     
     return chunks_with_metadata
-
-
-
