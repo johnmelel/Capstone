@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import './MessageInput.css';
 
-const MessageInput = ({ onSendMessage, isLoading, selectedPatient, patients }) => {
+const MessageInput = ({ onSendMessage, isLoading, selectedPatients, patients }) => {
     const [text, setText] = useState('');
 
     useEffect(() => {
-        if (selectedPatient && patients) {
-            const patient = patients.find(p => p.id === selectedPatient);
-            if (patient) {
-                setText(`@${patient.name}: `);
+        if (selectedPatients && selectedPatients.length > 0 && patients) {
+            // Get patient names for all selected patients
+            const patientNames = selectedPatients
+                .map(id => patients.find(p => p.id === id))
+                .filter(p => p) // Remove any undefined
+                .map(p => `@${p.name}`);
+
+            // Format with proper grammar
+            let formattedNames = '';
+            if (patientNames.length === 1) {
+                formattedNames = patientNames[0];
+            } else if (patientNames.length === 2) {
+                formattedNames = `${patientNames[0]} & ${patientNames[1]}`;
+            } else if (patientNames.length > 2) {
+                const lastPatient = patientNames[patientNames.length - 1];
+                const otherPatients = patientNames.slice(0, -1).join(', ');
+                formattedNames = `${otherPatients} & ${lastPatient}`;
             }
+
+            setText(`${formattedNames}: `);
+        } else {
+            // Clear the text if no patients are selected
+            setText('');
         }
-    }, [selectedPatient, patients]);
+    }, [selectedPatients, patients]);
 
     const handleSubmit = (e) => {
         e.preventDefault();

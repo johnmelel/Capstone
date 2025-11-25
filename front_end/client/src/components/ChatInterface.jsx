@@ -3,6 +3,7 @@ import LeftSidebar from './LeftSidebar';
 import RightSidebar from './RightSidebar';
 import MessageList from './MessageList';
 import MessageInput from './MessageInput';
+import ConfirmModal from './ConfirmModal';
 import './ChatInterface.css';
 
 // localStorage keys
@@ -28,7 +29,7 @@ const ChatInterface = () => {
         { id: 1, text: "Hello! I'm Iris AI, your Medical Assistant. How can I help you today?", sender: 'bot' }
     ]);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [selectedPatients, setSelectedPatients] = useState([]);
     const [leftWidth, setLeftWidth] = useState(22);
     const [rightWidth, setRightWidth] = useState(22);
     const [conversations, setConversations] = useState(() => loadFromStorage(STORAGE_KEYS.CONVERSATIONS, []));
@@ -36,11 +37,35 @@ const ChatInterface = () => {
     const [pinnedAnswers, setPinnedAnswers] = useState(() => loadFromStorage(STORAGE_KEYS.PINNED_ANSWERS, []));
     const [currentConversationId, setCurrentConversationId] = useState(null);
 
+    // Confirmation modal state
+    const [confirmModal, setConfirmModal] = useState({
+        isOpen: false,
+        message: '',
+        onConfirm: null
+    });
+
     // Mock data for patients
     const patients = [
         { id: 1, name: 'Paul Stevens' },
         { id: 2, name: 'Johnson Matt' },
-        { id: 3, name: 'Steve Rock' }
+        { id: 3, name: 'Steve Rock' },
+        { id: 4, name: 'John Doe' },
+        { id: 5, name: 'Jane Smith' },
+        { id: 6, name: 'Bob Johnson' },
+        { id: 7, name: 'Alice Brown' },
+        { id: 8, name: 'Tom Wilson' },
+        { id: 9, name: 'Lily Davis' },
+        { id: 10, name: 'Mark Taylor' },
+        { id: 11, name: 'Emily White' },
+        { id: 12, name: 'David Wilson' },
+        { id: 13, name: 'Sarah Johnson' },
+        { id: 14, name: 'Michael Brown' },
+        { id: 15, name: 'Jessica Davis' },
+        { id: 16, name: 'William Wilson' },
+        { id: 17, name: 'Olivia Taylor' },
+        { id: 18, name: 'James White' },
+        { id: 19, name: 'Sophia Davis' },
+        { id: 20, name: 'Benjamin Wilson' }
     ];
 
     // Auto-run pinned questions on component mount
@@ -206,7 +231,27 @@ const ChatInterface = () => {
     };
 
     const handlePatientSelect = (patientId) => {
-        setSelectedPatient(patientId);
+        setSelectedPatients(prev => {
+            if (prev.includes(patientId)) {
+                // Remove if already selected
+                return prev.filter(id => id !== patientId);
+            } else {
+                // Add if not selected
+                return [...prev, patientId];
+            }
+        });
+    };
+
+    const handleClearConversations = () => {
+        setConfirmModal({
+            isOpen: true,
+            message: 'Are you sure you want to follow up this action? All conversations will be permanently deleted.',
+            onConfirm: () => {
+                setConversations([]);
+                localStorage.setItem(STORAGE_KEYS.CONVERSATIONS, JSON.stringify([]));
+                setConfirmModal({ isOpen: false, message: '', onConfirm: null });
+            }
+        });
     };
 
     const handlePinMessage = (messageId, shouldUnpin = false) => {
@@ -229,8 +274,17 @@ const ChatInterface = () => {
     };
 
     const handleUnpinQuestion = (pinnedId) => {
-        // Remove from pinned questions but keep the answer
-        setPinnedQuestions(prev => prev.filter(pq => pq.id !== pinnedId));
+        setConfirmModal({
+            isOpen: true,
+            message: 'Are you sure you want to follow up this action? This question will be unpinned.',
+            onConfirm: () => {
+                // Remove from pinned questions
+                setPinnedQuestions(prev => prev.filter(pq => pq.id !== pinnedId));
+                // Also remove the associated answer
+                setPinnedAnswers(prev => prev.filter(pa => pa.questionId !== pinnedId));
+                setConfirmModal({ isOpen: false, message: '', onConfirm: null });
+            }
+        });
     };
 
     const handleLeftResize = (e) => {
@@ -283,10 +337,11 @@ const ChatInterface = () => {
                 <LeftSidebar
                     patients={patients}
                     conversations={conversations}
-                    selectedPatient={selectedPatient}
+                    selectedPatients={selectedPatients}
                     onPatientSelect={handlePatientSelect}
                     onNewChat={handleNewChat}
                     onLoadConversation={handleLoadConversation}
+                    onClearConversations={handleClearConversations}
                 />
                 <div className="resize-handle resize-handle-right" onMouseDown={handleLeftResize} />
             </div>
@@ -317,7 +372,7 @@ const ChatInterface = () => {
                 <MessageInput
                     onSendMessage={handleSendMessage}
                     isLoading={isLoading}
-                    selectedPatient={selectedPatient}
+                    selectedPatients={selectedPatients}
                     patients={patients}
                 />
             </div>
@@ -326,9 +381,17 @@ const ChatInterface = () => {
                 <div className="resize-handle resize-handle-left" onMouseDown={handleRightResize} />
                 <RightSidebar
                     pinnedAnswers={pinnedAnswers}
+                    pinnedQuestions={pinnedQuestions}
                     onUnpinQuestion={handleUnpinQuestion}
                 />
             </div>
+
+            <ConfirmModal
+                isOpen={confirmModal.isOpen}
+                message={confirmModal.message}
+                onConfirm={confirmModal.onConfirm}
+                onCancel={() => setConfirmModal({ isOpen: false, message: '', onConfirm: null })}
+            />
         </div>
     );
 };

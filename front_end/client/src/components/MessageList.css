@@ -1,29 +1,44 @@
 :root {
     /* ===== COLOR SYSTEM ===== */
 
-    --color-primary-blue: #4f46e5; /* Primary Brand Colors */
-    --color-primary-blue-hover: #4338ca; /* Main action color - Indigo 600 */
-    --color-primary-blue-light: #eef2ff; /* Light background tint */
+    --color-primary-blue: #4f46e5;
+    /* Primary Brand Colors */
+    --color-primary-blue-hover: #4338ca;
+    /* Main action color - Indigo 600 */
+    --color-primary-blue-light: #eef2ff;
+    /* Light background tint */
 
     /* Status/Priority Colors - following medical alert conventions */
-    --color-status-critical: #dc2626; /* Red - Highest priority */
-    --color-status-urgent: #ea580c; /* Orange - High priority */
-    --color-status-follow-up: #eab308; /* Yellow - Medium priority */
+    --color-status-critical: #dc2626;
+    /* Red - Highest priority */
+    --color-status-urgent: #ea580c;
+    /* Orange - High priority */
+    --color-status-follow-up: #eab308;
+    /* Yellow - Medium priority */
 
     /* Neutral/Background Colors */
-    --color-bg-primary: #ffffff; /* Main background */
-    --color-bg-secondary: #f9fafb; /* Secondary surface (sidebars) */
-    --color-bg-tertiary: #f3f4f6; /* Tertiary surface */
+    --color-bg-primary: #ffffff;
+    /* Main background */
+    --color-bg-secondary: #f9fafb;
+    /* Secondary surface (sidebars) */
+    --color-bg-tertiary: #f3f4f6;
+    /* Tertiary surface */
 
     /* Text Colors - meet WCAG contrast requirements */
-    --color-text-primary: #111827; /* Main text - dark gray */
-    --color-text-secondary: #6b7280; /* Secondary text - medium gray */
-    --color-text-tertiary: #9ca3af; /* Tertiary text - light gray */
-    --color-text-inverse: #ffffff; /* Text on dark backgrounds */
+    --color-text-primary: #111827;
+    /* Main text - dark gray */
+    --color-text-secondary: #6b7280;
+    /* Secondary text - medium gray */
+    --color-text-tertiary: #9ca3af;
+    /* Tertiary text - light gray */
+    --color-text-inverse: #ffffff;
+    /* Text on dark backgrounds */
 
     /* Border Colors */
-    --color-border-light: #e5e7eb; /* Light borders */
-    --color-border-medium: #d1d5db; /* Medium borders */
+    --color-border-light: #e5e7eb;
+    /* Light borders */
+    --color-border-medium: #d1d5db;
+    /* Medium borders */
 
     /* ===== TYPOGRAPHY SYSTEM ===== */
 
@@ -31,12 +46,18 @@
         'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
         sans-serif;
 
-    --font-size-xs: 0.75rem; /* 12px - small labels */
-    --font-size-sm: 0.875rem; /* 14px - body small */
-    --font-size-base: 1rem; /* 16px - standard body text */
-    --font-size-lg: 1.125rem; /* 18px - larger text */
-    --font-size-xl: 1.25rem; /* 20px - titles */
-    --font-size-2xl: 1.5rem; /* 24px - large titles */
+    --font-size-xs: 0.75rem;
+    /* 12px - small labels */
+    --font-size-sm: 0.875rem;
+    /* 14px - body small */
+    --font-size-base: 1rem;
+    /* 16px - standard body text */
+    --font-size-lg: 1.125rem;
+    /* 18px - larger text */
+    --font-size-xl: 1.25rem;
+    /* 20px - titles */
+    --font-size-2xl: 1.5rem;
+    /* 24px - large titles */
 
     --font-weight-normal: 400;
     --font-weight-medium: 500;
@@ -49,12 +70,18 @@
 
     /* ===== SPACING SYSTEM ===== */
 
-    --spacing-xs: 0.25rem; /* 4px */
-    --spacing-sm: 0.5rem; /* 8px */
-    --spacing-md: 1rem; /* 16px */
-    --spacing-lg: 1.5rem; /* 24px */
-    --spacing-xl: 2rem; /* 32px */
-    --spacing-2xl: 3rem; /* 48px */
+    --spacing-xs: 0.25rem;
+    /* 4px */
+    --spacing-sm: 0.5rem;
+    /* 8px */
+    --spacing-md: 1rem;
+    /* 16px */
+    --spacing-lg: 1.5rem;
+    /* 24px */
+    --spacing-xl: 2rem;
+    /* 32px */
+    --spacing-2xl: 3rem;
+    /* 48px */
 
     /* ===== ELEVATION/SHADOW SYSTEM ===== */
 
@@ -65,11 +92,16 @@
 
     /* ===== BORDER RADIUS =====  */
 
-    --radius-sm: 0.375rem; /* 6px - subtle rounding */
-    --radius-md: 0.5rem; /* 8px - default rounding */
-    --radius-lg: 0.75rem; /* 12px - prominent elements */
-    --radius-xl: 1rem; /* 16px - large elements */
-    --radius-full: 9999px; /* Pills and circular elements */
+    --radius-sm: 0.375rem;
+    /* 6px - subtle rounding */
+    --radius-md: 0.5rem;
+    /* 8px - default rounding */
+    --radius-lg: 0.75rem;
+    /* 12px - prominent elements */
+    --radius-xl: 1rem;
+    /* 16px - large elements */
+    --radius-full: 9999px;
+    /* Pills and circular elements */
 
     /* ===== TRANSITIONS =====
         Smooth animations for interactive elements
@@ -81,8 +113,10 @@
 
     /* ===== LAYOUT DIMENSIONS ===== */
 
-    --sidebar-width-left: 20%; /* Left sidebar width */
-    --sidebar-width-right: 22%; /* Right sidebar width */
+    --sidebar-width-left: 20%;
+    /* Left sidebar width */
+    --sidebar-width-right: 22%;
+    /* Right sidebar width */
     --chat-area-width: calc(100% - var(--sidebar-width-left) - var(--sidebar-width-right));
 }
 
@@ -360,6 +394,12 @@ input:focus {
     background-color: #10b981;
     border-color: #10b981;
     color: white;
+}
+
+.pin-icon {
+    width: 0.875rem;
+    height: 0.875rem;
+    display: block;
 }
 
 .message-content p {

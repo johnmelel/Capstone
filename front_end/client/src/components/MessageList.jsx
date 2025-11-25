@@ -43,7 +43,9 @@ const MessageList = ({ messages, isLoading, onPinMessage, pinnedQuestions }) => 
                                 }}
                                 title={isMessagePinned(msg.id) ? "Unpin this question" : "Pin this question"}
                             >
-                                ✓✓
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="pin-icon">
+                                    <path d="M16 12V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v8l-2 2v2h5v6l1 1 1-1v-6h5v-2l-2-2z" />
+                                </svg>
                             </button>
                         )}
                         <div className="message-content">
