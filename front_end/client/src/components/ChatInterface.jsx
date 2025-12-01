@@ -36,6 +36,7 @@ const ChatInterface = () => {
     const [pinnedQuestions, setPinnedQuestions] = useState(() => loadFromStorage(STORAGE_KEYS.PINNED_QUESTIONS, []));
     const [pinnedAnswers, setPinnedAnswers] = useState(() => loadFromStorage(STORAGE_KEYS.PINNED_ANSWERS, []));
     const [currentConversationId, setCurrentConversationId] = useState(null);
+    const [patients, setPatients] = useState([]);
 
     // Confirmation modal state
     const [confirmModal, setConfirmModal] = useState({
@@ -44,29 +45,39 @@ const ChatInterface = () => {
         onConfirm: null
     });
 
-    // Mock data for patients
-    const patients = [
-        { id: 1, name: 'Paul Stevens' },
-        { id: 2, name: 'Johnson Matt' },
-        { id: 3, name: 'Steve Rock' },
-        { id: 4, name: 'John Doe' },
-        { id: 5, name: 'Jane Smith' },
-        { id: 6, name: 'Bob Johnson' },
-        { id: 7, name: 'Alice Brown' },
-        { id: 8, name: 'Tom Wilson' },
-        { id: 9, name: 'Lily Davis' },
-        { id: 10, name: 'Mark Taylor' },
-        { id: 11, name: 'Emily White' },
-        { id: 12, name: 'David Wilson' },
-        { id: 13, name: 'Sarah Johnson' },
-        { id: 14, name: 'Michael Brown' },
-        { id: 15, name: 'Jessica Davis' },
-        { id: 16, name: 'William Wilson' },
-        { id: 17, name: 'Olivia Taylor' },
-        { id: 18, name: 'James White' },
-        { id: 19, name: 'Sophia Davis' },
-        { id: 20, name: 'Benjamin Wilson' }
-    ];
+    // Fetch real patient IDs from database on mount
+    useEffect(() => {
+        const fetchPatients = async () => {
+            console.log('ChatInterface: Fetching patients from /patients endpoint...');
+            try {
+                const response = await fetch('http://localhost:8000/patients');
+                console.log('ChatInterface: Response status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('ChatInterface: Received patient data:', data.count, 'patients');
+                    console.log('ChatInterface: Sample patients:', data.patients.slice(0, 3));
+                    
+                    // Map to format expected by components (with id as both id and subject_id)
+                    const formattedPatients = data.patients.map(p => ({
+                        id: p.subject_id,  // Use numeric ID for internal tracking
+                        subject_id: p.subject_id,  // Keep for reference
+                        name: `Patient ID: ${p.subject_id}`  // Display format
+                    }));
+                    
+                    console.log('ChatInterface: Formatted patients sample:', formattedPatients.slice(0, 3));
+                    setPatients(formattedPatients);
+                    console.log('ChatInterface: Patient state updated with', formattedPatients.length, 'patients');
+                } else {
+                    console.error('ChatInterface: Failed to fetch patients, status:', response.status);
+                }
+            } catch (error) {
+                console.error('ChatInterface: Error fetching patients:', error);
+            }
+        };
+
+        fetchPatients();
+    }, []);
 
     // Auto-run pinned questions on component mount
     useEffect(() => {

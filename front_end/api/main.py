@@ -140,6 +140,46 @@ async def chat(request: ChatRequest):
         )
 
 
+@app.get("/patients")
+async def get_patients():
+    """
+    Fetch all patient IDs from the EMR database.
+    
+    Returns list of patient objects with IDs for frontend display.
+    """
+    import sqlite3
+    
+    db_path = os.path.join(project_root, "database", "mimic_emr.db")
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        
+        # Get all unique patient IDs from the patients table
+        cursor.execute("SELECT DISTINCT subject_id FROM patients ORDER BY subject_id")
+        patient_ids = cursor.fetchall()
+        
+        conn.close()
+        
+        # Format as list of patient objects
+        patients = [
+            {
+                "id": str(pid[0]),  # subject_id as string
+                "subject_id": pid[0]  # Keep numeric version too
+            }
+            for pid in patient_ids
+        ]
+        
+        return {"patients": patients, "count": len(patients)}
+        
+    except Exception as e:
+        print(f"Error fetching patients: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error fetching patient list: {str(e)}"
+        )
+
+
 @app.get("/health")
 async def health():
     """Health check endpoint."""

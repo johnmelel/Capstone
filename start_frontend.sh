@@ -21,5 +21,11 @@ echo "Make sure the FastAPI backend is running on http://localhost:8000"
 echo "Press Ctrl+C to stop"
 echo ""
 
+# Use Node 22 from Homebrew if available
+if [ -d "/opt/homebrew/opt/node@22/bin" ]; then
+    export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
+    echo "Using Node 22 from Homebrew"
+fi
+
 # Start Vite dev server
 npm run dev

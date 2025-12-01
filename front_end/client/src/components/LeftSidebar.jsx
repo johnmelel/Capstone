@@ -5,14 +5,16 @@ const LeftSidebar = ({ patients, conversations, selectedPatients, onPatientSelec
     const [showAllPatients, setShowAllPatients] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Debug: log conversations prop
+    // Debug: log conversations and patients
     useEffect(() => {
         console.log('LeftSidebar received conversations:', conversations);
-    }, [conversations]);
+        console.log('LeftSidebar received patients:', patients.length, patients.slice(0, 3));
+    }, [conversations, patients]);
 
-    // Filter patients based on search term
+    // Filter patients based on search term (works with both name and id)
     const filteredPatients = patients.filter(patient =>
-        patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+        patient.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        String(patient.id).includes(searchTerm)
     );
 
     const handleSearchKeyDown = (e) => {
@@ -41,7 +43,7 @@ const LeftSidebar = ({ patients, conversations, selectedPatients, onPatientSelec
                 <div className="filter-header">
                     <input
                         type="text"
-                        placeholder="Patient Name..."
+                        placeholder="Patient ID..."
                         className="patient-search"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}

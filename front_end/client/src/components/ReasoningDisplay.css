@@ -59,3 +59,91 @@
 .source-section li {
     margin-bottom: 0.25rem;
 }
+
+/* EMR Data Sections */
+.emr-data {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.subsection {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid #e5e7eb;
+}
+
+.subsection h5 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.subsection p {
+    margin: 0.25rem 0;
+    color: #4b5563;
+    line-height: 1.5;
+}
+
+.sql-query {
+    background: #1f2937;
+    color: #10b981;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+.row-count {
+    font-weight: 500;
+    color: #800000;
+    margin-bottom: 0.5rem;
+}
+
+.data-preview {
+    margin-top: 0.5rem;
+}
+
+.preview-label {
+    margin-bottom: 0.5rem;
+    color: #6b7280;
+    font-size: 0.8125rem;
+}
+
+.data-rows {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
+
+.more-rows {
+    margin-top: 0.5rem;
+    color: #6b7280;
+    font-style: italic;
+    font-size: 0.8125rem;
+}
+
+.json-data {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 0.75rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    margin: 0;
+    font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+}
