@@ -134,7 +134,10 @@ async def emr_node(state: Dict[str, Any]) -> Dict[str, Any]:
     
     # Get API key and MCP command from environment
     api_key = os.getenv("GEMINI_API_KEY")
-    mcp_command = os.getenv("MCP_SERVER_COMMAND", "python ../mcp-servers/server.py")
+    # Use absolute path relative to project root
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    mcp_server_path = os.path.join(project_root, "mcp-servers", "server.py")
+    mcp_command = os.getenv("MCP_SERVER_COMMAND", f"python {mcp_server_path}")
     
     if not api_key:
         return {
@@ -194,7 +197,10 @@ async def research_node(state: Dict[str, Any]) -> Dict[str, Any]:
     
     # Get API key and MCP command from environment
     api_key = os.getenv("GEMINI_API_KEY")
-    mcp_command = os.getenv("MCP_SERVER_COMMAND", "python ../mcp-servers/server.py")
+    # Use absolute path relative to project root
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    mcp_server_path = os.path.join(project_root, "mcp-servers", "server.py")
+    mcp_command = os.getenv("MCP_SERVER_COMMAND", f"python {mcp_server_path}")
     
     if not api_key:
         return {
@@ -286,11 +292,25 @@ async def aggregator_node(state: Dict[str, Any]) -> Dict[str, Any]:
     
     # Combine raw data
     if not raw_parts:
-        final_response = "No results were generated. Please check if the query was processed correctly."
-        logger.warning("No results to aggregate")
+        # No worker data - likely a generic query that didn't route to workers
+        # Provide helpful default response
+        query = state.get("query", "")
+        final_response = f"""Hello! I'm Iris AI, your Medical Assistant.
+
+I can help you with:
+- **EMR Queries**: Lab results, diagnoses, medications, procedures for specific patients
+- **Medical Research**: Treatment guidelines, disease information, clinical evidence
+
+Examples:
+- "What are the lab results for patient 10000032?"
+- "What are treatment guidelines for hypertension?"
+- "Show me diagnoses for patient 10006866"
+
+Please ask a medical question and I'll be happy to help!"""
+        logger.info("No worker data - returning helpful guidance")
         return {
             "final_response": final_response,
-            "messages": ["Aggregator: No results to process"]
+            "messages": ["Aggregator: Provided helpful guidance for generic query"]
         }
     
     raw_combined = "\n\n".join(raw_parts)

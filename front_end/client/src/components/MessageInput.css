@@ -23,6 +23,7 @@
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
     background-color: #ffffff;
+    color: #1f2937;
 }
 
 .message-input::placeholder {

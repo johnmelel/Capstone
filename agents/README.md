@@ -382,15 +382,6 @@ Common errors:
 4. **Basic query refinement**: Not yet using RL-tuned rewriter
    - Future: Part 4 will add RL query optimization
 
-## Next Steps
-
-After Part 3 completion:
-
-1. **Part 4**: Wrap workers in LangSmith assistants
-2. **Part 5**: Add Memento personalization agent
-3. **Part 6**: Enable full LangSmith tracing
-4. **Part 7**: End-to-end integration testing
-
 ## Troubleshooting
 
 **Import Error: No module named 'mcp'**

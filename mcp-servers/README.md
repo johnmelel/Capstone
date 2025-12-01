@@ -309,12 +309,3 @@ python setup_database.py
 **Gemini API Key Invalid**
 - Verify GEMINI_API_KEY in .env
 - Embeddings required for semantic_search tool
-
-## Next Steps
-
-After Part 2 completion, proceed to:
-- **Part 3:** Build worker agents that consume these MCP tools
-- **Part 4:** Build router and planner agents
-- **Part 5:** Add personalization with Memento
-- **Part 6:** Enable LangSmith tracing
-- **Part 7:** End-to-end integration testing

@@ -316,16 +316,6 @@ SQLite can only handle one writer at a time. If you get a lock error:
 - Wait a moment and retry
 - Ensure no other process is accessing the database
 
-## Next Steps
-
-After completing Part 1, proceed to:
-- **Part 2**: MCP server for SQL database access
-- **Part 3**: MCP server for vector store and RL query rewriter
-- **Part 4**: Worker agents (EMR + Research)
-- **Part 5**: Router and planner agents
-- **Part 6**: Personalization with Memento
-- **Part 7**: LangSmith tracing
-
 ## License and Data
 
 This uses MIMIC-IV demo data. Ensure you have appropriate permissions to use MIMIC data.

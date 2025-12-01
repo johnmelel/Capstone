@@ -1,4 +1,15 @@
+# FastAPI Backend
 fastapi>=0.104.0
 uvicorn>=0.24.0
 pydantic>=2.5.0
 python-multipart
+
+# Agent System Dependencies (from agents/)
+mcp>=0.9.0
+google-generativeai>=0.3.0
+google-cloud-aiplatform>=1.38.0
+python-dotenv>=1.0.0
+langgraph>=0.0.20
+langsmith>=0.1.0
+langchain-core>=0.1.0
+pymilvus>=2.3.0
