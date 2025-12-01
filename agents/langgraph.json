@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "medical_agent": "./graph.py:create_medical_agent_graph"
+  },
+  "env": "../.env"
+}

@@ -1,0 +1,223 @@
+{
+  "timestamp": "2025-11-17T19:40:32.752754",
+  "test_configuration": {
+    "num_queries": 10,
+    "orchestrator_types_tested": 4
+  },
+  "results": [
+    {
+      "orchestrator_type": "mcp_multi_agent",
+      "total_tests": 3,
+      "successful_tests": 3,
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 6.0,
+      "avg_latency": 13.311837752660116,
+      "avg_answer_length": 1255.6666666666667,
+      "multi_modal_usage": 100.0,
+      "structured_only": 0,
+      "unstructured_only": 0,
+      "detailed_results": [
+        {
+          "category": "1. Diagnostic Pattern Reasoning",
+          "query": "What are the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus (ICD-9 code 25000) who are on insulin therapy?",
+          "reasoning_steps": 5,
+          "answer_length": 364,
+          "latency": 9.130573987960815,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "I am unable to provide the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus (ICD-9 code 25000) who are on insulin therapy, as the provided medical "
+        },
+        {
+          "category": "2. Mechanistic/Pathophysiologic Reasoning",
+          "query": "Explain why patients with atrial fibrillation (ICD-9 code 42731) in our database require careful medication management and what monitoring is essential",
+          "reasoning_steps": 9,
+          "answer_length": 2909,
+          "latency": 17.133228063583374,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "Patients with Atrial Fibrillation (ICD-9 code 42731) require careful medication management due to the significant risks associated with the condition and the medications used to treat it. The primary "
+        },
+        {
+          "category": "3. Comparative/Evidence-Based Selection",
+          "query": "Compare the use of Furosemide versus other diuretics in our patient population. What clinical scenarios favor Furosemide and what monitoring is required?",
+          "reasoning_steps": 4,
+          "answer_length": 494,
+          "latency": 13.671711206436157,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "Based on the provided information, a direct comparison of Furosemide versus other diuretics in our patient population cannot be performed, as the structured database query failed. Furthermore, the pro"
+        }
+      ]
+    },
+    {
+      "orchestrator_type": "no_mcp",
+      "total_tests": 3,
+      "successful_tests": 2,
+      "success_rate": 66.66666666666666,
+      "avg_reasoning_steps": 2.0,
+      "avg_latency": 21.552385091781616,
+      "avg_answer_length": 2309.0,
+      "multi_modal_usage": 100.0,
+      "structured_only": 0,
+      "unstructured_only": 0,
+      "detailed_results": [
+        {
+          "category": "1. Diagnostic Pattern Reasoning",
+          "query": "What are the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus (ICD-9 code 25000) who are on insulin therapy?",
+          "reasoning_steps": 8,
+          "answer_length": 2727,
+          "latency": 35.77574706077576,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": false,
+          "answer_preview": "Due to errors encountered with both the structured EMR database and the unstructured medical knowledge source (Milvus), specific patient data and detailed medical guidelines cannot be accessed at this"
+        },
+        {
+          "category": "2. Mechanistic/Pathophysiologic Reasoning",
+          "query": "Explain why patients with atrial fibrillation (ICD-9 code 42731) in our database require careful medication management and what monitoring is essential",
+          "reasoning_steps": 0,
+          "answer_length": 4155,
+          "latency": 38.08360815048218,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "```json\n{\n  \"answer\": \"I am unable to provide a precise answer based on your specific EMR data or medical literature at this time, as both the structured database (SQLite) and unstructured knowledge b"
+        },
+        {
+          "category": "3. Comparative/Evidence-Based Selection",
+          "query": "Compare the use of Furosemide versus other diuretics in our patient population. What clinical scenarios favor Furosemide and what monitoring is required?",
+          "reasoning_steps": 4,
+          "answer_length": 463,
+          "latency": 5.021162033081055,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "I am unable to provide a comprehensive comparison of Furosemide versus other diuretics in your patient population, delineate clinical scenarios favoring Furosemide, or detail required monitoring. This"
+        }
+      ]
+    },
+    {
+      "orchestrator_type": "single_agent",
+      "total_tests": 3,
+      "successful_tests": 3,
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 8.666666666666666,
+      "avg_latency": 36.107675313949585,
+      "avg_answer_length": 1774.6666666666667,
+      "multi_modal_usage": 100.0,
+      "structured_only": 0,
+      "unstructured_only": 0,
+      "detailed_results": [
+        {
+          "category": "1. Diagnostic Pattern Reasoning",
+          "query": "What are the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus (ICD-9 code 25000) who are on insulin therapy?",
+          "reasoning_steps": 6,
+          "answer_length": 453,
+          "latency": 34.378578186035156,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "Based on the provided data, I am unable to identify the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus on insulin therapy. The structured databas"
+        },
+        {
+          "category": "2. Mechanistic/Pathophysiologic Reasoning",
+          "query": "Explain why patients with atrial fibrillation (ICD-9 code 42731) in our database require careful medication management and what monitoring is essential",
+          "reasoning_steps": 7,
+          "answer_length": 3209,
+          "latency": 39.67251682281494,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "While I cannot provide patient-specific insights due to a database error and the provided unstructured medical knowledge is irrelevant to atrial fibrillation, I can explain the general reasons why pat"
+        },
+        {
+          "category": "3. Comparative/Evidence-Based Selection",
+          "query": "Compare the use of Furosemide versus other diuretics in our patient population. What clinical scenarios favor Furosemide and what monitoring is required?",
+          "reasoning_steps": 13,
+          "answer_length": 1662,
+          "latency": 34.27193093299866,
+          "used_structured": true,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "I am unable to provide a comparison of Furosemide versus other diuretics in your patient population, identify specific clinical scenarios favoring Furosemide, or detail monitoring requirements based o"
+        }
+      ]
+    },
+    {
+      "orchestrator_type": "vector_only",
+      "total_tests": 3,
+      "successful_tests": 3,
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 5.0,
+      "avg_latency": 5.282474597295125,
+      "avg_answer_length": 493.0,
+      "multi_modal_usage": 0.0,
+      "structured_only": 0,
+      "unstructured_only": 1,
+      "detailed_results": [
+        {
+          "category": "1. Diagnostic Pattern Reasoning",
+          "query": "What are the key monitoring requirements and potential complications for patients diagnosed with diabetes mellitus (ICD-9 code 25000) who are on insulin therapy?",
+          "reasoning_steps": 3,
+          "answer_length": 432,
+          "latency": 2.908019781112671,
+          "used_structured": false,
+          "used_unstructured": true,
+          "success": true,
+          "answer_preview": "I apologize, but the provided medical literature (Context 1 and Context 2) discusses hepatocellular carcinoma (HCC) and related imaging techniques (Gd-EOB-DTPA-enhanced MR) and does not contain inform"
+        },
+        {
+          "category": "2. Mechanistic/Pathophysiologic Reasoning",
+          "query": "Explain why patients with atrial fibrillation (ICD-9 code 42731) in our database require careful medication management and what monitoring is essential",
+          "reasoning_steps": 8,
+          "answer_length": 553,
+          "latency": 8.234570980072021,
+          "used_structured": false,
+          "used_unstructured": false,
+          "success": true,
+          "answer_preview": "The provided medical literature (Context 1 and Context 2) does not contain information relevant to the careful medication management and essential monitoring for patients with atrial fibrillation (ICD"
+        },
+        {
+          "category": "3. Comparative/Evidence-Based Selection",
+          "query": "Compare the use of Furosemide versus other diuretics in our patient population. What clinical scenarios favor Furosemide and what monitoring is required?",
+          "reasoning_steps": 4,
+          "answer_length": 494,
+          "latency": 4.704833030700684,
+          "used_structured": false,
+          "used_unstructured": false,
+          "success": true,
+          "answer_preview": "I apologize, but the medical literature provided (Context 1: related to Diffusion Kurtosis Imaging and ADC maps; Context 2: related to tumor sensitivity and prostatectomy specimens) does not contain i"
+        }
+      ]
+    }
+  ],
+  "comparison_summary": {
+    "mcp_multi_agent": {
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 6.0,
+      "avg_latency": 13.311837752660116,
+      "multi_modal_usage": 100.0
+    },
+    "no_mcp": {
+      "success_rate": 66.66666666666666,
+      "avg_reasoning_steps": 2.0,
+      "avg_latency": 21.552385091781616,
+      "multi_modal_usage": 100.0
+    },
+    "single_agent": {
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 8.666666666666666,
+      "avg_latency": 36.107675313949585,
+      "multi_modal_usage": 100.0
+    },
+    "vector_only": {
+      "success_rate": 100.0,
+      "avg_reasoning_steps": 5.0,
+      "avg_latency": 5.282474597295125,
+      "multi_modal_usage": 0.0
+    }
+  }
+}

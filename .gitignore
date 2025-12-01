@@ -23,8 +23,13 @@
 /page2_only.pdf
 *.pyc
 medical-agent/MIMIC_data/
-medical-agent/adsp-34002-ip09-team-2-e0cca2d396a9.json
 medical-agent/data/
+z-legacy-implementation/medical-agent/MIMIC_data/
+z-legacy-implementation/medical-agent/data/
+# Service account credentials (anywhere in repo)
+**/service_account.json
+service_account.json
+**/adsp-34002-ip09-team-2-*.json
 memory-bank/
 /docs
 
@@ -46,3 +51,4 @@ data_ingestion/IMPLEMENTATION_COMPLETE.md
 data_ingestion/QUICKSTART_EMBEDDINGS.md
 data_ingestion/models/
 data_ingestion/debug_output/
+/agents/.langgraph_api

@@ -1,0 +1,20 @@
+# Worker Agent Dependencies
+
+# MCP Client
+mcp>=0.9.0
+
+# Google Gemini for LLM reasoning
+google-generativeai>=0.3.0
+google-cloud-aiplatform>=1.38.0  # Vertex AI SDK for higher rate limits
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# LangGraph multi-agent coordination (Part 4)
+langgraph>=0.0.20
+langsmith>=0.1.0
+langchain-core>=0.1.0
