@@ -1,0 +1,6 @@
+# Test Images Folder
+# 
+# Add any test image here (PNG, JPG, JPEG, GIF, WEBP)
+# When user types "image" in the chat, one of these will be returned.
+#
+# Example: Copy any image file here and rename it to test_image.png
