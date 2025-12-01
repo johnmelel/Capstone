@@ -29,33 +29,44 @@ User Query → Planner → Router → {EMR Worker, Research Worker} → Aggregat
 
 ## Quick Start
 
-### Prerequisites
+### One-Time Setup
 
-1. Python 3.10+ with virtual environment
-2. Node.js 16+ with npm
-3. Environment variables configured in `.env`:
-   - `GOOGLE_API_KEY` (Gemini API)
-   - `LANGSMITH_API_KEY` (tracing)
-   - `MILVUS_URI` (vector store)
-   - `MILVUS_API_KEY` (vector auth)
+**1. Configure environment** - Create `.env` file in project root:
+```bash
+GEMINI_API_KEY=your_gemini_api_key
+LANGSMITH_API_KEY=your_langsmith_key
+LANGSMITH_PROJECT=your_project_name
+MILVUS_URI=your_milvus_uri
+MILVUS_API_KEY=your_milvus_key
+MILVUS_COLLECTION_NAME=capstone_group_2_multimodal
+```
 
-### Run the Application
+**2. Set up database** (one-time):
+```bash
+cd emr-database-setup && pip install -r requirements.txt && python setup_database.py && cd ..
+```
+
+**3. Install backend dependencies**:
+```bash
+cd agents && pip install -r requirements.txt && cd ..
+cd mcp-servers && pip install -r requirements.txt && cd ..
+cd front_end/api && pip install -r requirements.txt && cd ../..
+```
+
+**4. Install frontend dependencies**:
+```bash
+cd front_end/client && npm install && cd ../..
+```
+
+### Run Application
 
 ```bash
-# Start everything at once (macOS/Linux)
 ./start_all.sh
-
-# Or manually:
-# Terminal 1 - Backend
-./start_api.sh
-
-# Terminal 2 - Frontend
-./start_frontend.sh
 ```
 
 Then open http://localhost:5173
 
-For complete documentation, see [INTEGRATION_GUIDE.md](INTEGRATION_GUIDE.md)
+**Note**: Requires Python 3.10+, Node.js 22+ (or 16+ with manual adjustments)
 
 ## Project Structure
 
