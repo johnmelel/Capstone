@@ -122,6 +122,7 @@ const ChatInterface = () => {
         localStorage.setItem(STORAGE_KEYS.PINNED_ANSWERS, JSON.stringify(pinnedAnswers));
     }, [pinnedAnswers]);
 
+    // Where frontend and backend meet
     const handleSendMessage = async (text) => {
         const userMessage = { id: Date.now(), text, sender: 'user' };
         setMessages(prev => [...prev, userMessage]);
