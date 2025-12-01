@@ -313,8 +313,8 @@ input:focus {
 }
 
 .message-list.centered {
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
 .message-wrapper {
