@@ -337,6 +337,7 @@ input:focus {
     font-size: 1rem;
     line-height: 1.5;
     position: relative;
+    text-align: left;
 }
 
 .message.user {
@@ -404,6 +405,7 @@ input:focus {
 
 .message-content p {
     margin: 0;
+    text-align: left;
 }
 
 .message-content p+p {
